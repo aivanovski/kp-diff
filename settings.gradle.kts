@@ -1,1 +1,1 @@
-rootProject.name = "autokpass"
+rootProject.name = "kpdiff"

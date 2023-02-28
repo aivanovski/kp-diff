@@ -83,8 +83,6 @@ dependencies {
 
     implementation("io.insert-koin:koin-core:3.1.5")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31")
-    implementation("org.buildobjects:jproc:2.8.0")
-    implementation("de.gesundkrank.fzf4j:fzf4j:0.2.0")
-    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
     implementation("com.github.anvell:kotpass:0.4.9")
+    implementation("com.github.ajalt.clikt:clikt:3.4.0")
 }
