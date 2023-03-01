@@ -1,0 +1,32 @@
+name: Ktlint
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 11
+        uses: actions/setup-java@v1
+        with:
+          java-version: 11
+
+      - name: Download Ktlint
+        run: |
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.48.2/ktlint
+          chmod +x ktlint
+
+      - name: Run Ktlint
+        run: ./ktlint --editor-config=".editorconfig"
+
