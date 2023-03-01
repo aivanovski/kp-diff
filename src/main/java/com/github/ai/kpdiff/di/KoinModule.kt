@@ -1,5 +1,7 @@
 package com.github.ai.kpdiff.di
 
+import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
+import com.github.ai.kpdiff.data.filesystem.FileSystemProviderImpl
 import com.github.ai.kpdiff.domain.ErrorHandler
 import com.github.ai.kpdiff.domain.MainInteractor
 import com.github.ai.kpdiff.domain.input.InputReaderFactory
@@ -14,6 +16,7 @@ object KoinModule {
         single { InputReaderFactory() }
         single<OutputWriter> { StdoutOutputWriter() }
         single { ErrorHandler(get()) }
+        single<FileSystemProvider> { FileSystemProviderImpl() }
 
         // use cases
         single { ReadPasswordUseCase(get()) }

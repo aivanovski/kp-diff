@@ -15,3 +15,7 @@ fun Any.resourceAsString(name: String): String =
 
 fun Any.resourceAsStream(name: String): InputStream =
     ByteArrayInputStream(resourceAsBytes(name))
+
+fun InputStream.readText(): String {
+    return String(readAllBytes())
+}
