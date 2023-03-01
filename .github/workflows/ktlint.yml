@@ -28,5 +28,5 @@ jobs:
           chmod +x ktlint
 
       - name: Run Ktlint
-        run: ./ktlint --editor-config=".editorconfig"
+        run: ./ktlint --editorconfig=".editorconfig"
 
