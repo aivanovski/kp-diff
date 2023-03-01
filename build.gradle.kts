@@ -1,8 +1,8 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 import java.io.BufferedWriter
 import java.io.FileInputStream
 import java.io.FileWriter
 import java.util.Properties
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.jetbrains.kotlin.jvm").version("1.5.31")
@@ -41,11 +41,13 @@ tasks.jacocoTestReport {
         html.outputLocation.set(coverageDir)
     }
 
-    classDirectories.setFrom(classDirectories.files.map {
-        fileTree(it).matching {
-            exclude("com/github/ai/kpdiff/di/**")
+    classDirectories.setFrom(
+        classDirectories.files.map {
+            fileTree(it).matching {
+                exclude("com/github/ai/kpdiff/di/**")
+            }
         }
-    })
+    )
 
     dependsOn(allprojects.map { it.tasks.named<Test>("test") })
 }
