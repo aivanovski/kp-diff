@@ -1,5 +1,6 @@
 package com.github.ai.kpdiff.domain.output
 
+import com.github.ai.kpdiff.utils.formatStackTrace
 import io.kotest.matchers.shouldBe
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
@@ -23,9 +24,9 @@ internal class StdoutOutputWriterTest {
     @Test
     fun `printStackTrace should print to standard error output`() {
         // arrange
-        val exception = Exception("Text exception")
+        val exception = Exception("Test exception")
         val stream = ByteArrayOutputStream(BUFFER_SIZE)
-        val expected = getStackTrace(exception).trim()
+        val expected = formatStackTrace(exception).trim()
         System.setErr(PrintStream(stream))
 
         // act
@@ -33,12 +34,6 @@ internal class StdoutOutputWriterTest {
 
         // assert
         stream.toString().trim() shouldBe expected
-    }
-
-    private fun getStackTrace(exception: Exception): String {
-        val stream = ByteArrayOutputStream(4096)
-        exception.printStackTrace(PrintStream(stream))
-        return stream.toString()
     }
 
     companion object {

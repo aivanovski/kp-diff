@@ -8,8 +8,13 @@ class MainInteractor(
     private val readPasswordUseCase: ReadPasswordUseCase
 ) {
 
+    // TODO: write tests
     fun process(args: Array<String>): Either<Unit> {
         val password = readPasswordUseCase.readPassword(InputReaderType.STANDARD)
+        if (password.isLeft()) {
+            return password.mapToLeft()
+        }
+
         return Either.Right(Unit)
     }
 }
