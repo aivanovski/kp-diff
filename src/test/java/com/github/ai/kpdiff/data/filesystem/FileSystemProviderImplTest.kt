@@ -1,6 +1,6 @@
 package com.github.ai.kpdiff.data.filesystem
 
-import com.github.ai.kpdiff.utils.readText
+import com.github.ai.kpdiff.testUtils.readText
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf

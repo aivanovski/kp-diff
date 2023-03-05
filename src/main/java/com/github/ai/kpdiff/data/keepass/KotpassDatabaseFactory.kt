@@ -4,8 +4,8 @@ import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.KeepassKey
-import io.github.anvell.kotpass.cryptography.EncryptedValue
-import io.github.anvell.kotpass.database.Credentials
+import com.github.ai.kpdiff.utils.buildNodeTree
+import com.github.ai.kpdiff.utils.toCredentials
 import io.github.anvell.kotpass.database.KeePassDatabase
 import io.github.anvell.kotpass.database.decode
 
@@ -28,17 +28,9 @@ class KotpassDatabaseFactory(
         }
     }
 
-    private fun KeepassKey.toCredentials(): Credentials {
-        return when (this) {
-            is KeepassKey.PasswordKey -> {
-                Credentials.from(EncryptedValue.fromString(password))
-            }
-        }
-    }
-
     private fun KeePassDatabase.convert(): KeepassDatabase {
         return KeepassDatabase(
-            root = content.group
+            root = content.group.buildNodeTree()
         )
     }
 }

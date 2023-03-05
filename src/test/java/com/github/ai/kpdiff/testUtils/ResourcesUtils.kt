@@ -1,4 +1,4 @@
-package com.github.ai.kpdiff.utils
+package com.github.ai.kpdiff.testUtils
 
 import java.io.ByteArrayInputStream
 import java.io.InputStream

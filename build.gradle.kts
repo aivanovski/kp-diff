@@ -5,13 +5,12 @@ import java.util.Properties
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.kotlin.jvm").version("1.5.31")
-    id("org.jetbrains.kotlin.plugin.spring").version("1.5.31")
-    id("org.springframework.boot").version("2.2.0.RELEASE")
+    kotlin("jvm") version "1.7.21"
+    kotlin("plugin.spring") version "1.7.21"
+    id("org.springframework.boot") version "3.0.1"
+    id("io.spring.dependency-management") version "1.1.0"
     jacoco
 }
-
-apply(plugin = "io.spring.dependency-management")
 
 val appVersion = "0.1.0"
 
@@ -79,12 +78,12 @@ tasks.register("createPropertyFileWithVersion") {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.9.2")
     testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.3")
     testImplementation("io.mockk:mockk:1.12.3")
 
     implementation("io.insert-koin:koin-core:3.1.5")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.7.21")
     implementation("com.github.anvell:kotpass:0.4.9")
     implementation("com.github.ajalt.clikt:clikt:3.4.0")
 }

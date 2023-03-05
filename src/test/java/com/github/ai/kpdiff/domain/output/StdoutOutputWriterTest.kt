@@ -1,6 +1,6 @@
 package com.github.ai.kpdiff.domain.output
 
-import com.github.ai.kpdiff.utils.formatStackTrace
+import com.github.ai.kpdiff.testUtils.formatStackTrace
 import io.kotest.matchers.shouldBe
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream

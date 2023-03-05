@@ -4,9 +4,9 @@ import com.github.ai.kpdiff.TestData
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.KeepassKey
-import com.github.ai.kpdiff.utils.contentStream
-import com.github.ai.kpdiff.utils.convert
-import com.github.ai.kpdiff.utils.isContentEquals
+import com.github.ai.kpdiff.testUtils.contentStream
+import com.github.ai.kpdiff.testUtils.convert
+import com.github.ai.kpdiff.testUtils.isContentEquals
 import io.github.anvell.kotpass.errors.CryptoError
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -32,7 +32,7 @@ internal class KotpassDatabaseFactoryTest {
 
         // assert
         db.isRight() shouldBe true
-        db.unwrap().isContentEquals(testDb) shouldBe true
+        db.unwrap().root.isContentEquals(testDb) shouldBe true
     }
 
     @Test
