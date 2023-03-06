@@ -5,6 +5,7 @@ import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputWriter
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
+import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.InputReaderType
 import com.github.ai.kpdiff.entity.KeepassKey
@@ -38,7 +39,8 @@ class MainInteractor(
         val lhs = lhsDb.unwrap()
         val rhs = rhsDb.unwrap()
         val diff = differ.getDiff(lhsDb.unwrap(), rhsDb.unwrap())
-        val diffLines = diffFormatter.format(diff, lhs, rhs)
+        val formatterOptions = DiffFormatterOptions(isColorEnabled = true)
+        val diffLines = diffFormatter.format(diff, lhs, rhs, formatterOptions)
         diffLines.forEach { writer.printLine(it) }
 
         return Either.Right(Unit)
