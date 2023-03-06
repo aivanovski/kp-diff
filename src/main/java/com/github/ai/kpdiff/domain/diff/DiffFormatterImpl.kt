@@ -2,10 +2,12 @@ package com.github.ai.kpdiff.domain.diff
 
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
+import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.Node
+import com.github.ai.kpdiff.utils.StringUtils.EMPTY
 import com.github.ai.kpdiff.utils.traverseByValueType
 import com.github.ai.kpdiff.utils.traverseWithParents
 import java.util.Comparator
@@ -20,7 +22,8 @@ class DiffFormatterImpl : DiffFormatter {
     override fun format(
         diff: List<DiffEvent<DatabaseEntity>>,
         lhs: KeepassDatabase,
-        rhs: KeepassDatabase
+        rhs: KeepassDatabase,
+        options: DiffFormatterOptions
     ): List<String> {
         val lhsGroupMap = lhs.buildAllGroupMap()
         val lhsUuidToParentMap = lhs.buildUuidToParentMap()
@@ -59,17 +62,31 @@ class DiffFormatterImpl : DiffFormatter {
             for ((idx, name) in parentNames.withIndex()) {
                 val indent = INDENT.repeat(idx)
 
-                lines.add("~ $indent$GROUP '$name'")
+                lines.add(formatGroupName(name, indent, options))
             }
 
             val entryLevel = parentNames.size
             val entryIndent = INDENT.repeat(entryLevel)
             for (event in events) {
-                lines.add(event.format(indentation = entryIndent))
+                lines.add(formatEvent(event, entryIndent, options))
             }
         }
 
         return lines
+    }
+
+    private fun formatGroupName(
+        name: String,
+        indentation: String,
+        options: DiffFormatterOptions
+    ): String {
+        val color = if (options.isColorEnabled) {
+            Color.YELLOW.value
+        } else {
+            EMPTY
+        }
+
+        return "$color~ $indentation$GROUP '$name'"
     }
 
     private fun getParentNames(
@@ -150,9 +167,18 @@ class DiffFormatterImpl : DiffFormatter {
         }
     }
 
-    private fun DiffEvent<DatabaseEntity>.format(indentation: String): String {
-        val eventType = formatType()
-        val entity = getEntity()
+    private fun <T : Any> formatEvent(
+        event: DiffEvent<T>,
+        indentation: String,
+        options: DiffFormatterOptions
+    ): String {
+        val eventType = event.formatType()
+        val entity = event.getEntity()
+        val color = if (options.isColorEnabled) {
+            event.getColor().value
+        } else {
+            EMPTY
+        }
 
         val entityType = when (entity) {
             is GroupEntity -> GROUP
@@ -166,7 +192,15 @@ class DiffFormatterImpl : DiffFormatter {
             else -> entity.toString()
         }
 
-        return "$eventType $indentation$entityType '$title'"
+        return "$color$eventType $indentation$entityType '$title'"
+    }
+
+    private fun <T : Any> DiffEvent<T>.getColor(): Color {
+        return when (this) {
+            is DiffEvent.Insert -> Color.GREEN
+            is DiffEvent.Delete -> Color.RED
+            is DiffEvent.Update -> Color.YELLOW
+        }
     }
 
     private fun <T : Any> DiffEvent<T>.formatType(): String {
@@ -228,6 +262,7 @@ class DiffFormatterImpl : DiffFormatter {
             is DiffEvent.Delete -> {
                 if (node.value is GroupEntity) 10 else 15
             }
+
             is DiffEvent.Insert -> {
                 if (node.value is GroupEntity) 20 else 25
             }
@@ -237,6 +272,12 @@ class DiffFormatterImpl : DiffFormatter {
     enum class OriginType {
         LEFT,
         RIGHT
+    }
+
+    enum class Color(val value: String) {
+        YELLOW("\u001B[0m\u001B[33m"),
+        RED("\u001B[0m\u001B[31m"),
+        GREEN("\u001B[0m\u001B[32m")
     }
 
     companion object {
