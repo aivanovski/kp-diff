@@ -4,6 +4,7 @@ import com.github.ai.kpdiff.data.keepass.KeepassDatabaseFactory
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputWriter
+import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.Either
@@ -12,6 +13,7 @@ import com.github.ai.kpdiff.entity.KeepassKey
 
 class MainInteractor(
     private val readPasswordUseCase: ReadPasswordUseCase,
+    private val printHelpUseCase: PrintHelpUseCase,
     private val dbFactory: KeepassDatabaseFactory,
     private val differ: DatabaseDiffer,
     private val diffFormatter: DiffFormatter,
@@ -20,6 +22,11 @@ class MainInteractor(
 
     // TODO: write tests
     fun process(args: Array<String>): Either<Unit> {
+        if (printHelpUseCase.shouldPrintHelp(args)) {
+            // TODO: print help
+            return Either.Right(Unit)
+        }
+
         val password = readPasswordUseCase.readPassword(InputReaderType.STANDARD)
         if (password.isLeft()) {
             return password.mapToLeft()

@@ -13,6 +13,7 @@ import com.github.ai.kpdiff.domain.diff.DiffFormatterImpl
 import com.github.ai.kpdiff.domain.input.InputReaderFactory
 import com.github.ai.kpdiff.domain.output.OutputWriter
 import com.github.ai.kpdiff.domain.output.StdoutOutputWriter
+import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
 import org.koin.dsl.module
 
@@ -29,7 +30,8 @@ object KoinModule {
 
         // use cases
         single { ReadPasswordUseCase(get()) }
+        single { PrintHelpUseCase() }
 
-        single { MainInteractor(get(), get(), get(), get(), get()) }
+        single { MainInteractor(get(), get(), get(), get(), get(), get()) }
     }
 }
