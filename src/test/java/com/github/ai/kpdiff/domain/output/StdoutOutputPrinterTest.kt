@@ -6,7 +6,7 @@ import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import org.junit.jupiter.api.Test
 
-internal class StdoutOutputWriterTest {
+internal class StdoutOutputPrinterTest {
 
     @Test
     fun `printLine should print to standard output`() {
@@ -15,7 +15,7 @@ internal class StdoutOutputWriterTest {
         System.setOut(PrintStream(stream))
 
         // act
-        StdoutOutputWriter().printLine(LINE)
+        StdoutOutputPrinter().printLine(LINE)
 
         // assert
         stream.toString().trim() shouldBe LINE
@@ -30,7 +30,7 @@ internal class StdoutOutputWriterTest {
         System.setErr(PrintStream(stream))
 
         // act
-        StdoutOutputWriter().printStackTrace(exception)
+        StdoutOutputPrinter().printStackTrace(exception)
 
         // assert
         stream.toString().trim() shouldBe expected

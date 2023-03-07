@@ -1,7 +1,7 @@
 package com.github.ai.kpdiff.domain
 
 import com.github.ai.kpdiff.domain.Errors.ERROR_HAS_BEEN_OCCURRED
-import com.github.ai.kpdiff.domain.output.OutputWriter
+import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.entity.Either
 import io.mockk.confirmVerified
 import io.mockk.every
@@ -14,7 +14,7 @@ internal class ErrorHandlerTest {
     @Test
     fun `handleIfLeft should print error`() {
         // arrange
-        val writer = mockk<OutputWriter>()
+        val writer = mockk<OutputPrinter>()
         val exception = Exception("Test exception")
         val message = String.format(
             ERROR_HAS_BEEN_OCCURRED,
@@ -36,7 +36,7 @@ internal class ErrorHandlerTest {
     @Test
     fun `hadleIfLeft should not print error`() {
         // arrange
-        val writer = mockk<OutputWriter>()
+        val writer = mockk<OutputPrinter>()
 
         // act
         ErrorHandler(writer).handleIfLeft(Either.Right(Unit))

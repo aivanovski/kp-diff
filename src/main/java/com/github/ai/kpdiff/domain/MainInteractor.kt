@@ -3,7 +3,7 @@ package com.github.ai.kpdiff.domain
 import com.github.ai.kpdiff.data.keepass.KeepassDatabaseFactory
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
-import com.github.ai.kpdiff.domain.output.OutputWriter
+import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
@@ -17,7 +17,7 @@ class MainInteractor(
     private val dbFactory: KeepassDatabaseFactory,
     private val differ: DatabaseDiffer,
     private val diffFormatter: DiffFormatter,
-    private val writer: OutputWriter
+    private val printer: OutputPrinter
 ) {
 
     // TODO: write tests
@@ -48,7 +48,7 @@ class MainInteractor(
         val diff = differ.getDiff(lhsDb.unwrap(), rhsDb.unwrap())
         val formatterOptions = DiffFormatterOptions(isColorEnabled = true)
         val diffLines = diffFormatter.format(diff, lhs, rhs, formatterOptions)
-        diffLines.forEach { writer.printLine(it) }
+        diffLines.forEach { printer.printLine(it) }
 
         return Either.Right(Unit)
     }
