@@ -53,7 +53,7 @@ tasks.jacocoTestReport {
 }
 
 tasks.bootJar {
-    archiveFileName.set("kpdiff.jar")
+    archiveFileName.set("kp-diff.jar")
 }
 
 tasks.classes {
