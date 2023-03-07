@@ -23,7 +23,7 @@ class MainInteractor(
     // TODO: write tests
     fun process(args: Array<String>): Either<Unit> {
         if (printHelpUseCase.shouldPrintHelp(args)) {
-            // TODO: print help
+            printHelpUseCase.printHelp(printer)
             return Either.Right(Unit)
         }
 
