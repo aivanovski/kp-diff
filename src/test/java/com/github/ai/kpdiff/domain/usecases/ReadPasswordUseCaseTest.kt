@@ -6,6 +6,7 @@ import com.github.ai.kpdiff.TestData.INVALID_PASSWORD
 import com.github.ai.kpdiff.TestData.PASSWORD
 import com.github.ai.kpdiff.data.keepass.KeepassDatabaseFactory
 import com.github.ai.kpdiff.domain.ErrorHandler
+import com.github.ai.kpdiff.domain.Strings.ENTER_A_PASSWORD
 import com.github.ai.kpdiff.domain.Strings.ENTER_A_PASSWORD_FOR_FILE
 import com.github.ai.kpdiff.domain.Strings.TOO_MANY_ATTEMPTS
 import com.github.ai.kpdiff.domain.input.InputReader
@@ -46,7 +47,7 @@ internal class ReadPasswordUseCaseTest {
         every { dbFactory.createDatabase(FILE_PATH, newKey(PASSWORD)) }.returns(db)
 
         // act
-        val result = newUseCase().readPassword(FILE_PATH)
+        val result = newUseCase().readPassword(listOf(FILE_PATH))
 
         // assert
         verifySequence {
@@ -74,7 +75,7 @@ internal class ReadPasswordUseCaseTest {
         every { errorHandler.handleIfLeft(error) }.returns(Unit)
 
         // act
-        val result = newUseCase().readPassword(FILE_PATH)
+        val result = newUseCase().readPassword(listOf(FILE_PATH))
 
         // assert
         verifySequence {
@@ -104,7 +105,7 @@ internal class ReadPasswordUseCaseTest {
         every { errorHandler.handleIfLeft(error) }.returns(Unit)
 
         // act
-        val result = newUseCase().readPassword(FILE_PATH)
+        val result = newUseCase().readPassword(listOf(FILE_PATH))
 
         // assert
         verifySequence {
@@ -128,6 +129,33 @@ internal class ReadPasswordUseCaseTest {
         result.unwrapError().message shouldBe TOO_MANY_ATTEMPTS
     }
 
+    @Test
+    fun `readPassword should return password for multiple files`() {
+        // arrange
+        val db = Either.Right(mockk<KeepassDatabase>())
+        val anotherDb = Either.Right(mockk<KeepassDatabase>())
+        every { determineInputTypeUseCase.getInputReaderType() }.returns(STANDARD)
+        every { inputReaderFactory.createReader(STANDARD) }.returns(inputReader)
+        every { outputPrinter.printLine(ENTER_A_PASSWORD) }.returns(Unit)
+        every { inputReader.read() }.returns(PASSWORD)
+        every { dbFactory.createDatabase(FILE_PATH, newKey(PASSWORD)) }.returns(db)
+        every { dbFactory.createDatabase(ANOTHER_FILE_PATH, newKey(PASSWORD)) }.returns(anotherDb)
+
+        // act
+        val result = newUseCase().readPassword(listOf(FILE_PATH, ANOTHER_FILE_PATH))
+
+        // assert
+        verifySequence {
+            determineInputTypeUseCase.getInputReaderType()
+            inputReaderFactory.createReader(STANDARD)
+            outputPrinter.printLine(ENTER_A_PASSWORD)
+            inputReader.read()
+            dbFactory.createDatabase(FILE_PATH, newKey(PASSWORD))
+            dbFactory.createDatabase(ANOTHER_FILE_PATH, newKey(PASSWORD))
+        }
+        result shouldBe Either.Right(PASSWORD)
+    }
+
     private fun newKey(password: String): KeepassKey.PasswordKey =
         KeepassKey.PasswordKey(password)
 
@@ -145,5 +173,9 @@ internal class ReadPasswordUseCaseTest {
             errorHandler,
             outputPrinter
         )
+    }
+
+    companion object {
+        private const val ANOTHER_FILE_PATH = "/path/to/another.kdbx"
     }
 }

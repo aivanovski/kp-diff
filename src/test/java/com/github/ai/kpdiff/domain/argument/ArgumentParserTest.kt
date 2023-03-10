@@ -25,10 +25,7 @@ internal class ArgumentParserTest {
     @Test
     fun `parse should return arguments`() {
         // arrange
-        val expected = Arguments(
-            leftPath = LEFT_FILE_PATH,
-            rightPath = RIGHT_FILE_PATH
-        )
+        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
 
         // act
         val result = ArgumentParser(newMockedProviderWithFiles())
@@ -165,7 +162,7 @@ internal class ArgumentParserTest {
     @Test
     fun `parse should return arguments if --help is specified`() {
         // arrange
-        val expected = Arguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
+        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
         val args = arrayOf(
             LEFT_FILE_PATH,
             RIGHT_FILE_PATH,
@@ -184,7 +181,7 @@ internal class ArgumentParserTest {
     @Test
     fun `parse should return arguments if -h is specified`() {
         // arrange
-        val expected = Arguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
+        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
         val args = arrayOf(
             LEFT_FILE_PATH,
             RIGHT_FILE_PATH,
@@ -200,8 +197,58 @@ internal class ArgumentParserTest {
         result.unwrap() shouldBe expected
     }
 
+    @Test
+    fun `parse should return arguments if --one-password is specified`() {
+        // arrange
+        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH, isUseOnePassword = true)
+        val args = arrayOf(
+            LEFT_FILE_PATH,
+            RIGHT_FILE_PATH,
+            OptionalArgument.ONE_PASSWORD.cliFullName
+        )
+
+        // act
+        val result = ArgumentParser(newMockedProviderWithFiles())
+            .parse(args)
+
+        // assert
+        result.isRight() shouldBe true
+        result.unwrap() shouldBe expected
+    }
+
+    @Test
+    fun `parse should return arguments if -o is specified`() {
+        // arrange
+        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH, isUseOnePassword = true)
+        val args = arrayOf(
+            LEFT_FILE_PATH,
+            RIGHT_FILE_PATH,
+            OptionalArgument.ONE_PASSWORD.cliShortName
+        )
+
+        // act
+        val result = ArgumentParser(newMockedProviderWithFiles())
+            .parse(args)
+
+        // assert
+        result.isRight() shouldBe true
+        result.unwrap() shouldBe expected
+    }
+
     private fun newEmptyProvider(): FileSystemProvider {
         return MockedFileSystemProvider()
+    }
+
+    private fun newArguments(
+        leftPath: String = EMPTY,
+        rightPath: String = EMPTY,
+        isUseOnePassword: Boolean = false
+    ): Arguments {
+        return Arguments(
+            leftPath,
+            rightPath,
+            isUseOnePassword
+        )
     }
 
     private fun newMockedProviderWithFiles(): FileSystemProvider {

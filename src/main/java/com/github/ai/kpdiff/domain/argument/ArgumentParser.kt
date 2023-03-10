@@ -23,15 +23,20 @@ class ArgumentParser(
 
         var leftPath: String? = null
         var rightPath: String? = null
+        var isUseOnePassword = false
 
         while (queue.isNotEmpty()) {
             val arg = queue.poll()
             if (arg.startsWith("-") || arg.startsWith("--")) {
-                val type = OPTIONAL_ARGUMENTS_MAP[arg]
-                if (type == null) {
-                    return Either.Left(
-                        ParsingException(String.format(UNKNOWN_OPTION, arg))
-                    )
+                when (OPTIONAL_ARGUMENTS_MAP[arg]) {
+                    OptionalArgument.ONE_PASSWORD -> {
+                        isUseOnePassword = true
+                    }
+                    null -> {
+                        return Either.Left(
+                            ParsingException(String.format(UNKNOWN_OPTION, arg))
+                        )
+                    }
                 }
             } else {
                 when {
@@ -75,7 +80,8 @@ class ArgumentParser(
         return Either.Right(
             Arguments(
                 leftPath = leftPath,
-                rightPath = rightPath
+                rightPath = rightPath,
+                isUseOnePassword = isUseOnePassword
             )
         )
     }
@@ -96,7 +102,9 @@ class ArgumentParser(
 
         private val OPTIONAL_ARGUMENTS_MAP = mapOf(
             OptionalArgument.HELP.cliShortName to OptionalArgument.HELP,
-            OptionalArgument.HELP.cliFullName to OptionalArgument.HELP
+            OptionalArgument.HELP.cliFullName to OptionalArgument.HELP,
+            OptionalArgument.ONE_PASSWORD.cliShortName to OptionalArgument.ONE_PASSWORD,
+            OptionalArgument.ONE_PASSWORD.cliFullName to OptionalArgument.ONE_PASSWORD
         )
     }
 }

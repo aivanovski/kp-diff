@@ -35,6 +35,7 @@ class PrintHelpUseCase(
                 <FILE-B>    Second file
 
             OPTIONS:
+                -o, --one-password               Use one password for both files
                 -h, --help                       Print help information
         """.trimIndent()
     }

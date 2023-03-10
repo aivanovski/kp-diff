@@ -34,18 +34,31 @@ class MainInteractor(
         }
 
         val parsedArgs = args.unwrap()
-        val lhsPassword = readPasswordUseCase.readPassword(parsedArgs.leftPath)
-        if (lhsPassword.isLeft()) {
-            return lhsPassword.mapToLeft()
+        val (lhsPassword, rhsPassword) = if (parsedArgs.isUseOnePassword) {
+            val password = readPasswordUseCase.readPassword(
+                listOf(parsedArgs.leftPath, parsedArgs.rightPath)
+            )
+            if (password.isLeft()) {
+                return password.mapToLeft()
+            }
+
+            Pair(password.unwrap(), password.unwrap())
+        } else {
+            val lhsPassword = readPasswordUseCase.readPassword(listOf(parsedArgs.leftPath))
+            if (lhsPassword.isLeft()) {
+                return lhsPassword.mapToLeft()
+            }
+
+            val rhsPassword = readPasswordUseCase.readPassword(listOf(parsedArgs.rightPath))
+            if (rhsPassword.isLeft()) {
+                return rhsPassword.mapToLeft()
+            }
+
+            Pair(lhsPassword.unwrap(), rhsPassword.unwrap())
         }
 
-        val rhsPassword = readPasswordUseCase.readPassword(parsedArgs.rightPath)
-        if (rhsPassword.isLeft()) {
-            return rhsPassword.mapToLeft()
-        }
-
-        val lhsKey = KeepassKey.PasswordKey(lhsPassword.unwrap())
-        val rhsKey = KeepassKey.PasswordKey(rhsPassword.unwrap())
+        val lhsKey = KeepassKey.PasswordKey(lhsPassword)
+        val rhsKey = KeepassKey.PasswordKey(rhsPassword)
 
         val lhsDb = dbFactory.createDatabase(args.unwrap().leftPath, lhsKey)
         if (lhsDb.isLeft()) {

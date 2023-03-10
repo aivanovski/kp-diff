@@ -8,5 +8,6 @@ object Strings {
     const val MISSING_ARGUMENT = "Missing argument: %s"
     const val FILE_DOES_NOT_EXIST = "File does not exist: %s"
     const val ENTER_A_PASSWORD_FOR_FILE = "Enter a password for %s:"
+    const val ENTER_A_PASSWORD = "Enter a password:"
     const val TOO_MANY_ATTEMPTS = "Too many attempts"
 }
