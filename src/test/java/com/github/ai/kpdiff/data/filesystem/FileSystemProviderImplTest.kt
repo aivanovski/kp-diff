@@ -1,5 +1,6 @@
 package com.github.ai.kpdiff.data.filesystem
 
+import com.github.ai.kpdiff.TestData.FILE_CONTENT
 import com.github.ai.kpdiff.testUtils.readText
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
@@ -17,8 +18,9 @@ internal class FileSystemProviderImplTest {
     @Test
     fun `open should return input stream`() {
         // arrange
-        val file = tempDir.resolve(FILE_NAME_TEXT).toFile()
+        val file = tempDir.resolve(FILE_NAME).toFile()
         file.writeText(FILE_CONTENT)
+        file.exists() shouldBe true
 
         // act
         val content = FileSystemProviderImpl().open(file.path)
@@ -31,7 +33,8 @@ internal class FileSystemProviderImplTest {
     @Test
     fun `open should return FileNotFoundException`() {
         // arrange
-        val file = tempDir.resolve(FILE_NAME_IMAGE).toFile()
+        val file = tempDir.resolve(FILE_NAME).toFile()
+        file.exists() shouldBe false
 
         // act
         val content = FileSystemProviderImpl().open(file.path)
@@ -41,9 +44,34 @@ internal class FileSystemProviderImplTest {
         content.unwrapError() should beInstanceOf<FileNotFoundException>()
     }
 
+    @Test
+    fun `exists should return true`() {
+        // arrange
+        val file = tempDir.resolve(FILE_NAME).toFile()
+        file.writeText(FILE_CONTENT)
+        file.exists() shouldBe true
+
+        // act
+        val isExist = FileSystemProviderImpl().exists(file.path)
+
+        // assert
+        isExist shouldBe true
+    }
+
+    @Test
+    fun `exists should return false`() {
+        // arrange
+        val file = tempDir.resolve(FILE_NAME).toFile()
+        file.exists() shouldBe false
+
+        // act
+        val isExist = FileSystemProviderImpl().exists(file.path)
+
+        // assert
+        isExist shouldBe false
+    }
+
     companion object {
-        private const val FILE_NAME_TEXT = "text.txt"
-        private const val FILE_NAME_IMAGE = "image.jpg"
-        private const val FILE_CONTENT = "Test file content"
+        private const val FILE_NAME = "text.txt"
     }
 }

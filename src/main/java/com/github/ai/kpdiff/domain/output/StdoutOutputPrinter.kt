@@ -1,6 +1,6 @@
 package com.github.ai.kpdiff.domain.output
 
-class StdoutOutputWriter : OutputWriter {
+class StdoutOutputPrinter : OutputPrinter {
     override fun printLine(line: String) {
         println(line)
     }

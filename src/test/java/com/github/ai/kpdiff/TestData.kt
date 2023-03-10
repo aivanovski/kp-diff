@@ -8,7 +8,14 @@ import java.util.UUID
 
 object TestData {
 
+    const val FILE_PATH = "/path/to/file.kdbx"
+    const val FILE_NAME = "file.kdbx"
+    const val LEFT_FILE_PATH = "/path/to/left.kdbx"
+    const val RIGHT_FILE_PATH = "/path/to/right.kdbx"
     const val PASSWORD = "test-password"
+    const val INVALID_PASSWORD = "invalid-password"
+    const val FILE_CONTENT = "mocked-file-content"
+    const val EXCEPTION_MESSAGE = "Exception message"
 
     val DB_WITH_PASSWORD = TestKeepassDatabase(
         key = TestKeepassKey.PasswordKey("abc123"),

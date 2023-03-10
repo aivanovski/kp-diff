@@ -53,7 +53,7 @@ tasks.jacocoTestReport {
 }
 
 tasks.bootJar {
-    archiveFileName.set("kpdiff.jar")
+    archiveFileName.set("kp-diff.jar")
 }
 
 tasks.classes {
@@ -86,5 +86,4 @@ dependencies {
     implementation("io.insert-koin:koin-core:3.1.5")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.5.31")
     implementation("com.github.anvell:kotpass:0.4.9")
-    implementation("com.github.ajalt.clikt:clikt:3.4.0")
 }

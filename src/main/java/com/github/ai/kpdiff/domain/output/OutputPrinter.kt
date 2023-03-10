@@ -1,6 +1,6 @@
 package com.github.ai.kpdiff.domain.output
 
-interface OutputWriter {
+interface OutputPrinter {
     fun printLine(line: String)
     fun printStackTrace(exception: Exception)
 }

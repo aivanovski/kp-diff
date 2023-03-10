@@ -1,12 +1,13 @@
 package com.github.ai.kpdiff.domain.output
 
+import com.github.ai.kpdiff.TestData.EXCEPTION_MESSAGE
 import com.github.ai.kpdiff.testUtils.formatStackTrace
 import io.kotest.matchers.shouldBe
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import org.junit.jupiter.api.Test
 
-internal class StdoutOutputWriterTest {
+internal class StdoutOutputPrinterTest {
 
     @Test
     fun `printLine should print to standard output`() {
@@ -15,7 +16,7 @@ internal class StdoutOutputWriterTest {
         System.setOut(PrintStream(stream))
 
         // act
-        StdoutOutputWriter().printLine(LINE)
+        StdoutOutputPrinter().printLine(LINE)
 
         // assert
         stream.toString().trim() shouldBe LINE
@@ -24,13 +25,13 @@ internal class StdoutOutputWriterTest {
     @Test
     fun `printStackTrace should print to standard error output`() {
         // arrange
-        val exception = Exception("Test exception")
+        val exception = Exception(EXCEPTION_MESSAGE)
         val stream = ByteArrayOutputStream(BUFFER_SIZE)
         val expected = formatStackTrace(exception).trim()
         System.setErr(PrintStream(stream))
 
         // act
-        StdoutOutputWriter().printStackTrace(exception)
+        StdoutOutputPrinter().printStackTrace(exception)
 
         // assert
         stream.toString().trim() shouldBe expected
@@ -38,6 +39,6 @@ internal class StdoutOutputWriterTest {
 
     companion object {
         private const val BUFFER_SIZE = 2 * 1024
-        private const val LINE = "Dummy text fro output"
+        private const val LINE = "Dummy text for output"
     }
 }
