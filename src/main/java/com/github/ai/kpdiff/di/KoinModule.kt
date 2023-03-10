@@ -14,6 +14,7 @@ import com.github.ai.kpdiff.domain.diff.DiffFormatterImpl
 import com.github.ai.kpdiff.domain.input.InputReaderFactory
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.output.StdoutOutputPrinter
+import com.github.ai.kpdiff.domain.usecases.DetermineInputTypeUseCase
 import com.github.ai.kpdiff.domain.usecases.GetVersionUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
@@ -32,7 +33,8 @@ object KoinModule {
         single { ArgumentParser(get()) }
 
         // use cases
-        single { ReadPasswordUseCase(get()) }
+        single { DetermineInputTypeUseCase() }
+        single { ReadPasswordUseCase(get(), get(), get(), get(), get()) }
         single { GetVersionUseCase() }
         single { PrintHelpUseCase(get()) }
 
