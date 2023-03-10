@@ -6,6 +6,7 @@ import com.github.ai.kpdiff.data.keepass.KeepassDatabaseFactory
 import com.github.ai.kpdiff.data.keepass.KotpassDatabaseFactory
 import com.github.ai.kpdiff.domain.ErrorHandler
 import com.github.ai.kpdiff.domain.MainInteractor
+import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DatabaseDifferImpl
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
@@ -28,12 +29,13 @@ object KoinModule {
         single<KeepassDatabaseFactory> { KotpassDatabaseFactory(get()) }
         single<DatabaseDiffer> { DatabaseDifferImpl() }
         single<DiffFormatter> { DiffFormatterImpl() }
+        single { ArgumentParser(get()) }
 
         // use cases
         single { ReadPasswordUseCase(get()) }
         single { GetVersionUseCase() }
         single { PrintHelpUseCase(get()) }
 
-        single { MainInteractor(get(), get(), get(), get(), get(), get()) }
+        single { MainInteractor(get(), get(), get(), get(), get(), get(), get()) }
     }
 }

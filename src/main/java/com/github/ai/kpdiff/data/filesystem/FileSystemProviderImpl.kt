@@ -8,6 +8,10 @@ import java.io.InputStream
 
 class FileSystemProviderImpl : FileSystemProvider {
 
+    override fun exists(path: String): Boolean {
+        return File(path).exists()
+    }
+
     override fun open(path: String): Either<InputStream> {
         return try {
             Either.Right(FileInputStream(File(path)))

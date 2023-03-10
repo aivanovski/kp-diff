@@ -1,6 +1,6 @@
 package com.github.ai.kpdiff.domain
 
-import com.github.ai.kpdiff.domain.Errors.ERROR_HAS_BEEN_OCCURRED
+import com.github.ai.kpdiff.domain.Strings.ERROR_HAS_BEEN_OCCURRED
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.entity.Either
 import io.mockk.confirmVerified

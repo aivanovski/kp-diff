@@ -11,7 +11,7 @@ class ErrorHandler(
         if (result.isLeft()) {
             writer.printLine(
                 String.format(
-                    Errors.ERROR_HAS_BEEN_OCCURRED,
+                    Strings.ERROR_HAS_BEEN_OCCURRED,
                     result.unwrapError().toString()
                 )
             )

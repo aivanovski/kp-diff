@@ -1,6 +1,7 @@
 package com.github.ai.kpdiff.domain
 
 import com.github.ai.kpdiff.data.keepass.KeepassDatabaseFactory
+import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputPrinter
@@ -12,6 +13,7 @@ import com.github.ai.kpdiff.entity.InputReaderType
 import com.github.ai.kpdiff.entity.KeepassKey
 
 class MainInteractor(
+    private val argumentParser: ArgumentParser,
     private val readPasswordUseCase: ReadPasswordUseCase,
     private val printHelpUseCase: PrintHelpUseCase,
     private val dbFactory: KeepassDatabaseFactory,
@@ -21,10 +23,15 @@ class MainInteractor(
 ) {
 
     // TODO: write tests
-    fun process(args: Array<String>): Either<Unit> {
-        if (printHelpUseCase.shouldPrintHelp(args)) {
+    fun process(rawArgs: Array<String>): Either<Unit> {
+        if (printHelpUseCase.shouldPrintHelp(rawArgs)) {
             printHelpUseCase.printHelp(printer)
             return Either.Right(Unit)
+        }
+
+        val args = argumentParser.parse(rawArgs)
+        if (args.isLeft()) {
+            return args.mapToLeft()
         }
 
         val password = readPasswordUseCase.readPassword(InputReaderType.STANDARD)
@@ -33,12 +40,12 @@ class MainInteractor(
         }
 
         val key = KeepassKey.PasswordKey(password.unwrap())
-        val lhsDb = dbFactory.createDatabase(args[0], key)
+        val lhsDb = dbFactory.createDatabase(args.unwrap().leftPath, key)
         if (lhsDb.isLeft()) {
             return lhsDb.mapToLeft()
         }
 
-        val rhsDb = dbFactory.createDatabase(args[1], key)
+        val rhsDb = dbFactory.createDatabase(args.unwrap().rightPath, key)
         if (rhsDb.isLeft()) {
             return rhsDb.mapToLeft()
         }

@@ -1,5 +1,6 @@
 package com.github.ai.kpdiff.domain.usecases
 
+import com.github.ai.kpdiff.domain.argument.OptionalArgument
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 
 class PrintHelpUseCase(
@@ -8,21 +9,21 @@ class PrintHelpUseCase(
 
     fun shouldPrintHelp(args: Array<String>): Boolean {
         return args.isEmpty() ||
-            args.contains("-h") ||
-            args.contains("--help")
+            args.contains(OptionalArgument.HELP.cliShortName) ||
+            args.contains(OptionalArgument.HELP.cliFullName)
     }
 
     fun printHelp(printer: OutputPrinter) {
         printer.printLine(
             String.format(
-                HELP,
+                HELP_TEXT,
                 getVersionUseCase.getVersionName()
             )
         )
     }
 
     companion object {
-        internal val HELP = """
+        internal val HELP_TEXT = """
             kp-diff %s
             Compare Keepass (.kdbx) files and prints differences
 

@@ -1,6 +1,7 @@
 package com.github.ai.kpdiff.domain.usecases
 
-import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase.Companion.HELP
+import com.github.ai.kpdiff.domain.argument.OptionalArgument
+import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase.Companion.HELP_TEXT
 import com.github.ai.kpdiff.testUtils.CollectingOutputPrinter
 import io.kotest.matchers.shouldBe
 import io.mockk.every
@@ -19,14 +20,14 @@ internal class PrintHelpUseCaseTest {
     @Test
     fun `shouldPrintHelp should return true if --help is specified`() {
         newUseCase().shouldPrintHelp(
-            arrayOf("--help")
+            arrayOf(OptionalArgument.HELP.cliFullName)
         ) shouldBe true
     }
 
     @Test
     fun `shouldPrintHelp should return true if -h is specified`() {
         newUseCase().shouldPrintHelp(
-            arrayOf("-h")
+            arrayOf(OptionalArgument.HELP.cliShortName)
         ) shouldBe true
     }
 
@@ -48,7 +49,7 @@ internal class PrintHelpUseCaseTest {
         newUseCase(versionUseCase).printHelp(printer)
 
         // assert
-        printer.getPrintedText() shouldBe String.format(HELP, VERSION)
+        printer.getPrintedText() shouldBe String.format(HELP_TEXT, VERSION)
     }
 
     private fun newUseCase(
