@@ -9,13 +9,18 @@ class ErrorHandler(
 
     fun handleIfLeft(result: Either<*>) {
         if (result.isLeft()) {
-            writer.printLine(
-                String.format(
-                    Strings.ERROR_HAS_BEEN_OCCURRED,
-                    result.unwrapError().toString()
+            val message = result.unwrapError().message
+
+            if (!message.isNullOrEmpty()) {
+                writer.printLine(
+                    String.format(
+                        Strings.ERROR_HAS_BEEN_OCCURRED,
+                        message
+                    )
                 )
-            )
-            writer.printStackTrace(result.unwrapError())
+            } else {
+                writer.printStackTrace(result.unwrapError())
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ class CollectingOutputPrinter : OutputPrinter {
     }
 
     override fun printStackTrace(exception: Exception) {
-        TODO("To implement")
+        lines.add(formatStackTrace(exception))
     }
 
     fun getPrintedText(): String {
