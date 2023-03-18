@@ -3,5 +3,7 @@ package com.github.ai.kpdiff.entity
 data class Arguments(
     val leftPath: String,
     val rightPath: String,
-    val isUseOnePassword: Boolean
+    val isUseOnePassword: Boolean,
+    val leftKeyPath: String?,
+    val rightKeyPath: String?
 )

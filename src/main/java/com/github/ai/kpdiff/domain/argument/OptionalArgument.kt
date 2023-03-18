@@ -1,20 +1,20 @@
 package com.github.ai.kpdiff.domain.argument
 
 enum class OptionalArgument(
-    shortName: String,
-    fullName: String
+    val shortName: String,
+    val fullName: String
 ) {
     // Options to add:
     // --no-color
-    // --key-file-a ...
-    // --key-file-b ...
     // --key-file ...
     // --verbose
     // --version
     // --flatten
 
     HELP(shortName = "h", fullName = "help"),
-    ONE_PASSWORD(shortName = "o", fullName = "one-password");
+    ONE_PASSWORD(shortName = "o", fullName = "one-password"),
+    KEY_FILE_A(shortName = "a", fullName = "key-file-a"),
+    KEY_FILE_B(shortName = "b", fullName = "key-file-b");
 
     val cliShortName: String = "-$shortName"
     val cliFullName: String = "--$fullName"

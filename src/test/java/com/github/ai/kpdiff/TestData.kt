@@ -12,10 +12,70 @@ object TestData {
     const val FILE_NAME = "file.kdbx"
     const val LEFT_FILE_PATH = "/path/to/left.kdbx"
     const val RIGHT_FILE_PATH = "/path/to/right.kdbx"
+    const val LEFT_KEY_PATH = "/path/to/left/key.key"
+    const val RIGHT_KEY_PATH = "/path/to/right/key.key"
     const val PASSWORD = "test-password"
     const val INVALID_PASSWORD = "invalid-password"
     const val FILE_CONTENT = "mocked-file-content"
     const val EXCEPTION_MESSAGE = "Exception message"
+
+    val DB_WITH_KEY = TestKeepassDatabase(
+        key = TestKeepassKey.FileKey("db-key"),
+        filename = "db-with-key.kdbx",
+        root = TestKeepassGroup(
+            uuid = UUID.fromString("c285cc88-6eb7-473e-a91a-1715e8689f79"),
+            name = "Root",
+            entries = listOf(
+                TestKeepassEntry(
+                    uuid = UUID.fromString("15077a66-c0f0-4a71-9352-fed3b1c01f37"),
+                    title = "Entry 1",
+                    username = "scott",
+                    password = "tiger"
+                )
+            ),
+            groups = listOf(
+                TestKeepassGroup(
+                    uuid = UUID.fromString("a5f9fa21-73cf-4da8-9c5c-39f8dd61e9c2"),
+                    name = "Root group 1",
+                    entries = listOf(
+                        TestKeepassEntry(
+                            uuid = UUID.fromString("05d00bab-9544-4636-aece-ff851561c5e3"),
+                            title = "Entry 2",
+                            username = "scott",
+                            password = "tiger"
+                        )
+                    ),
+                    groups = listOf(
+                        TestKeepassGroup(
+                            uuid = UUID.fromString("f7adcc56-92da-4ac9-b72e-441a3add52ca"),
+                            name = "Inner group 1",
+                            entries = listOf(
+                                TestKeepassEntry(
+                                    uuid = UUID.fromString("0484d3b6-2d0d-426e-bf5a-3eee7ebf0985"),
+                                    title = "Entry 3",
+                                    username = "scott",
+                                    password = "tiger"
+                                ),
+                                TestKeepassEntry(
+                                    uuid = UUID.fromString("a97f8961-018e-411c-be10-59a4b6777433"),
+                                    title = "Entry 4",
+                                    username = "scott",
+                                    password = "tiger"
+                                )
+                            ),
+                            groups = emptyList()
+                        ),
+                        TestKeepassGroup(
+                            uuid = UUID.fromString("27e9ad5d-b428-40d4-b7dd-0be9fe5cfde7"),
+                            name = "Inner group 2",
+                            entries = emptyList(),
+                            groups = emptyList()
+                        )
+                    )
+                )
+            )
+        )
+    )
 
     val DB_WITH_PASSWORD = TestKeepassDatabase(
         key = TestKeepassKey.PasswordKey("abc123"),

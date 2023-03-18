@@ -2,7 +2,9 @@ package com.github.ai.kpdiff.domain.argument
 
 import com.github.ai.kpdiff.TestData.FILE_CONTENT
 import com.github.ai.kpdiff.TestData.LEFT_FILE_PATH
+import com.github.ai.kpdiff.TestData.LEFT_KEY_PATH
 import com.github.ai.kpdiff.TestData.RIGHT_FILE_PATH
+import com.github.ai.kpdiff.TestData.RIGHT_KEY_PATH
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.domain.Strings.FILE_DOES_NOT_EXIST
 import com.github.ai.kpdiff.domain.Strings.MISSING_ARGUMENT
@@ -11,6 +13,8 @@ import com.github.ai.kpdiff.domain.Strings.UNKNOWN_ARGUMENT
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_OPTION
 import com.github.ai.kpdiff.domain.argument.ArgumentParser.Companion.ARGUMENT_FILE_A
 import com.github.ai.kpdiff.domain.argument.ArgumentParser.Companion.ARGUMENT_FILE_B
+import com.github.ai.kpdiff.domain.argument.ArgumentParserTest.Side.LEFT
+import com.github.ai.kpdiff.domain.argument.ArgumentParserTest.Side.RIGHT
 import com.github.ai.kpdiff.entity.Arguments
 import com.github.ai.kpdiff.entity.exception.ParsingException
 import com.github.ai.kpdiff.testUtils.MockedFileSystemProvider
@@ -28,7 +32,7 @@ internal class ArgumentParserTest {
         val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
 
         // act
-        val result = ArgumentParser(newMockedProviderWithFiles())
+        val result = ArgumentParser(newMockedProviderWithAllFiles())
             .parse(arrayOf(LEFT_FILE_PATH, RIGHT_FILE_PATH))
 
         // assert
@@ -60,7 +64,7 @@ internal class ArgumentParserTest {
         )
 
         // act
-        val result = ArgumentParser(newMockedProviderWithFiles())
+        val result = ArgumentParser(newMockedProviderWithAllFiles())
             .parse(args)
 
         // assert
@@ -75,7 +79,7 @@ internal class ArgumentParserTest {
         val message = String.format(MISSING_ARGUMENT, ARGUMENT_FILE_B)
 
         // act
-        val result = ArgumentParser(newMockedProviderWithFiles())
+        val result = ArgumentParser(newMockedProviderWithAllFiles())
             .parse(arrayOf(LEFT_FILE_PATH))
 
         // assert
@@ -150,7 +154,7 @@ internal class ArgumentParserTest {
         )
 
         // act
-        val result = ArgumentParser(newMockedProviderWithFiles())
+        val result = ArgumentParser(newMockedProviderWithAllFiles())
             .parse(args)
 
         // assert
@@ -170,7 +174,7 @@ internal class ArgumentParserTest {
         )
 
         // act
-        val result = ArgumentParser(newMockedProviderWithFiles())
+        val result = ArgumentParser(newMockedProviderWithAllFiles())
             .parse(args)
 
         // assert
@@ -189,7 +193,7 @@ internal class ArgumentParserTest {
         )
 
         // act
-        val result = ArgumentParser(newMockedProviderWithFiles())
+        val result = ArgumentParser(newMockedProviderWithAllFiles())
             .parse(args)
 
         // assert
@@ -208,7 +212,7 @@ internal class ArgumentParserTest {
         )
 
         // act
-        val result = ArgumentParser(newMockedProviderWithFiles())
+        val result = ArgumentParser(newMockedProviderWithAllFiles())
             .parse(args)
 
         // assert
@@ -227,12 +231,79 @@ internal class ArgumentParserTest {
         )
 
         // act
-        val result = ArgumentParser(newMockedProviderWithFiles())
+        val result = ArgumentParser(newMockedProviderWithAllFiles())
             .parse(args)
 
         // assert
         result.isRight() shouldBe true
         result.unwrap() shouldBe expected
+    }
+
+    @Test
+    fun `parse should return key path if it is specified`() {
+        listOf(
+            Triple(LEFT, OptionalArgument.KEY_FILE_A.cliFullName, LEFT_KEY_PATH),
+            Triple(LEFT, OptionalArgument.KEY_FILE_A.cliShortName, LEFT_KEY_PATH),
+            Triple(RIGHT, OptionalArgument.KEY_FILE_B.cliFullName, RIGHT_KEY_PATH),
+            Triple(RIGHT, OptionalArgument.KEY_FILE_B.cliShortName, RIGHT_KEY_PATH)
+        ).forEach { (side, argumentName, keyPath) ->
+            // arrange
+            val expected = newArguments(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                leftKeyPath = if (side == LEFT) keyPath else null,
+                rightKeyPath = if (side == RIGHT) keyPath else null,
+            )
+
+            // act
+            val result = ArgumentParser(newMockedProviderWithAllFiles())
+                .parse(
+                    args = arrayOf(
+                        LEFT_FILE_PATH,
+                        RIGHT_FILE_PATH,
+                        argumentName,
+                        keyPath
+                    )
+                )
+
+            // assert
+            result.isRight() shouldBe true
+            result.unwrap() shouldBe expected
+        }
+    }
+
+    @Test
+    fun `parse should return error if key file is not found`() {
+        val fsProvider = MockedFileSystemProvider(
+            fileContent = mapOf(
+                LEFT_FILE_PATH to FILE_CONTENT,
+                RIGHT_FILE_PATH to FILE_CONTENT
+            )
+        )
+
+        listOf(
+            Pair(OptionalArgument.KEY_FILE_A.cliFullName, LEFT_KEY_PATH),
+            Pair(OptionalArgument.KEY_FILE_B.cliFullName, RIGHT_KEY_PATH)
+        ).forEach { (argumentName, keyPath) ->
+            // arrange
+            val message = String.format(FILE_DOES_NOT_EXIST, keyPath)
+
+            // act
+            val result = ArgumentParser(fsProvider)
+                .parse(
+                    args = arrayOf(
+                        LEFT_FILE_PATH,
+                        RIGHT_FILE_PATH,
+                        argumentName,
+                        keyPath
+                    )
+                )
+
+            // assert
+            result.isLeft() shouldBe true
+            result.unwrapError() should beInstanceOf<ParsingException>()
+            result.unwrapError().message shouldBe message
+        }
     }
 
     private fun newEmptyProvider(): FileSystemProvider {
@@ -242,22 +313,33 @@ internal class ArgumentParserTest {
     private fun newArguments(
         leftPath: String = EMPTY,
         rightPath: String = EMPTY,
-        isUseOnePassword: Boolean = false
+        isUseOnePassword: Boolean = false,
+        leftKeyPath: String? = null,
+        rightKeyPath: String? = null
     ): Arguments {
         return Arguments(
             leftPath,
             rightPath,
-            isUseOnePassword
+            isUseOnePassword,
+            leftKeyPath,
+            rightKeyPath
         )
     }
 
-    private fun newMockedProviderWithFiles(): FileSystemProvider {
+    private fun newMockedProviderWithAllFiles(): FileSystemProvider {
         return MockedFileSystemProvider(
             fileContent = mapOf(
                 LEFT_FILE_PATH to FILE_CONTENT,
-                RIGHT_FILE_PATH to FILE_CONTENT
+                RIGHT_FILE_PATH to FILE_CONTENT,
+                LEFT_KEY_PATH to FILE_CONTENT,
+                RIGHT_KEY_PATH to FILE_CONTENT
             )
         )
+    }
+
+    enum class Side {
+        LEFT,
+        RIGHT
     }
 
     companion object {

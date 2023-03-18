@@ -7,9 +7,12 @@ import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
+import com.github.ai.kpdiff.entity.Arguments
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.KeepassKey
+import com.github.ai.kpdiff.entity.KeepassKey.FileKey
+import com.github.ai.kpdiff.entity.KeepassKey.PasswordKey
 
 class MainInteractor(
     private val argumentParser: ArgumentParser,
@@ -34,38 +37,20 @@ class MainInteractor(
         }
 
         val parsedArgs = args.unwrap()
-        val (lhsPassword, rhsPassword) = if (parsedArgs.isUseOnePassword) {
-            val password = readPasswordUseCase.readPassword(
-                listOf(parsedArgs.leftPath, parsedArgs.rightPath)
-            )
-            if (password.isLeft()) {
-                return password.mapToLeft()
-            }
 
-            Pair(password.unwrap(), password.unwrap())
-        } else {
-            val lhsPassword = readPasswordUseCase.readPassword(listOf(parsedArgs.leftPath))
-            if (lhsPassword.isLeft()) {
-                return lhsPassword.mapToLeft()
-            }
-
-            val rhsPassword = readPasswordUseCase.readPassword(listOf(parsedArgs.rightPath))
-            if (rhsPassword.isLeft()) {
-                return rhsPassword.mapToLeft()
-            }
-
-            Pair(lhsPassword.unwrap(), rhsPassword.unwrap())
+        val keys = getKeys(parsedArgs)
+        if (keys.isLeft()) {
+            return keys.mapToLeft()
         }
 
-        val lhsKey = KeepassKey.PasswordKey(lhsPassword)
-        val rhsKey = KeepassKey.PasswordKey(rhsPassword)
+        val (lhsKey, rhsKey) = keys.unwrap()
 
-        val lhsDb = dbFactory.createDatabase(args.unwrap().leftPath, lhsKey)
+        val lhsDb = dbFactory.createDatabase(parsedArgs.leftPath, lhsKey)
         if (lhsDb.isLeft()) {
             return lhsDb.mapToLeft()
         }
 
-        val rhsDb = dbFactory.createDatabase(args.unwrap().rightPath, rhsKey)
+        val rhsDb = dbFactory.createDatabase(parsedArgs.rightPath, rhsKey)
         if (rhsDb.isLeft()) {
             return rhsDb.mapToLeft()
         }
@@ -78,5 +63,46 @@ class MainInteractor(
         diffLines.forEach { printer.printLine(it) }
 
         return Either.Right(Unit)
+    }
+
+    private fun getKeys(args: Arguments): Either<Pair<KeepassKey, KeepassKey>> {
+        if (args.isUseOnePassword) {
+            val password = readPasswordUseCase.readPassword(
+                listOf(args.leftPath, args.rightPath)
+            )
+            if (password.isLeft()) {
+                return password.mapToLeft()
+            }
+
+            return Either.Right(
+                Pair(
+                    PasswordKey(password.unwrap()),
+                    PasswordKey(password.unwrap())
+                )
+            )
+        }
+
+        val keys = mutableListOf<KeepassKey>()
+        val pathToKeyPathPairs = listOf(
+            Pair(args.leftPath, args.leftKeyPath),
+            Pair(args.rightPath, args.rightKeyPath)
+        )
+
+        for ((path, keyPath) in pathToKeyPathPairs) {
+            if (keyPath != null) {
+                keys.add(FileKey(keyPath))
+            } else {
+                val password = readPasswordUseCase.readPassword(listOf(path))
+                if (password.isLeft()) {
+                    return password.mapToLeft()
+                }
+
+                keys.add(PasswordKey(password.unwrap()))
+            }
+        }
+
+        return Either.Right(
+            Pair(keys[0], keys[1])
+        )
     }
 }
