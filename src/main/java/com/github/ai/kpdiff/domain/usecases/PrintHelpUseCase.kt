@@ -36,6 +36,8 @@ class PrintHelpUseCase(
 
             OPTIONS:
                 -o, --one-password               Use one password for both files
+                -a, --key-file-a                 Path to key file for <FILE-A>
+                -b, --key-file-b                 Path to key file for <FILE-B>
                 -h, --help                       Print help information
         """.trimIndent()
     }

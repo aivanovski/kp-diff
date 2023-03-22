@@ -22,6 +22,17 @@ jobs:
         with:
           java-version: 11
 
+      - name: Download Ktlint
+        run: |
+          curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.48.2/ktlint
+          chmod +x ktlint
+
+      - name: Run Ktlint
+        run: ./ktlint --editorconfig=".editorconfig"
+
+      - name: Run tests
+        run: ./gradlew test
+
       - name: Build debug jar
         run: ./gradlew bootJar
 
@@ -30,3 +41,22 @@ jobs:
         with:
           name: kpdiff.jar
           path: ./build/libs/kpdiff.jar
+
+      - name: Create JaCoCo Badge
+        id: jacoco
+        uses: cicirello/jacoco-badge-generator@v2
+        with:
+          jacoco-csv-file: build/reports/coverage/coverage.csv
+          badges-directory: .github/badges
+          generate-coverage-badge: true
+
+      - name: Log coverage percentage
+        run: |
+          echo "coverage = ${{ steps.jacoco.outputs.coverage }}"
+
+      - name: Commit and push the badge (if it changed)
+        uses: EndBug/add-and-commit@v7
+        with:
+          default_author: github_actions
+          message: 'Commit coverage badge'
+          add: '*.svg'

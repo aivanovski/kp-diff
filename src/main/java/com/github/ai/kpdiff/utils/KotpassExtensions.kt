@@ -1,6 +1,8 @@
 package com.github.ai.kpdiff.utils
 
+import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.DatabaseEntity
+import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassKey
@@ -11,10 +13,21 @@ import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.Group
 import java.util.LinkedList
 
-fun KeepassKey.toCredentials(): Credentials {
+fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Credentials> {
     return when (this) {
         is KeepassKey.PasswordKey -> {
-            Credentials.from(EncryptedValue.fromString(password))
+            Either.Right(
+                Credentials.from(EncryptedValue.fromString(password))
+            )
+        }
+        is KeepassKey.FileKey -> {
+            val file = fileSystemProvider.open(path)
+            if (file.isLeft()) {
+                return file.mapToLeft()
+            }
+
+            val bytes = file.unwrap().readAllBytes()
+            Either.Right(Credentials.from(bytes))
         }
     }
 }

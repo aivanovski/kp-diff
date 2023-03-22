@@ -17,7 +17,11 @@ import java.util.LinkedList
 import java.util.UUID
 
 fun TestKeepassDatabase.open(): KeePassDatabase {
-    return KeePassDatabase.decode(contentStream(), key.convert().toCredentials())
+    val fsProvider = ResourcesFileSystemProvider()
+    return KeePassDatabase.decode(
+        contentStream(),
+        key.convert().toCredentials(fsProvider).unwrap()
+    )
 }
 
 @Suppress("UNCHECKED_CAST")
@@ -99,7 +103,16 @@ fun TestKeepassDatabase.contentStream(): InputStream {
 fun TestKeepassKey.convert(): KeepassKey {
     return when (this) {
         is TestKeepassKey.PasswordKey -> KeepassKey.PasswordKey(password)
+        is TestKeepassKey.FileKey -> KeepassKey.FileKey(path)
     }
+}
+
+fun TestKeepassKey.asFileKey(): TestKeepassKey.FileKey {
+    return this as TestKeepassKey.FileKey
+}
+
+fun TestKeepassKey.FileKey.contentStream(): InputStream {
+    return resourceAsStream(path)
 }
 
 fun createUuidFrom(value: Any): UUID {

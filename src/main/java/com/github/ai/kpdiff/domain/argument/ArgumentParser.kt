@@ -24,6 +24,8 @@ class ArgumentParser(
         var leftPath: String? = null
         var rightPath: String? = null
         var isUseOnePassword = false
+        var leftKeyPath: String? = null
+        var rightKeyPath: String? = null
 
         while (queue.isNotEmpty()) {
             val arg = queue.poll()
@@ -31,6 +33,22 @@ class ArgumentParser(
                 when (OPTIONAL_ARGUMENTS_MAP[arg]) {
                     OptionalArgument.ONE_PASSWORD -> {
                         isUseOnePassword = true
+                    }
+                    OptionalArgument.KEY_FILE_A -> {
+                        val path = checkPath(queue.poll())
+                        if (path.isLeft()) {
+                            return path.mapToLeft()
+                        }
+
+                        leftKeyPath = path.unwrap()
+                    }
+                    OptionalArgument.KEY_FILE_B -> {
+                        val path = checkPath(queue.poll())
+                        if (path.isLeft()) {
+                            return path.mapToLeft()
+                        }
+
+                        rightKeyPath = path.unwrap()
                     }
                     null -> {
                         return Either.Left(
@@ -66,28 +84,37 @@ class ArgumentParser(
         }
 
         if (leftPath == null) {
-            return Either.Left(
-                ParsingException(String.format(MISSING_ARGUMENT, ARGUMENT_FILE_A))
-            )
+            return missingArgumentError(ARGUMENT_FILE_A)
         }
 
         if (rightPath == null) {
-            return Either.Left(
-                ParsingException(String.format(MISSING_ARGUMENT, ARGUMENT_FILE_B))
-            )
+            return missingArgumentError(ARGUMENT_FILE_B)
         }
 
         return Either.Right(
             Arguments(
                 leftPath = leftPath,
                 rightPath = rightPath,
-                isUseOnePassword = isUseOnePassword
+                isUseOnePassword = isUseOnePassword,
+                leftKeyPath = leftKeyPath,
+                rightKeyPath = rightKeyPath
             )
         )
     }
 
-    private fun checkPath(path: String): Either<String> {
-        if (!fsProvider.exists(path)) {
+    private fun <T> missingArgumentError(argumentName: String): Either<T> {
+        return Either.Left(
+            ParsingException(
+                String.format(
+                    MISSING_ARGUMENT,
+                    argumentName
+                )
+            )
+        )
+    }
+
+    private fun checkPath(path: String?): Either<String> {
+        if (path.isNullOrEmpty() || !fsProvider.exists(path)) {
             return Either.Left(
                 ParsingException(String.format(FILE_DOES_NOT_EXIST, path))
             )
@@ -103,8 +130,15 @@ class ArgumentParser(
         private val OPTIONAL_ARGUMENTS_MAP = mapOf(
             OptionalArgument.HELP.cliShortName to OptionalArgument.HELP,
             OptionalArgument.HELP.cliFullName to OptionalArgument.HELP,
+
             OptionalArgument.ONE_PASSWORD.cliShortName to OptionalArgument.ONE_PASSWORD,
-            OptionalArgument.ONE_PASSWORD.cliFullName to OptionalArgument.ONE_PASSWORD
+            OptionalArgument.ONE_PASSWORD.cliFullName to OptionalArgument.ONE_PASSWORD,
+
+            OptionalArgument.KEY_FILE_A.cliShortName to OptionalArgument.KEY_FILE_A,
+            OptionalArgument.KEY_FILE_A.cliFullName to OptionalArgument.KEY_FILE_A,
+
+            OptionalArgument.KEY_FILE_B.cliShortName to OptionalArgument.KEY_FILE_B,
+            OptionalArgument.KEY_FILE_B.cliFullName to OptionalArgument.KEY_FILE_B
         )
     }
 }

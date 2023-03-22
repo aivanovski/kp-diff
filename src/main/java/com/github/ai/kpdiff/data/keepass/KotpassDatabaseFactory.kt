@@ -14,14 +14,18 @@ class KotpassDatabaseFactory(
 ) : KeepassDatabaseFactory {
 
     override fun createDatabase(path: String, key: KeepassKey): Either<KeepassDatabase> {
+        val creds = key.toCredentials(fsProvider)
+        if (creds.isLeft()) {
+            return creds.mapToLeft()
+        }
+
         val content = fsProvider.open(path)
         if (content.isLeft()) {
             return content.mapToLeft()
         }
 
         return try {
-            val creds = key.toCredentials()
-            val db = KeePassDatabase.decode(content.unwrap(), creds)
+            val db = KeePassDatabase.decode(content.unwrap(), creds.unwrap())
             Either.Right(db.convert())
         } catch (exception: Exception) {
             Either.Left(exception)
