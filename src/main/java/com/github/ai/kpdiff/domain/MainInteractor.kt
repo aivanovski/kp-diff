@@ -58,7 +58,9 @@ class MainInteractor(
         val lhs = lhsDb.unwrap()
         val rhs = rhsDb.unwrap()
         val diff = differ.getDiff(lhsDb.unwrap(), rhsDb.unwrap())
-        val formatterOptions = DiffFormatterOptions(isColorEnabled = true)
+        val formatterOptions = DiffFormatterOptions(
+            isColorEnabled = !parsedArgs.isNoColoredOutput
+        )
         val diffLines = diffFormatter.format(diff, lhs, rhs, formatterOptions)
         diffLines.forEach { printer.printLine(it) }
 
