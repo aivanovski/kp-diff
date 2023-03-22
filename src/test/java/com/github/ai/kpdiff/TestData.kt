@@ -8,6 +8,7 @@ import java.util.UUID
 
 object TestData {
 
+    const val VERSION = "4.5.6"
     const val FILE_PATH = "/path/to/file.kdbx"
     const val FILE_NAME = "file.kdbx"
     const val LEFT_FILE_PATH = "/path/to/left.kdbx"

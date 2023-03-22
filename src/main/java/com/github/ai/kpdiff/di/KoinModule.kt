@@ -17,6 +17,7 @@ import com.github.ai.kpdiff.domain.output.StdoutOutputPrinter
 import com.github.ai.kpdiff.domain.usecases.DetermineInputTypeUseCase
 import com.github.ai.kpdiff.domain.usecases.GetVersionUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
+import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
 import org.koin.dsl.module
 
@@ -37,7 +38,8 @@ object KoinModule {
         single { ReadPasswordUseCase(get(), get(), get(), get(), get()) }
         single { GetVersionUseCase() }
         single { PrintHelpUseCase(get()) }
+        single { PrintVersionUseCase(get()) }
 
-        single { MainInteractor(get(), get(), get(), get(), get(), get(), get()) }
+        single { MainInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
     }
 }
