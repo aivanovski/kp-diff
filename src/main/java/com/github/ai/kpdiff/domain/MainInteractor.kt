@@ -6,6 +6,7 @@ import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
+import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
 import com.github.ai.kpdiff.entity.Arguments
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
@@ -18,6 +19,7 @@ class MainInteractor(
     private val argumentParser: ArgumentParser,
     private val readPasswordUseCase: ReadPasswordUseCase,
     private val printHelpUseCase: PrintHelpUseCase,
+    private val printVersionUseCase: PrintVersionUseCase,
     private val dbFactory: KeepassDatabaseFactory,
     private val differ: DatabaseDiffer,
     private val diffFormatter: DiffFormatter,
@@ -28,6 +30,11 @@ class MainInteractor(
     fun process(rawArgs: Array<String>): Either<Unit> {
         if (printHelpUseCase.shouldPrintHelp(rawArgs)) {
             printHelpUseCase.printHelp(printer)
+            return Either.Right(Unit)
+        }
+
+        if (printVersionUseCase.shouldPrintVersion(rawArgs)) {
+            printVersionUseCase.printVersion(printer)
             return Either.Right(Unit)
         }
 

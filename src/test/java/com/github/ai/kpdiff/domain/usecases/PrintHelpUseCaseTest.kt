@@ -1,5 +1,6 @@
 package com.github.ai.kpdiff.domain.usecases
 
+import com.github.ai.kpdiff.TestData.VERSION
 import com.github.ai.kpdiff.domain.argument.OptionalArgument
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase.Companion.HELP_TEXT
 import com.github.ai.kpdiff.testUtils.CollectingOutputPrinter
@@ -58,9 +59,5 @@ internal class PrintHelpUseCaseTest {
         return PrintHelpUseCase(
             getVersionUseCase = getVersionUseCase
         )
-    }
-
-    companion object {
-        private const val VERSION = "version-1.2.3"
     }
 }

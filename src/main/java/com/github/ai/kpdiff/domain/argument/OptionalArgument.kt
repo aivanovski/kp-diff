@@ -6,10 +6,10 @@ enum class OptionalArgument(
 ) {
     // Options to add:
     // --verbose
-    // --version
     // --flatten
 
     HELP(shortName = "h", fullName = "help"),
+    VERSION(shortName = "v", fullName = "version"),
     NO_COLOR(shortName = "n", fullName = "no-color"),
     ONE_PASSWORD(shortName = "o", fullName = "one-password"),
     KEY_FILE(shortName = "k", fullName = "key-file"),
