@@ -138,7 +138,7 @@ class ArgumentParser(
             OptionalArgument.KEY_FILE_A.cliFullName to OptionalArgument.KEY_FILE_A,
 
             OptionalArgument.KEY_FILE_B.cliShortName to OptionalArgument.KEY_FILE_B,
-            OptionalArgument.KEY_FILE_B.cliFullName to OptionalArgument.KEY_FILE_B,
+            OptionalArgument.KEY_FILE_B.cliFullName to OptionalArgument.KEY_FILE_B
         )
     }
 }

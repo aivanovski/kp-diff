@@ -252,7 +252,7 @@ internal class ArgumentParserTest {
                 LEFT_FILE_PATH,
                 RIGHT_FILE_PATH,
                 leftKeyPath = if (side == LEFT) keyPath else null,
-                rightKeyPath = if (side == RIGHT) keyPath else null,
+                rightKeyPath = if (side == RIGHT) keyPath else null
             )
 
             // act
