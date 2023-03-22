@@ -23,6 +23,7 @@ import com.github.ai.kpdiff.utils.StringUtils.EMPTY
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf
+import javax.swing.text.html.Option
 import org.junit.jupiter.api.Test
 
 internal class ArgumentParserTest {
@@ -311,6 +312,29 @@ internal class ArgumentParserTest {
         }
     }
 
+    @Test
+    fun `parse should return arguments if no-color option is specified`() {
+        listOf(
+            OptionalArgument.NO_COLOR.cliShortName,
+            OptionalArgument.NO_COLOR.cliFullName
+        )
+            .forEach { argumentName ->
+                val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH, isNoColoredOutput = true)
+                val args = arrayOf(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    argumentName
+                )
+
+                // act
+                val result = ArgumentParser(newMockedProviderWithAllFiles()).parse(args)
+
+                // assert
+                result.isRight() shouldBe true
+                result.unwrap() shouldBe expected
+            }
+    }
+
     private fun newEmptyProvider(): FileSystemProvider {
         return MockedFileSystemProvider()
     }
@@ -319,6 +343,7 @@ internal class ArgumentParserTest {
         leftPath: String = EMPTY,
         rightPath: String = EMPTY,
         isUseOnePassword: Boolean = false,
+        isNoColoredOutput: Boolean = false,
         keyPath: String? = null,
         leftKeyPath: String? = null,
         rightKeyPath: String? = null
@@ -327,6 +352,7 @@ internal class ArgumentParserTest {
             leftPath,
             rightPath,
             isUseOnePassword,
+            isNoColoredOutput,
             keyPath,
             leftKeyPath,
             rightKeyPath

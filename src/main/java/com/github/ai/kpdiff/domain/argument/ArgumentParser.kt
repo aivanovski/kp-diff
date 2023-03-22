@@ -24,6 +24,7 @@ class ArgumentParser(
         var leftPath: String? = null
         var rightPath: String? = null
         var isUseOnePassword = false
+        var isNoColoredOutput = false
         var keyPath: String? = null
         var leftKeyPath: String? = null
         var rightKeyPath: String? = null
@@ -34,6 +35,9 @@ class ArgumentParser(
                 when (OPTIONAL_ARGUMENTS_MAP[arg]) {
                     OptionalArgument.ONE_PASSWORD -> {
                         isUseOnePassword = true
+                    }
+                    OptionalArgument.NO_COLOR -> {
+                        isNoColoredOutput = true
                     }
                     OptionalArgument.KEY_FILE_A -> {
                         val path = checkPath(queue.poll())
@@ -105,6 +109,7 @@ class ArgumentParser(
                 leftPath = leftPath,
                 rightPath = rightPath,
                 isUseOnePassword = isUseOnePassword,
+                isNoColoredOutput = isNoColoredOutput,
                 keyPath = keyPath,
                 leftKeyPath = leftKeyPath,
                 rightKeyPath = rightKeyPath
@@ -151,7 +156,10 @@ class ArgumentParser(
             OptionalArgument.KEY_FILE_B.cliFullName to OptionalArgument.KEY_FILE_B,
 
             OptionalArgument.KEY_FILE.cliShortName to OptionalArgument.KEY_FILE,
-            OptionalArgument.KEY_FILE.cliFullName to OptionalArgument.KEY_FILE
+            OptionalArgument.KEY_FILE.cliFullName to OptionalArgument.KEY_FILE,
+
+            OptionalArgument.NO_COLOR.cliShortName to OptionalArgument.NO_COLOR,
+            OptionalArgument.NO_COLOR.cliFullName to OptionalArgument.NO_COLOR
         )
     }
 }
