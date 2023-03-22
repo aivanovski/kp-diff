@@ -13,6 +13,7 @@ import com.github.ai.kpdiff.domain.Strings.UNKNOWN_ARGUMENT
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_OPTION
 import com.github.ai.kpdiff.domain.argument.ArgumentParser.Companion.ARGUMENT_FILE_A
 import com.github.ai.kpdiff.domain.argument.ArgumentParser.Companion.ARGUMENT_FILE_B
+import com.github.ai.kpdiff.domain.argument.ArgumentParserTest.Side.BOTH
 import com.github.ai.kpdiff.domain.argument.ArgumentParserTest.Side.LEFT
 import com.github.ai.kpdiff.domain.argument.ArgumentParserTest.Side.RIGHT
 import com.github.ai.kpdiff.entity.Arguments
@@ -242,6 +243,8 @@ internal class ArgumentParserTest {
     @Test
     fun `parse should return key path if it is specified`() {
         listOf(
+            Triple(BOTH, OptionalArgument.KEY_FILE.cliFullName, LEFT_KEY_PATH),
+            Triple(BOTH, OptionalArgument.KEY_FILE.cliShortName, LEFT_KEY_PATH),
             Triple(LEFT, OptionalArgument.KEY_FILE_A.cliFullName, LEFT_KEY_PATH),
             Triple(LEFT, OptionalArgument.KEY_FILE_A.cliShortName, LEFT_KEY_PATH),
             Triple(RIGHT, OptionalArgument.KEY_FILE_B.cliFullName, RIGHT_KEY_PATH),
@@ -251,6 +254,7 @@ internal class ArgumentParserTest {
             val expected = newArguments(
                 LEFT_FILE_PATH,
                 RIGHT_FILE_PATH,
+                keyPath = if (side == BOTH) keyPath else null,
                 leftKeyPath = if (side == LEFT) keyPath else null,
                 rightKeyPath = if (side == RIGHT) keyPath else null
             )
@@ -282,6 +286,7 @@ internal class ArgumentParserTest {
         )
 
         listOf(
+            Pair(OptionalArgument.KEY_FILE.cliFullName, LEFT_KEY_PATH),
             Pair(OptionalArgument.KEY_FILE_A.cliFullName, LEFT_KEY_PATH),
             Pair(OptionalArgument.KEY_FILE_B.cliFullName, RIGHT_KEY_PATH)
         ).forEach { (argumentName, keyPath) ->
@@ -314,6 +319,7 @@ internal class ArgumentParserTest {
         leftPath: String = EMPTY,
         rightPath: String = EMPTY,
         isUseOnePassword: Boolean = false,
+        keyPath: String? = null,
         leftKeyPath: String? = null,
         rightKeyPath: String? = null
     ): Arguments {
@@ -321,6 +327,7 @@ internal class ArgumentParserTest {
             leftPath,
             rightPath,
             isUseOnePassword,
+            keyPath,
             leftKeyPath,
             rightKeyPath
         )
@@ -338,6 +345,7 @@ internal class ArgumentParserTest {
     }
 
     enum class Side {
+        BOTH,
         LEFT,
         RIGHT
     }

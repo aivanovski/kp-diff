@@ -24,6 +24,7 @@ class ArgumentParser(
         var leftPath: String? = null
         var rightPath: String? = null
         var isUseOnePassword = false
+        var keyPath: String? = null
         var leftKeyPath: String? = null
         var rightKeyPath: String? = null
 
@@ -49,6 +50,14 @@ class ArgumentParser(
                         }
 
                         rightKeyPath = path.unwrap()
+                    }
+                    OptionalArgument.KEY_FILE -> {
+                        val path = checkPath(queue.poll())
+                        if (path.isLeft()) {
+                            return path.mapToLeft()
+                        }
+
+                        keyPath = path.unwrap()
                     }
                     null -> {
                         return Either.Left(
@@ -96,6 +105,7 @@ class ArgumentParser(
                 leftPath = leftPath,
                 rightPath = rightPath,
                 isUseOnePassword = isUseOnePassword,
+                keyPath = keyPath,
                 leftKeyPath = leftKeyPath,
                 rightKeyPath = rightKeyPath
             )
@@ -138,7 +148,10 @@ class ArgumentParser(
             OptionalArgument.KEY_FILE_A.cliFullName to OptionalArgument.KEY_FILE_A,
 
             OptionalArgument.KEY_FILE_B.cliShortName to OptionalArgument.KEY_FILE_B,
-            OptionalArgument.KEY_FILE_B.cliFullName to OptionalArgument.KEY_FILE_B
+            OptionalArgument.KEY_FILE_B.cliFullName to OptionalArgument.KEY_FILE_B,
+
+            OptionalArgument.KEY_FILE.cliShortName to OptionalArgument.KEY_FILE,
+            OptionalArgument.KEY_FILE.cliFullName to OptionalArgument.KEY_FILE
         )
     }
 }

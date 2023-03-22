@@ -82,10 +82,13 @@ class MainInteractor(
             )
         }
 
+        val leftKeyPath = args.keyPath ?: args.leftKeyPath
+        val rightKeyPath = args.keyPath ?: args.rightKeyPath
+
         val keys = mutableListOf<KeepassKey>()
         val pathToKeyPathPairs = listOf(
-            Pair(args.leftPath, args.leftKeyPath),
-            Pair(args.rightPath, args.rightKeyPath)
+            Pair(args.leftPath, leftKeyPath),
+            Pair(args.rightPath, rightKeyPath)
         )
 
         for ((path, keyPath) in pathToKeyPathPairs) {
