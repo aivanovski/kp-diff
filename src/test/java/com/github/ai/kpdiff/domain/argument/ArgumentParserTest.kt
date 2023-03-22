@@ -23,7 +23,6 @@ import com.github.ai.kpdiff.utils.StringUtils.EMPTY
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf
-import javax.swing.text.html.Option
 import org.junit.jupiter.api.Test
 
 internal class ArgumentParserTest {
@@ -319,7 +318,11 @@ internal class ArgumentParserTest {
             OptionalArgument.NO_COLOR.cliFullName
         )
             .forEach { argumentName ->
-                val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH, isNoColoredOutput = true)
+                val expected = newArguments(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    isNoColoredOutput = true
+                )
                 val args = arrayOf(
                     LEFT_FILE_PATH,
                     RIGHT_FILE_PATH,
