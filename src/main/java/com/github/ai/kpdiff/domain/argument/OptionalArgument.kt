@@ -6,13 +6,13 @@ enum class OptionalArgument(
 ) {
     // Options to add:
     // --no-color
-    // --key-file ...
     // --verbose
     // --version
     // --flatten
 
     HELP(shortName = "h", fullName = "help"),
     ONE_PASSWORD(shortName = "o", fullName = "one-password"),
+    KEY_FILE(shortName = "k", fullName = "key-file"),
     KEY_FILE_A(shortName = "a", fullName = "key-file-a"),
     KEY_FILE_B(shortName = "b", fullName = "key-file-b");
 
