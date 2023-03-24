@@ -1,5 +1,6 @@
 package com.github.ai.kpdiff.domain.diff
 
+import com.github.ai.kpdiff.domain.diff.TerminalOutputFormatter.Color
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
@@ -7,7 +8,6 @@ import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.Node
-import com.github.ai.kpdiff.utils.StringUtils.EMPTY
 import com.github.ai.kpdiff.utils.traverseByValueType
 import com.github.ai.kpdiff.utils.traverseWithParents
 import java.util.Comparator
@@ -15,6 +15,7 @@ import java.util.UUID
 
 class DiffFormatterImpl : DiffFormatter {
 
+    private val terminalOutputFormatter = TerminalOutputFormatter()
     private val comparator = Comparator<DiffEvent<DatabaseEntity>> { lhs, rhs ->
         lhs.sortOrder().compareTo(rhs.sortOrder())
     }
@@ -80,13 +81,14 @@ class DiffFormatterImpl : DiffFormatter {
         indentation: String,
         options: DiffFormatterOptions
     ): String {
-        val color = if (options.isColorEnabled) {
-            Color.YELLOW.value
-        } else {
-            EMPTY
-        }
-
-        return "$color~ $indentation$GROUP '$name'"
+        return terminalOutputFormatter.format(
+            line = "~ $indentation$GROUP '$name'",
+            color = if (options.isColorEnabled) {
+                Color.YELLOW
+            } else {
+                Color.NONE
+            }
+        )
     }
 
     private fun getParentNames(
@@ -175,9 +177,9 @@ class DiffFormatterImpl : DiffFormatter {
         val eventType = event.formatType()
         val entity = event.getEntity()
         val color = if (options.isColorEnabled) {
-            event.getColor().value
+            event.getColor()
         } else {
-            EMPTY
+            Color.NONE
         }
 
         val entityType = when (entity) {
@@ -192,7 +194,10 @@ class DiffFormatterImpl : DiffFormatter {
             else -> entity.toString()
         }
 
-        return "$color$eventType $indentation$entityType '$title'"
+        return terminalOutputFormatter.format(
+            line = "$eventType $indentation$entityType '$title'",
+            color = color
+        )
     }
 
     private fun <T : Any> DiffEvent<T>.getColor(): Color {
@@ -259,6 +264,7 @@ class DiffFormatterImpl : DiffFormatter {
             is DiffEvent.Update -> {
                 if (newNode.value is GroupEntity) 1 else 5
             }
+
             is DiffEvent.Delete -> {
                 if (node.value is GroupEntity) 10 else 15
             }
@@ -272,12 +278,6 @@ class DiffFormatterImpl : DiffFormatter {
     enum class OriginType {
         LEFT,
         RIGHT
-    }
-
-    enum class Color(val value: String) {
-        YELLOW("\u001B[0m\u001B[33m"),
-        RED("\u001B[0m\u001B[31m"),
-        GREEN("\u001B[0m\u001B[32m")
     }
 
     companion object {
