@@ -19,6 +19,20 @@ object TestData {
     const val INVALID_PASSWORD = "invalid-password"
     const val FILE_CONTENT = "mocked-file-content"
     const val EXCEPTION_MESSAGE = "Exception message"
+    const val NAME = "field-name"
+    const val TITLE = "entry-title"
+    const val VALUE = "value"
+    const val VALUE1 = "field-value1"
+    const val VALUE2 = "field-value2"
+    const val TITLE1 = "entry-title1"
+    const val TITLE2 = "entry-title2"
+    val UUID1 = UUID.fromString("00000000-0000-0000-0000-000000000001")
+    val UUID_CHILD = UUID.fromString("00000000-0000-0000-0000-100000000001")
+    val UUID_PARENT = UUID.fromString("00000000-0000-0000-0000-100000000002")
+
+    const val INDENT_EMPTY = ""
+    val INDENT_SINGLE = ".".repeat(4)
+    val INDENT_DOUBLE = ".".repeat(8)
 
     val DB_WITH_KEY = TestKeepassDatabase(
         key = TestKeepassKey.FileKey("db-key"),

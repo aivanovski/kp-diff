@@ -18,7 +18,7 @@ class SimpleDiffer {
         )
     }
 
-    private fun <T : Any> diff(
+    fun <T : Any> diff(
         lhsRoots: List<Node<T>>,
         rhsRoots: List<Node<T>>,
         visited: MutableSet<UUID>

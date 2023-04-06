@@ -4,11 +4,12 @@ import com.github.ai.kpdiff.TestData.DB_WITH_PASSWORD
 import com.github.ai.kpdiff.TestData.DB_WITH_PASSWORD_MODIFIED
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.EntryEntity.Companion.PROPERTY_TITLE
+import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.testUtils.open
 import com.github.ai.kpdiff.utils.buildNodeTree
+import com.github.ai.kpdiff.utils.getTitle
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
@@ -43,14 +44,15 @@ internal class DatabaseDifferImplTest {
         second.shouldBeInstanceOf<DiffEvent.Delete<GroupEntity>>()
         second.node.value.name shouldBe "Inner group 2"
 
-        third.shouldBeInstanceOf<DiffEvent.Update<EntryEntity>>()
-        third.oldNode.value.properties[PROPERTY_TITLE] shouldBe "Entry 4"
-        third.newNode.value.properties[PROPERTY_TITLE] shouldBe "Entry 4 modified"
+        third.shouldBeInstanceOf<DiffEvent.Update<FieldEntity>>()
+        third.oldNode.value.name shouldBe "Title"
+        third.oldNode.value.value shouldBe "Entry 4"
+        third.newNode.value.value shouldBe "Entry 4 modified"
 
         fourth.shouldBeInstanceOf<DiffEvent.Delete<EntryEntity>>()
-        fourth.node.value.properties[PROPERTY_TITLE] shouldBe "Entry 3"
+        fourth.node.value.getTitle() shouldBe "Entry 3"
 
         fifth.shouldBeInstanceOf<DiffEvent.Insert<EntryEntity>>()
-        fifth.node.value.properties[PROPERTY_TITLE] shouldBe "Entry 5"
+        fifth.node.value.getTitle() shouldBe "Entry 5"
     }
 }

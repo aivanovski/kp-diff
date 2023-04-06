@@ -10,7 +10,10 @@ import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DatabaseDifferImpl
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
-import com.github.ai.kpdiff.domain.diff.DiffFormatterImpl
+import com.github.ai.kpdiff.domain.diff.formatter.DiffFormatterImpl
+import com.github.ai.kpdiff.domain.diff.formatter.EntityFormatterProvider
+import com.github.ai.kpdiff.domain.diff.formatter.ParentFormatter
+import com.github.ai.kpdiff.domain.diff.formatter.TerminalOutputFormatter
 import com.github.ai.kpdiff.domain.input.InputReaderFactory
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.output.StdoutOutputPrinter
@@ -30,7 +33,10 @@ object KoinModule {
         single<FileSystemProvider> { FileSystemProviderImpl() }
         single<KeepassDatabaseFactory> { KotpassDatabaseFactory(get()) }
         single<DatabaseDiffer> { DatabaseDifferImpl() }
-        single<DiffFormatter> { DiffFormatterImpl() }
+        single { EntityFormatterProvider() }
+        single { TerminalOutputFormatter() }
+        single { ParentFormatter() }
+        single<DiffFormatter> { DiffFormatterImpl(get(), get(), get()) }
         single { ArgumentParser(get()) }
 
         // use cases
