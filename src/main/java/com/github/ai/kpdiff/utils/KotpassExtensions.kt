@@ -4,6 +4,7 @@ import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.EntryEntity
+import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassKey
 import com.github.ai.kpdiff.entity.Node
@@ -12,6 +13,7 @@ import io.github.anvell.kotpass.database.Credentials
 import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.Group
 import java.util.LinkedList
+import java.util.UUID
 
 fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Credentials> {
     return when (this) {
@@ -42,19 +44,36 @@ fun Group.buildNodeTree(): Node<DatabaseEntity> {
         val (node, group) = groups.poll()
 
         for (childGroup in group.groups) {
-            val childNode: Node<DatabaseEntity> = Node(childGroup.uuid, childGroup.toEntity())
+            val childNode = Node<DatabaseEntity>(childGroup.uuid, childGroup.toEntity())
 
             node.nodes.add(childNode)
             groups.push(Pair(childNode, childGroup))
         }
 
         for (entry in group.entries) {
-            val entryNode: Node<DatabaseEntity> = Node(entry.uuid, entry.toEntity())
+            val entryUid = entry.uuid
+            val entryNode = Node<DatabaseEntity>(entryUid, entry.toEntity())
+
             node.nodes.add(entryNode)
         }
     }
 
     return root
+}
+
+fun EntryEntity.getFieldNodes(): List<Node<DatabaseEntity>> {
+    val result = mutableListOf<Node<DatabaseEntity>>()
+
+    for ((name, value) in this.properties) {
+        // TODO: resolve hash collision
+        val fieldUid = UUID(uuid.mostSignificantBits, name.hashCode().toLong())
+        val field = FieldEntity(fieldUid, uuid, name, value)
+        val fieldNode = Node<DatabaseEntity>(fieldUid, field)
+
+        result.add(fieldNode)
+    }
+
+    return result
 }
 
 private fun Group.toEntity(): GroupEntity {

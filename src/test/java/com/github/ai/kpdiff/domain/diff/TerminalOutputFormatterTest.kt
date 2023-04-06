@@ -1,6 +1,7 @@
 package com.github.ai.kpdiff.domain.diff
 
-import com.github.ai.kpdiff.domain.diff.TerminalOutputFormatter.Color
+import com.github.ai.kpdiff.domain.diff.formatter.TerminalOutputFormatter
+import com.github.ai.kpdiff.domain.diff.formatter.TerminalOutputFormatter.Color
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 

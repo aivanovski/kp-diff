@@ -1,4 +1,4 @@
-package com.github.ai.kpdiff.domain.diff
+package com.github.ai.kpdiff.domain.diff.formatter
 
 class TerminalOutputFormatter {
 
