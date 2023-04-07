@@ -48,8 +48,8 @@ jobs:
       - name: Store jar file
         uses: actions/upload-artifact@v2
         with:
-          name: kpdiff.jar
-          path: ./build/libs/kpdiff.jar
+          name: kp-diff-${{ env.VERSION }}.jar
+          path: ./build/libs/kp-diff-${{ env.VERSION }}.jar
 
       - name: Create JaCoCo Badge
         id: jacoco
