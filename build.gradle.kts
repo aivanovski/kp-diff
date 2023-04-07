@@ -72,7 +72,6 @@ tasks.register("createPropertyFileWithVersion") {
     }
 }
 
-
 tasks {
     named<ShadowJar>("shadowJar") {
         archiveBaseName.set("kp-diff")
