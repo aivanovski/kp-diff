@@ -100,4 +100,4 @@ jobs:
 
       - name: 'Build Linux Image'
         run: |
-          native-image --no-server --no-fallback -jar kp-diff-${{env.VERSION}}.jar
+          native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
