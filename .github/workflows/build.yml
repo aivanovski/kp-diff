@@ -101,3 +101,13 @@ jobs:
       - name: 'Build Linux Image'
         run: |
           native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
+
+      - name: 'Print files'
+        run: ls -la
+
+      - name: 'Publish Linux Image'
+        if: success()
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: 'kp-diff-${{env.VERSION}}-linux'
+          path: 'kp-diff-${{env.VERSION}}-all'
