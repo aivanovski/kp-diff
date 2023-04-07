@@ -66,10 +66,19 @@ jobs:
           name: kp-diff-${{env.VERSION}}.jar
           path: ./build/libs/kp-diff-${{env.VERSION}}.jar
 
-  build-linux-image:
+  build-native-images:
+    name: 'Build native images'
     needs: [ build-jar ]
-    name: 'Build Linux Image'
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ 'ubuntu-latest', 'macos-latest' ]
+        include:
+          - os: 'ubuntu-latest'
+            label: 'linux'
+          - os: 'macos-latest'
+            label: 'mac'
+    runs-on: ${{matrix.os}}
+
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
@@ -99,22 +108,22 @@ jobs:
         with:
           name: 'kp-diff-${{env.VERSION}}.jar'
 
-      - name: 'Build Linux Image'
+      - name: 'Build Image'
         run: |
           native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
 
       - name: 'Print files'
         run: ls -la
 
-      - name: 'Publish Linux Image'
+      - name: 'Publish Image'
         if: success()
         uses: actions/upload-artifact@v2-preview
         with:
-          name: 'kp-diff-${{env.VERSION}}-linux'
+          name: 'kp-diff-${{env.VERSION}}-${{matrix.label}}'
           path: 'kp-diff-${{env.VERSION}}'
 
   create-coverage-badge:
-    needs: [ build-jar, build-linux-image ]
+    needs: [ build-native-images ]
     name: 'Create coverage badge'
     runs-on: ubuntu-latest
     steps:
