@@ -86,6 +86,7 @@ jobs:
       - name: 'Setup GraalVM Environment'
         uses: DeLaGuardo/setup-graalvm@2.0
         with:
+          ACTIONS_ALLOW_UNSECURE_COMMANDS: true
           graalvm-version: '20.1.0.java11'
 
       - name: 'Install Native Image Plugin'
