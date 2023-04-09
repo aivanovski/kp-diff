@@ -3,17 +3,37 @@
 GRAALVM_LINUX_URL = 'https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-21.3.3.1/graalvm-ce-java11-linux-amd64-21.3.3.1.tar.gz'.freeze
 GRAALVM_MACOS_URL = 'https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-21.3.3.1/graalvm-ce-java11-darwin-amd64-21.3.3.1.tar.gz'.freeze
 
-def graalvm_url
-  kernel = `uname | head -1`.strip
+OS_LINUX = 1
+OS_MAC = 2
 
+def os_type
+  kernel = `uname | head -1`.strip
   case kernel
   when 'Linux'
-    GRAALVM_LINUX_URL
+    OS_LINUX
   when 'Darwin'
-    GRAALVM_MACOS_URL
+    OS_MAC
   else
     puts 'Unsupported OS'
     exit 1
+  end
+end
+
+def graalvm_url
+  case os_type
+  when OS_LINUX
+    GRAALVM_LINUX_URL
+  when OS_MAC
+    GRAALVM_MACOS_URL
+  end
+end
+
+def graalvm_bin_path(graalvm_path)
+  case os_type
+  when OS_LINUX
+    "#{graalvm_path}/bin"
+  when OS_MAC
+    "#{graalvm_path}/Contents/Home/bin"
   end
 end
 
@@ -72,8 +92,8 @@ def graal_vm_dir_path
 end
 
 def setup_graal_vm(graalvm_path)
-  native_image_path = "#{graalvm_path}/bin/native-image"
-  gu_path = "#{graalvm_path}/bin/gu"
+  native_image_path = "#{graalvm_bin_path(graalvm_path)}/native-image"
+  gu_path = "#{graalvm_bin_path(graalvm_path)}/gu"
 
   unless File.exist?(native_image_path)
     puts 'Installing native-image'
@@ -89,7 +109,7 @@ def remove_compiled_file
 end
 
 def compile_binary(graalvm_path)
-  native_image_path = "#{graalvm_path}/bin/native-image"
+  native_image_path = "#{graalvm_bin_path(graalvm_path)}/native-image"
 
   if File.exist?(native_image_path)
     puts 'Compiling'
