@@ -40,8 +40,8 @@ jobs:
         run: ./gradlew test
 
   build-jar:
-    needs: [ check-code-style, run-tests ]
     name: 'Build jar'
+    needs: [ check-code-style, run-tests ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -68,16 +68,7 @@ jobs:
   build-native-images:
     name: 'Build native images'
     needs: [ build-jar ]
-    strategy:
-      matrix:
-        os: [ 'ubuntu-latest', 'macos-latest' ]
-        include:
-          - os: 'ubuntu-latest'
-            label: 'linux'
-#          - os: 'macos-latest'
-#            label: 'mac'
-    runs-on: ${{matrix.os}}
-
+    runs-on: ubuntu-latest
     steps:
       - name: 'Checkout'
         uses: actions/checkout@v2
@@ -110,14 +101,11 @@ jobs:
         run: |
           native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
 
-      - name: 'Print files'
-        run: ls -la
-
       - name: 'Publish Image'
         if: success()
         uses: actions/upload-artifact@v2-preview
         with:
-          name: 'kp-diff-${{env.VERSION}}-${{matrix.label}}'
+          name: 'kp-diff-${{env.VERSION}}-linux'
           path: 'kp-diff-${{env.VERSION}}'
 
   create-coverage-badge:
