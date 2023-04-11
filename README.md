@@ -1,12 +1,12 @@
 # kp-diff
-**kp-diff** is a CLI utility for comparing Keepass database files.
+**kp-diff** is a CLI utility that compares and prints diff for Keepass database files.
 
 
 ## Installation
 #### Binary file installation (for Linux only)
 - Download `kp-diff-linux` binary from [Release page](https://github.com/aivanovski/kp-diff/releases)
 
-#### Jar file installation (for Linux or Mac OS)
+#### `.jar` file installation (for Linux, Mac OS, Windows)
 - Install Java version >= 11
 - Download `kp-diff.jar` from [Release page](https://github.com/aivanovski/kp-diff/releases)
 
@@ -45,5 +45,17 @@ Then to build the project run:
 ./gradlew shadowJar
 ```
 Output file should be localed at `kp-diff/build/libs/`
+
 #### Building binary file
-`kp-diff.jar` file can be compiled to the executable binary with GraalVM
+Binary file provides faster startup and better performance. It can be compiled (ahead-of-time) from `.jar` file with [GraalVM](https://www.graalvm.org/) with
+the following steps:
+- Install and setup latest version of [GraalVM](https://www.graalvm.org/) (for example version >= 21)
+- Compile binary with following command:
+```
+native-image \
+    --no-server \
+    --no-fallback \
+    -H:IncludeResources=".*\.properties" \
+    --allow-incomplete-classpath \
+    -jar PATH_TO_JAR_FILE
+```
