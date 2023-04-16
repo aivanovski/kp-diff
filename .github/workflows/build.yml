@@ -131,6 +131,7 @@ jobs:
       - name: Log current files
         run: |
           ls -la
+          tree -L 3
 
       - name: Setup package files
         run: |
