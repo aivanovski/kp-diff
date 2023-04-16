@@ -39,6 +39,12 @@ jobs:
       - name: Run tests
         run: ./gradlew test
 
+      - name: Upload coverage.csv file
+        uses: actions/upload-artifact@v2-preview
+        with:
+          name: coverage.csv
+          path: build/reports/coverage/coverage.csv
+
   build-jar:
     name: 'Build jar'
     needs: [ check-code-style, run-tests ]
@@ -104,8 +110,8 @@ jobs:
       - name: Publish Image
         uses: actions/upload-artifact@v2-preview
         with:
-          name: 'kp-diff-${{env.VERSION}}-linux'
-          path: 'kp-diff-${{env.VERSION}}'
+          name: kp-diff-${{env.VERSION}}-linux
+          path: kp-diff-${{env.VERSION}}
 
   create-deb-package:
     needs: [ build-native-images ]
@@ -155,11 +161,11 @@ jobs:
       - name: Publish .deb file
         uses: actions/upload-artifact@v2-preview
         with:
-          name: 'kp-diff_${{env.VERSION}}.deb'
-          path: 'kp-diff_${{env.VERSION}}.deb'
+          name: kp-diff_${{env.VERSION}}.deb
+          path: kp-diff_${{env.VERSION}}.deb
 
   create-coverage-badge:
-    needs: [ build-native-images ]
+    needs: [ create-deb-package ]
     name: 'Create coverage badge'
     runs-on: ubuntu-latest
     steps:
@@ -171,14 +177,16 @@ jobs:
         with:
           java-version: 11
 
-      - name: Run tests
-        run: ./gradlew test
+      - name: Get coverage.csv
+        uses: actions/download-artifact@v2-preview
+        with:
+          name: 'coverage.csv'
 
       - name: Create JaCoCo Badge
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2
         with:
-          jacoco-csv-file: build/reports/coverage/coverage.csv
+          jacoco-csv-file: coverage.csv
           badges-directory: .github/badges
           generate-coverage-badge: true
 
