@@ -32,8 +32,9 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
 
       - name: Run tests
@@ -58,8 +59,9 @@ jobs:
           echo "VERSION=$(grep '^version=' src/main/resources/version.properties | cut -d= -f2)" >> $GITHUB_ENV
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
 
       - name: Build debug jar
@@ -82,11 +84,6 @@ jobs:
       - name: Setup version variable
         run: |
           echo "VERSION=$(grep '^version=' src/main/resources/version.properties | cut -d= -f2)" >> $GITHUB_ENV
-
-      - name: Setup Java 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
 
       - name: Setup GraalVM Environment
         uses: DeLaGuardo/setup-graalvm@5.0
@@ -128,7 +125,11 @@ jobs:
       - name: Get linux binary
         uses: actions/download-artifact@v2-preview
         with:
-          name: 'kp-diff-${{env.VERSION}}-linux'
+          name: kp-diff-${{env.VERSION}}-linux
+
+      - name: Log current files
+        run: |
+          ls -la
 
       - name: Setup package files
         run: |
@@ -171,11 +172,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
 
       - name: Get coverage.csv
         uses: actions/download-artifact@v2-preview
