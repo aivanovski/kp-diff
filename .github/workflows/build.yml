@@ -126,6 +126,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: kp-diff-${{env.VERSION}}-linux
+          path: kp-diff-${{env.VERSION}}-linux
 
       - name: Log current files
         run: |
@@ -176,7 +177,8 @@ jobs:
       - name: Get coverage.csv
         uses: actions/download-artifact@v3
         with:
-          name: 'coverage.csv'
+          name: coverage.csv
+          path: coverage.csv
 
       - name: Create JaCoCo Badge
         id: jacoco
