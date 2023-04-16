@@ -91,7 +91,7 @@ jobs:
           graalvm: '21.0.0.2'
           java: 'java11'
 
-      - name: Install Native Image Plugin
+      - name: Install Native Image utility
         run: |
           gu install native-image
 
@@ -100,14 +100,14 @@ jobs:
         with:
           name: 'kp-diff-${{env.VERSION}}.jar'
 
-      - name: Build Image
+      - name: Build binary file
         run: |
           native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
 
-      - name: Publish Image
+      - name: Publish binary file
         uses: actions/upload-artifact@v3
         with:
-          name: kp-diff-${{env.VERSION}}-linux
+          name: kp-diff-${{env.VERSION}}-linux-amd64
           path: kp-diff-${{env.VERSION}}
 
   create-deb-package:
@@ -125,7 +125,7 @@ jobs:
       - name: Get linux binary
         uses: actions/download-artifact@v3
         with:
-          name: kp-diff-${{env.VERSION}}-linux
+          name: kp-diff-${{env.VERSION}}-linux-amd64
           path: artifacts
 
       - name: Setup package files
@@ -160,7 +160,7 @@ jobs:
       - name: Publish .deb file
         uses: actions/upload-artifact@v3
         with:
-          name: kp-diff_${{env.VERSION}}.deb
+          name: kp-diff_${{env.VERSION}}-amd64.deb
           path: kp-diff_${{env.VERSION}}.deb
 
   create-coverage-badge:
