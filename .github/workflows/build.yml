@@ -137,7 +137,7 @@ jobs:
           mkdir kp-diff_${{env.VERSION}}/usr
           mkdir kp-diff_${{env.VERSION}}/usr/local
           mkdir kp-diff_${{env.VERSION}}/usr/local/bin
-          cp kp-diff_${{env.VERSION}}-linux kp-diff_${{env.VERSION}}/usr/local/bin/kp-diff
+          cp kp-diff-${{env.VERSION}}-linux kp-diff_${{env.VERSION}}/usr/local/bin/kp-diff
 
           PACKAGE_INFO=$(cat << EOF
           Package: kp-diff
