@@ -14,14 +14,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: 'Download ktlint binary'
+      - name: Download ktlint binary
         run: |
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.48.2/ktlint
           chmod +x ktlint
 
-      - name: 'Run ktlint'
+      - name: Run ktlint
         run: ./ktlint --editorconfig=".editorconfig"
 
   run-tests:
@@ -29,15 +29,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
 
       - name: Run tests
         run: ./gradlew test
+
+      - name: Upload coverage.csv file
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage.csv
+          path: build/reports/coverage/coverage.csv
 
   build-jar:
     name: 'Build jar'
@@ -45,22 +52,23 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Setup version variable
         run: |
-          echo "VERSION=$(grep "^version=" src/main/resources/version.properties | cut -d= -f2)" >> $GITHUB_ENV
+          echo "VERSION=$(grep '^version=' src/main/resources/version.properties | cut -d= -f2)" >> $GITHUB_ENV
 
       - name: Set up JDK 11
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
+          distribution: 'zulu'
           java-version: 11
 
       - name: Build debug jar
         run: ./gradlew shadowJar
 
       - name: Store jar file
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: kp-diff-${{env.VERSION}}.jar
           path: ./build/libs/kp-diff-${{env.VERSION}}.jar
@@ -70,65 +78,110 @@ jobs:
     needs: [ build-jar ]
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout'
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Setup version variable
         run: |
-          echo "VERSION=$(grep "^version=" src/main/resources/version.properties | cut -d= -f2)" >> $GITHUB_ENV
+          echo "VERSION=$(grep '^version=' src/main/resources/version.properties | cut -d= -f2)" >> $GITHUB_ENV
 
-      - name: 'Setup Java 11'
-        uses: actions/setup-java@v1
-        with:
-          java-version: 11
-
-      - name: 'Setup GraalVM Environment'
+      - name: Setup GraalVM Environment
         uses: DeLaGuardo/setup-graalvm@5.0
         with:
           graalvm: '21.0.0.2'
           java: 'java11'
 
-      - name: 'Install Native Image Plugin'
+      - name: Install Native Image utility
         run: |
           gu install native-image
 
-      - name: 'Get JAR Artifact'
-        uses: actions/download-artifact@v2-preview
+      - name: Get JAR Artifact
+        uses: actions/download-artifact@v3
         with:
           name: 'kp-diff-${{env.VERSION}}.jar'
 
-      - name: 'Build Image'
+      - name: Build binary file
         run: |
           native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
 
-      - name: 'Publish Image'
-        if: success()
-        uses: actions/upload-artifact@v2-preview
+      - name: Publish binary file
+        uses: actions/upload-artifact@v3
         with:
-          name: 'kp-diff-${{env.VERSION}}-linux'
-          path: 'kp-diff-${{env.VERSION}}'
+          name: kp-diff-${{env.VERSION}}-linux-amd64
+          path: kp-diff-${{env.VERSION}}
+
+  create-deb-package:
+    needs: [ build-native-images ]
+    name: 'Create deb package'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup version variable
+        run: |
+          echo "VERSION=$(grep '^version=' src/main/resources/version.properties | cut -d= -f2)" >> $GITHUB_ENV
+
+      - name: Get linux binary
+        uses: actions/download-artifact@v3
+        with:
+          name: kp-diff-${{env.VERSION}}-linux-amd64
+          path: artifacts
+
+      - name: Setup package files
+        run: |
+          mkdir kp-diff_${{env.VERSION}}
+          mkdir kp-diff_${{env.VERSION}}/DEBIAN
+          mkdir kp-diff_${{env.VERSION}}/usr
+          mkdir kp-diff_${{env.VERSION}}/usr/local
+          mkdir kp-diff_${{env.VERSION}}/usr/local/bin
+          cp artifacts/kp-diff-${{env.VERSION}} kp-diff_${{env.VERSION}}/usr/local/bin/kp-diff
+          chmod +x kp-diff_${{env.VERSION}}/usr/local/bin/kp-diff
+
+          PACKAGE_INFO=$(cat << EOF
+          Package: kp-diff
+          Version: ${{env.VERSION}}
+          Section: base
+          Priority: optional
+          Architecture: amd64
+          Depends: libc6 (>= 2.32)
+          Maintainer: Aliaksei Ivanouski <alexei.ivanovski@gmail.com>
+          Homepage: https://github.com/aivanovski/kp-diff
+          Website: https://github.com/aivanovski/kp-diff
+          Description: Utility to diff Keepass databases
+          EOF
+          )
+          echo "$PACKAGE_INFO" > kp-diff_${{env.VERSION}}/DEBIAN/control
+
+      - name: Create .deb file
+        run: |
+          dpkg-deb --build kp-diff_${{env.VERSION}}
+
+      - name: Publish .deb file
+        uses: actions/upload-artifact@v3
+        with:
+          name: kp-diff_${{env.VERSION}}-amd64.deb
+          path: kp-diff_${{env.VERSION}}.deb
 
   create-coverage-badge:
-    needs: [ build-native-images ]
+    needs: [ create-deb-package ]
     name: 'Create coverage badge'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: Set up JDK 11
-        uses: actions/setup-java@v1
+      - name: Get coverage.csv
+        uses: actions/download-artifact@v3
         with:
-          java-version: 11
-
-      - name: Run tests
-        run: ./gradlew test
+          name: coverage.csv
+          path: artifacts
 
       - name: Create JaCoCo Badge
         id: jacoco
-        uses: cicirello/jacoco-badge-generator@v2
+        uses: cicirello/jacoco-badge-generator@v2.8.1
         with:
-          jacoco-csv-file: build/reports/coverage/coverage.csv
+          jacoco-csv-file: artifacts/coverage.csv
           badges-directory: .github/badges
           generate-coverage-badge: true
 
