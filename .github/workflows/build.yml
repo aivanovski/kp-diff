@@ -128,11 +128,6 @@ jobs:
           name: kp-diff-${{env.VERSION}}-linux
           path: artifacts
 
-      - name: Log current files
-        run: |
-          ls -la
-          tree -L 3
-
       - name: Setup package files
         run: |
           mkdir kp-diff_${{env.VERSION}}
