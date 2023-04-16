@@ -16,12 +16,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: 'Download ktlint binary'
+      - name: Download ktlint binary
         run: |
           curl -sSLO https://github.com/pinterest/ktlint/releases/download/0.48.2/ktlint
           chmod +x ktlint
 
-      - name: 'Run ktlint'
+      - name: Run ktlint
         run: ./ktlint --editorconfig=".editorconfig"
 
   run-tests:
@@ -70,38 +70,38 @@ jobs:
     needs: [ build-jar ]
     runs-on: ubuntu-latest
     steps:
-      - name: 'Checkout'
+      - name: Checkout
         uses: actions/checkout@v2
 
       - name: Setup version variable
         run: |
           echo "VERSION=$(grep '^version=' src/main/resources/version.properties | cut -d= -f2)" >> $GITHUB_ENV
 
-      - name: 'Setup Java 11'
+      - name: Setup Java 11
         uses: actions/setup-java@v1
         with:
           java-version: 11
 
-      - name: 'Setup GraalVM Environment'
+      - name: Setup GraalVM Environment
         uses: DeLaGuardo/setup-graalvm@5.0
         with:
           graalvm: '21.0.0.2'
           java: 'java11'
 
-      - name: 'Install Native Image Plugin'
+      - name: Install Native Image Plugin
         run: |
           gu install native-image
 
-      - name: 'Get JAR Artifact'
+      - name: Get JAR Artifact
         uses: actions/download-artifact@v2-preview
         with:
           name: 'kp-diff-${{env.VERSION}}.jar'
 
-      - name: 'Build Image'
+      - name: Build Image
         run: |
           native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
 
-      - name: 'Publish Image'
+      - name: Publish Image
         uses: actions/upload-artifact@v2-preview
         with:
           name: 'kp-diff-${{env.VERSION}}-linux'
@@ -153,7 +153,7 @@ jobs:
         run: |
           dpkg-deb --build kp-diff_${{env.VERSION}}
 
-      - name: 'Publish Image'
+      - name: Publish .deb file
         uses: actions/upload-artifact@v2-preview
         with:
           name: 'kp-diff_${{env.VERSION}}.deb'
