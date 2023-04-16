@@ -126,7 +126,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: kp-diff-${{env.VERSION}}-linux
-          path: kp-diff-${{env.VERSION}}-linux
+          path: artifacts
 
       - name: Log current files
         run: |
@@ -139,7 +139,7 @@ jobs:
           mkdir kp-diff_${{env.VERSION}}/usr
           mkdir kp-diff_${{env.VERSION}}/usr/local
           mkdir kp-diff_${{env.VERSION}}/usr/local/bin
-          cp kp-diff-${{env.VERSION}}-linux kp-diff_${{env.VERSION}}/usr/local/bin/kp-diff
+          cp artifacts/kp-diff-${{env.VERSION}}-linux kp-diff_${{env.VERSION}}/usr/local/bin/kp-diff
 
           PACKAGE_INFO=$(cat << EOF
           Package: kp-diff
@@ -178,13 +178,13 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: coverage.csv
-          path: coverage.csv
+          path: artifacts
 
       - name: Create JaCoCo Badge
         id: jacoco
         uses: cicirello/jacoco-badge-generator@v2
         with:
-          jacoco-csv-file: coverage.csv
+          jacoco-csv-file: artifacts/coverage.csv
           badges-directory: .github/badges
           generate-coverage-badge: true
 
