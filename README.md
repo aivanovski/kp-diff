@@ -3,18 +3,24 @@
 
 
 ## Installation
-#### Binary file installation (for Linux only)
-- Download `kp-diff-linux` binary from [Release page](https://github.com/aivanovski/kp-diff/releases)
 
-#### `.jar` file installation (for Linux, Mac OS, Windows)
-- Install Java version >= 11
-- Download `kp-diff.jar` from [Release page](https://github.com/aivanovski/kp-diff/releases)
+### Linux
 
-## How to run
-#### For binary file
-`kp-diff file1.kdbx file2.kdbx`
-#### For `.jar` file
-`java -jar kp-diff.jar file1.kdbx file2.kdbx`
+##### Manual installation
+All releases of `kp-diff` can be downloaded from [releases](https://github.com/aivanovski/kp-diff/releases) page
+
+##### Command line installation via `curl`
+A particular version of `kp-diff` can be downloaded with next command which also changes the file to an executable in directory `$HOME/.local/bin`
+```
+curl -sSLO https://github.com/aivanovski/kp-diff/releases/download/0.2.0/kp-diff-linux-amd64 && chmod +x kp-diff-linux-amd64 && mkdir -p $HOME/.local/bin && mv kp-diff-linux-amd64 $HOME/.local/bin/kp-diff
+```
+
+### macOS
+##### Installation
+At the moment `kp-diff` on macOS can be used only with pre-installed JVM
+- Install JVM version >= 11
+- Dowload `kp-diff.jar` file from [releases](https://github.com/aivanovski/kp-diff/releases) page
+- Run it from terminal: `java -jar kp-diff.jar [OPTIONS]`
 
 ## Usage
 ```
