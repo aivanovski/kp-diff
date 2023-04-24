@@ -102,7 +102,7 @@ jobs:
 
       - name: Build binary file
         run: |
-          native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
+          native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --enable-all-security-services --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
 
       - name: Publish binary file
         uses: actions/upload-artifact@v3
