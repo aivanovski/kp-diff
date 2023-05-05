@@ -1,6 +1,8 @@
 # kp-diff
 **kp-diff** is a CLI utility that compares and prints diff for Keepass database files.
 
+## Demo
+[![asciicast](https://asciinema.org/a/582798.svg)](https://asciinema.org/a/582798)
 
 ## Installation
 
