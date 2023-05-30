@@ -4,7 +4,10 @@ import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputPrinter
-import com.github.ai.kpdiff.domain.usecases.*
+import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
+import com.github.ai.kpdiff.domain.usecases.OpenDatabasesUseCase
+import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
+import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.Either
 

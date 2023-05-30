@@ -6,7 +6,7 @@ import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.KeepassKey
 
 class OpenDatabasesUseCase(
-    private val dbFactory: KeepassDatabaseFactory,
+    private val dbFactory: KeepassDatabaseFactory
 ) {
 
     fun openDatabases(
