@@ -18,6 +18,7 @@ import com.github.ai.kpdiff.domain.input.InputReaderFactory
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.output.StdoutOutputPrinter
 import com.github.ai.kpdiff.domain.usecases.DetermineInputTypeUseCase
+import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
 import com.github.ai.kpdiff.domain.usecases.GetVersionUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
@@ -45,7 +46,8 @@ object KoinModule {
         single { GetVersionUseCase() }
         single { PrintHelpUseCase(get()) }
         single { PrintVersionUseCase(get()) }
+        single { GetKeysUseCase(get()) }
 
-        single { MainInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
+        single { MainInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     }
 }

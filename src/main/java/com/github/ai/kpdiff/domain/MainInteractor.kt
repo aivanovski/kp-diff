@@ -5,6 +5,7 @@ import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputPrinter
+import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
@@ -20,6 +21,7 @@ class MainInteractor(
     private val readPasswordUseCase: ReadPasswordUseCase,
     private val printHelpUseCase: PrintHelpUseCase,
     private val printVersionUseCase: PrintVersionUseCase,
+    private val getKeysUseCase: GetKeysUseCase,
     private val dbFactory: KeepassDatabaseFactory,
     private val differ: DatabaseDiffer,
     private val diffFormatter: DiffFormatter,
@@ -45,7 +47,7 @@ class MainInteractor(
 
         val parsedArgs = args.unwrap()
 
-        val keys = getKeys(parsedArgs)
+        val keys = getKeysUseCase.getKeys(parsedArgs)
         if (keys.isLeft()) {
             return keys.mapToLeft()
         }
@@ -72,49 +74,5 @@ class MainInteractor(
         diffLines.forEach { printer.printLine(it) }
 
         return Either.Right(Unit)
-    }
-
-    private fun getKeys(args: Arguments): Either<Pair<KeepassKey, KeepassKey>> {
-        if (args.isUseOnePassword) {
-            val password = readPasswordUseCase.readPassword(
-                listOf(args.leftPath, args.rightPath)
-            )
-            if (password.isLeft()) {
-                return password.mapToLeft()
-            }
-
-            return Either.Right(
-                Pair(
-                    PasswordKey(password.unwrap()),
-                    PasswordKey(password.unwrap())
-                )
-            )
-        }
-
-        val leftKeyPath = args.keyPath ?: args.leftKeyPath
-        val rightKeyPath = args.keyPath ?: args.rightKeyPath
-
-        val keys = mutableListOf<KeepassKey>()
-        val pathToKeyPathPairs = listOf(
-            Pair(args.leftPath, leftKeyPath),
-            Pair(args.rightPath, rightKeyPath)
-        )
-
-        for ((path, keyPath) in pathToKeyPathPairs) {
-            if (keyPath != null) {
-                keys.add(FileKey(keyPath))
-            } else {
-                val password = readPasswordUseCase.readPassword(listOf(path))
-                if (password.isLeft()) {
-                    return password.mapToLeft()
-                }
-
-                keys.add(PasswordKey(password.unwrap()))
-            }
-        }
-
-        return Either.Right(
-            Pair(keys[0], keys[1])
-        )
     }
 }
