@@ -1,28 +1,19 @@
 package com.github.ai.kpdiff.domain
 
-import com.github.ai.kpdiff.data.keepass.KeepassDatabaseFactory
 import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputPrinter
-import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
-import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
-import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
-import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
-import com.github.ai.kpdiff.entity.Arguments
+import com.github.ai.kpdiff.domain.usecases.*
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.Either
-import com.github.ai.kpdiff.entity.KeepassKey
-import com.github.ai.kpdiff.entity.KeepassKey.FileKey
-import com.github.ai.kpdiff.entity.KeepassKey.PasswordKey
 
 class MainInteractor(
     private val argumentParser: ArgumentParser,
-    private val readPasswordUseCase: ReadPasswordUseCase,
     private val printHelpUseCase: PrintHelpUseCase,
     private val printVersionUseCase: PrintVersionUseCase,
     private val getKeysUseCase: GetKeysUseCase,
-    private val dbFactory: KeepassDatabaseFactory,
+    private val openDatabasesUseCase: OpenDatabasesUseCase,
     private val differ: DatabaseDiffer,
     private val diffFormatter: DiffFormatter,
     private val printer: OutputPrinter
@@ -54,19 +45,18 @@ class MainInteractor(
 
         val (lhsKey, rhsKey) = keys.unwrap()
 
-        val lhsDb = dbFactory.createDatabase(parsedArgs.leftPath, lhsKey)
-        if (lhsDb.isLeft()) {
-            return lhsDb.mapToLeft()
+        val databases = openDatabasesUseCase.openDatabases(
+            leftPath = parsedArgs.leftPath,
+            leftKey = lhsKey,
+            rightPath = parsedArgs.rightPath,
+            rightKey = rhsKey
+        )
+        if (databases.isLeft()) {
+            return databases.mapToLeft()
         }
 
-        val rhsDb = dbFactory.createDatabase(parsedArgs.rightPath, rhsKey)
-        if (rhsDb.isLeft()) {
-            return rhsDb.mapToLeft()
-        }
-
-        val lhs = lhsDb.unwrap()
-        val rhs = rhsDb.unwrap()
-        val diff = differ.getDiff(lhsDb.unwrap(), rhsDb.unwrap())
+        val (lhs, rhs) = databases.unwrap()
+        val diff = differ.getDiff(lhs, rhs)
         val formatterOptions = DiffFormatterOptions(
             isColorEnabled = !parsedArgs.isNoColoredOutput
         )
