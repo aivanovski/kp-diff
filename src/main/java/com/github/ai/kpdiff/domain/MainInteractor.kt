@@ -1,120 +1,71 @@
 package com.github.ai.kpdiff.domain
 
-import com.github.ai.kpdiff.data.keepass.KeepassDatabaseFactory
 import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
-import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputPrinter
+import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
+import com.github.ai.kpdiff.domain.usecases.OpenDatabasesUseCase
+import com.github.ai.kpdiff.domain.usecases.PrintDiffUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
-import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
-import com.github.ai.kpdiff.entity.Arguments
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.Either
-import com.github.ai.kpdiff.entity.KeepassKey
-import com.github.ai.kpdiff.entity.KeepassKey.FileKey
-import com.github.ai.kpdiff.entity.KeepassKey.PasswordKey
 
 class MainInteractor(
     private val argumentParser: ArgumentParser,
-    private val readPasswordUseCase: ReadPasswordUseCase,
     private val printHelpUseCase: PrintHelpUseCase,
     private val printVersionUseCase: PrintVersionUseCase,
-    private val dbFactory: KeepassDatabaseFactory,
+    private val getKeysUseCase: GetKeysUseCase,
+    private val openDatabasesUseCase: OpenDatabasesUseCase,
+    private val printDiffUseCase: PrintDiffUseCase,
     private val differ: DatabaseDiffer,
-    private val diffFormatter: DiffFormatter,
     private val printer: OutputPrinter
 ) {
 
     // TODO: write tests
     fun process(rawArgs: Array<String>): Either<Unit> {
-        if (printHelpUseCase.shouldPrintHelp(rawArgs)) {
-            printHelpUseCase.printHelp(printer)
-            return Either.Right(Unit)
-        }
-
-        if (printVersionUseCase.shouldPrintVersion(rawArgs)) {
-            printVersionUseCase.printVersion(printer)
-            return Either.Right(Unit)
-        }
-
         val args = argumentParser.parse(rawArgs)
         if (args.isLeft()) {
             return args.mapToLeft()
         }
 
         val parsedArgs = args.unwrap()
+        if (parsedArgs.isPrintHelp) {
+            printHelpUseCase.printHelp(printer)
+            return Either.Right(Unit)
+        }
 
-        val keys = getKeys(parsedArgs)
+        if (parsedArgs.isPrintVersion) {
+            printVersionUseCase.printVersion(printer)
+            return Either.Right(Unit)
+        }
+
+        val keys = getKeysUseCase.getKeys(parsedArgs)
         if (keys.isLeft()) {
             return keys.mapToLeft()
         }
 
         val (lhsKey, rhsKey) = keys.unwrap()
 
-        val lhsDb = dbFactory.createDatabase(parsedArgs.leftPath, lhsKey)
-        if (lhsDb.isLeft()) {
-            return lhsDb.mapToLeft()
-        }
-
-        val rhsDb = dbFactory.createDatabase(parsedArgs.rightPath, rhsKey)
-        if (rhsDb.isLeft()) {
-            return rhsDb.mapToLeft()
-        }
-
-        val lhs = lhsDb.unwrap()
-        val rhs = rhsDb.unwrap()
-        val diff = differ.getDiff(lhsDb.unwrap(), rhsDb.unwrap())
-        val formatterOptions = DiffFormatterOptions(
-            isColorEnabled = !parsedArgs.isNoColoredOutput
+        val databases = openDatabasesUseCase.openDatabases(
+            leftPath = parsedArgs.leftPath,
+            leftKey = lhsKey,
+            rightPath = parsedArgs.rightPath,
+            rightKey = rhsKey
         )
-        val diffLines = diffFormatter.format(diff, lhs, rhs, formatterOptions)
-        diffLines.forEach { printer.printLine(it) }
+        if (databases.isLeft()) {
+            return databases.mapToLeft()
+        }
+
+        val (lhs, rhs) = databases.unwrap()
+        val diff = differ.getDiff(lhs, rhs)
+        printDiffUseCase.printDiff(
+            diff = diff,
+            options = DiffFormatterOptions(
+                isColorEnabled = !parsedArgs.isNoColoredOutput
+            )
+        )
 
         return Either.Right(Unit)
-    }
-
-    private fun getKeys(args: Arguments): Either<Pair<KeepassKey, KeepassKey>> {
-        if (args.isUseOnePassword) {
-            val password = readPasswordUseCase.readPassword(
-                listOf(args.leftPath, args.rightPath)
-            )
-            if (password.isLeft()) {
-                return password.mapToLeft()
-            }
-
-            return Either.Right(
-                Pair(
-                    PasswordKey(password.unwrap()),
-                    PasswordKey(password.unwrap())
-                )
-            )
-        }
-
-        val leftKeyPath = args.keyPath ?: args.leftKeyPath
-        val rightKeyPath = args.keyPath ?: args.rightKeyPath
-
-        val keys = mutableListOf<KeepassKey>()
-        val pathToKeyPathPairs = listOf(
-            Pair(args.leftPath, leftKeyPath),
-            Pair(args.rightPath, rightKeyPath)
-        )
-
-        for ((path, keyPath) in pathToKeyPathPairs) {
-            if (keyPath != null) {
-                keys.add(FileKey(keyPath))
-            } else {
-                val password = readPasswordUseCase.readPassword(listOf(path))
-                if (password.isLeft()) {
-                    return password.mapToLeft()
-                }
-
-                keys.add(PasswordKey(password.unwrap()))
-            }
-        }
-
-        return Either.Right(
-            Pair(keys[0], keys[1])
-        )
     }
 }

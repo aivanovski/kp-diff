@@ -1,15 +1,13 @@
 package com.github.ai.kpdiff.domain.diff
 
 import com.github.ai.kpdiff.entity.DatabaseEntity
-import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
+import com.github.ai.kpdiff.entity.DiffResult
 import com.github.ai.kpdiff.entity.KeepassDatabase
 
 interface DiffFormatter {
     fun format(
-        diff: List<DiffEvent<DatabaseEntity>>,
-        lhs: KeepassDatabase,
-        rhs: KeepassDatabase,
+        diff: DiffResult<KeepassDatabase, DatabaseEntity>,
         options: DiffFormatterOptions
     ): List<String>
 }

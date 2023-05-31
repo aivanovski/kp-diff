@@ -3,12 +3,12 @@ package com.github.ai.kpdiff.domain.argument
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.domain.Strings.FILE_DOES_NOT_EXIST
 import com.github.ai.kpdiff.domain.Strings.MISSING_ARGUMENT
-import com.github.ai.kpdiff.domain.Strings.NO_ARGUMENTS_FOUND
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_ARGUMENT
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_OPTION
 import com.github.ai.kpdiff.entity.Arguments
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.exception.ParsingException
+import com.github.ai.kpdiff.utils.StringUtils.EMPTY
 import java.util.LinkedList
 
 class ArgumentParser(
@@ -18,16 +18,30 @@ class ArgumentParser(
     fun parse(args: Array<String>): Either<Arguments> {
         val queue = LinkedList(args.toList())
         if (args.isEmpty()) {
-            return Either.Left(ParsingException(NO_ARGUMENTS_FOUND))
+            return Either.Right(
+                Arguments(
+                    leftPath = EMPTY,
+                    rightPath = EMPTY,
+                    keyPath = null,
+                    leftKeyPath = null,
+                    rightKeyPath = null,
+                    isUseOnePassword = false,
+                    isNoColoredOutput = false,
+                    isPrintHelp = true,
+                    isPrintVersion = false
+                )
+            )
         }
 
         var leftPath: String? = null
         var rightPath: String? = null
-        var isUseOnePassword = false
-        var isNoColoredOutput = false
         var keyPath: String? = null
         var leftKeyPath: String? = null
         var rightKeyPath: String? = null
+        var isUseOnePassword = false
+        var isNoColoredOutput = false
+        var isPrintHelp = false
+        var isPrintVersion = false
 
         while (queue.isNotEmpty()) {
             val arg = queue.poll()
@@ -38,6 +52,12 @@ class ArgumentParser(
                     }
                     OptionalArgument.NO_COLOR -> {
                         isNoColoredOutput = true
+                    }
+                    OptionalArgument.HELP -> {
+                        isPrintHelp = true
+                    }
+                    OptionalArgument.VERSION -> {
+                        isPrintVersion = true
                     }
                     OptionalArgument.KEY_FILE_A -> {
                         val path = checkPath(queue.poll())
@@ -96,23 +116,25 @@ class ArgumentParser(
             }
         }
 
-        if (leftPath == null) {
+        if (leftPath == null && !isPrintHelp && !isPrintVersion) {
             return missingArgumentError(ARGUMENT_FILE_A)
         }
 
-        if (rightPath == null) {
+        if (rightPath == null && !isPrintHelp && !isPrintVersion) {
             return missingArgumentError(ARGUMENT_FILE_B)
         }
 
         return Either.Right(
             Arguments(
-                leftPath = leftPath,
-                rightPath = rightPath,
-                isUseOnePassword = isUseOnePassword,
-                isNoColoredOutput = isNoColoredOutput,
+                leftPath = leftPath ?: EMPTY,
+                rightPath = rightPath ?: EMPTY,
                 keyPath = keyPath,
                 leftKeyPath = leftKeyPath,
-                rightKeyPath = rightKeyPath
+                rightKeyPath = rightKeyPath,
+                isUseOnePassword = isUseOnePassword,
+                isNoColoredOutput = isNoColoredOutput,
+                isPrintHelp = isPrintHelp,
+                isPrintVersion = isPrintVersion
             )
         )
     }
@@ -145,6 +167,9 @@ class ArgumentParser(
         private val OPTIONAL_ARGUMENTS_MAP = mapOf(
             OptionalArgument.HELP.cliShortName to OptionalArgument.HELP,
             OptionalArgument.HELP.cliFullName to OptionalArgument.HELP,
+
+            OptionalArgument.VERSION.cliShortName to OptionalArgument.VERSION,
+            OptionalArgument.VERSION.cliFullName to OptionalArgument.VERSION,
 
             OptionalArgument.ONE_PASSWORD.cliShortName to OptionalArgument.ONE_PASSWORD,
             OptionalArgument.ONE_PASSWORD.cliFullName to OptionalArgument.ONE_PASSWORD,

@@ -30,13 +30,17 @@ internal class DatabaseDifferImplTest {
         val diff = DatabaseDifferImpl().getDiff(lhs, rhs)
 
         // assert
-        diff.size shouldBe 5
+        diff.lhs shouldBe lhs
+        diff.rhs shouldBe rhs
 
-        val first = diff[0]
-        val second = diff[1]
-        val third = diff[2]
-        val fourth = diff[3]
-        val fifth = diff[4]
+        val events = diff.events
+        events.size shouldBe 5
+
+        val first = events[0]
+        val second = events[1]
+        val third = events[2]
+        val fourth = events[3]
+        val fifth = events[4]
 
         first.shouldBeInstanceOf<DiffEvent.Insert<GroupEntity>>()
         first.node.value.name shouldBe "Inner group 3"

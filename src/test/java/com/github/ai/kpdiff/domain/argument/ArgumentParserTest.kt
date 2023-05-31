@@ -8,7 +8,6 @@ import com.github.ai.kpdiff.TestData.RIGHT_KEY_PATH
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.domain.Strings.FILE_DOES_NOT_EXIST
 import com.github.ai.kpdiff.domain.Strings.MISSING_ARGUMENT
-import com.github.ai.kpdiff.domain.Strings.NO_ARGUMENTS_FOUND
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_ARGUMENT
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_OPTION
 import com.github.ai.kpdiff.domain.argument.ArgumentParser.Companion.ARGUMENT_FILE_A
@@ -17,6 +16,7 @@ import com.github.ai.kpdiff.domain.argument.ArgumentParserTest.Side.BOTH
 import com.github.ai.kpdiff.domain.argument.ArgumentParserTest.Side.LEFT
 import com.github.ai.kpdiff.domain.argument.ArgumentParserTest.Side.RIGHT
 import com.github.ai.kpdiff.entity.Arguments
+import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.exception.ParsingException
 import com.github.ai.kpdiff.testUtils.MockedFileSystemProvider
 import com.github.ai.kpdiff.utils.StringUtils.EMPTY
@@ -42,26 +42,24 @@ internal class ArgumentParserTest {
     }
 
     @Test
-    fun `parse should return error if no arguments provided`() {
+    fun `parse should set isPrintHelp if no arguments provided`() {
         // arrange
-        val message = NO_ARGUMENTS_FOUND
+        val expected = newArguments(isPrintHelp = true)
 
         // act
         val result = ArgumentParser(newEmptyProvider())
             .parse(emptyArray())
 
         // assert
-        result.isLeft() shouldBe true
-        result.unwrapError() should beInstanceOf<ParsingException>()
-        result.unwrapError().message shouldBe message
+        result shouldBe Either.Right(expected)
     }
 
     @Test
-    fun `parse should return error if right left is not specified`() {
+    fun `parse should return error if left file is not specified`() {
         // arrange
         val message = String.format(MISSING_ARGUMENT, ARGUMENT_FILE_A)
         val args = arrayOf(
-            OptionalArgument.HELP.cliFullName
+            OptionalArgument.ONE_PASSWORD.cliFullName
         )
 
         // act
@@ -166,40 +164,40 @@ internal class ArgumentParserTest {
 
     @Test
     fun `parse should return arguments if --help is specified`() {
-        // arrange
-        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
-        val args = arrayOf(
-            LEFT_FILE_PATH,
-            RIGHT_FILE_PATH,
-            OptionalArgument.HELP.cliFullName
-        )
+        listOf(
+            OptionalArgument.HELP.cliFullName,
+            OptionalArgument.HELP.cliShortName
+        ).forEach { argumentName ->
+            // arrange
+            val expected = newArguments(isPrintHelp = true)
+            val args = arrayOf(argumentName)
 
-        // act
-        val result = ArgumentParser(newMockedProviderWithAllFiles())
-            .parse(args)
+            // act
+            val result = ArgumentParser(newMockedProviderWithAllFiles())
+                .parse(args)
 
-        // assert
-        result.isRight() shouldBe true
-        result.unwrap() shouldBe expected
+            // assert
+            result shouldBe Either.Right(expected)
+        }
     }
 
     @Test
-    fun `parse should return arguments if -h is specified`() {
-        // arrange
-        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
-        val args = arrayOf(
-            LEFT_FILE_PATH,
-            RIGHT_FILE_PATH,
-            OptionalArgument.HELP.cliShortName
-        )
+    fun `parse should return arguments if --version is specified`() {
+        listOf(
+            OptionalArgument.VERSION.cliFullName,
+            OptionalArgument.VERSION.cliShortName
+        ).forEach { argumentName ->
+            // arrange
+            val expected = newArguments(isPrintVersion = true)
+            val args = arrayOf(argumentName)
 
-        // act
-        val result = ArgumentParser(newMockedProviderWithAllFiles())
-            .parse(args)
+            // act
+            val result = ArgumentParser(newMockedProviderWithAllFiles())
+                .parse(args)
 
-        // assert
-        result.isRight() shouldBe true
-        result.unwrap() shouldBe expected
+            // assert
+            result shouldBe Either.Right(expected)
+        }
     }
 
     @Test
@@ -345,20 +343,24 @@ internal class ArgumentParserTest {
     private fun newArguments(
         leftPath: String = EMPTY,
         rightPath: String = EMPTY,
-        isUseOnePassword: Boolean = false,
-        isNoColoredOutput: Boolean = false,
         keyPath: String? = null,
         leftKeyPath: String? = null,
-        rightKeyPath: String? = null
+        rightKeyPath: String? = null,
+        isUseOnePassword: Boolean = false,
+        isNoColoredOutput: Boolean = false,
+        isPrintHelp: Boolean = false,
+        isPrintVersion: Boolean = false
     ): Arguments {
         return Arguments(
-            leftPath,
-            rightPath,
-            isUseOnePassword,
-            isNoColoredOutput,
-            keyPath,
-            leftKeyPath,
-            rightKeyPath
+            leftPath = leftPath,
+            rightPath = rightPath,
+            keyPath = keyPath,
+            leftKeyPath = leftKeyPath,
+            rightKeyPath = rightKeyPath,
+            isUseOnePassword = isUseOnePassword,
+            isNoColoredOutput = isNoColoredOutput,
+            isPrintHelp = isPrintHelp,
+            isPrintVersion = isPrintVersion
         )
     }
 

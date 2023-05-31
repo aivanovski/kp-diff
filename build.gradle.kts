@@ -90,7 +90,8 @@ tasks {
 
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-engine:5.5.2")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.3")
+    testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.2")
+    testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.2")
     testImplementation("io.mockk:mockk:1.12.3")
 
     implementation("io.insert-koin:koin-core:3.1.5")
