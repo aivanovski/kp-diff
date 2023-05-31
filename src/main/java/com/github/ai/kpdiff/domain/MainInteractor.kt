@@ -2,10 +2,10 @@ package com.github.ai.kpdiff.domain
 
 import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
-import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
 import com.github.ai.kpdiff.domain.usecases.OpenDatabasesUseCase
+import com.github.ai.kpdiff.domain.usecases.PrintDiffUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
@@ -17,8 +17,8 @@ class MainInteractor(
     private val printVersionUseCase: PrintVersionUseCase,
     private val getKeysUseCase: GetKeysUseCase,
     private val openDatabasesUseCase: OpenDatabasesUseCase,
+    private val printDiffUseCase: PrintDiffUseCase,
     private val differ: DatabaseDiffer,
-    private val diffFormatter: DiffFormatter,
     private val printer: OutputPrinter
 ) {
 
@@ -60,11 +60,12 @@ class MainInteractor(
 
         val (lhs, rhs) = databases.unwrap()
         val diff = differ.getDiff(lhs, rhs)
-        val formatterOptions = DiffFormatterOptions(
-            isColorEnabled = !parsedArgs.isNoColoredOutput
+        printDiffUseCase.printDiff(
+            diff = diff,
+            options = DiffFormatterOptions(
+                isColorEnabled = !parsedArgs.isNoColoredOutput
+            )
         )
-        val diffLines = diffFormatter.format(diff, formatterOptions)
-        diffLines.forEach { printer.printLine(it) }
 
         return Either.Right(Unit)
     }
