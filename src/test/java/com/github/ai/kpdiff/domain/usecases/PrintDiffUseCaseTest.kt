@@ -1,21 +1,14 @@
 package com.github.ai.kpdiff.domain.usecases
 
-import com.github.ai.kpdiff.TestData
-import com.github.ai.kpdiff.TestData.TITLE
-import com.github.ai.kpdiff.TestData.UUID1
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.DiffResult
-import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.EntryEntity.Companion.PROPERTY_TITLE
 import com.github.ai.kpdiff.entity.KeepassDatabase
-import com.github.ai.kpdiff.entity.Node
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import io.mockk.verifySequence
 import org.junit.jupiter.api.Test
 

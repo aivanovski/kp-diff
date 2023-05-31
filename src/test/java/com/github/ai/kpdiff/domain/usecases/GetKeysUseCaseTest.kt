@@ -137,10 +137,10 @@ class GetKeysUseCaseTest {
     private fun newArgs(
         leftPath: String = LEFT_FILE_PATH,
         rightPath: String = RIGHT_FILE_PATH,
-        isUseOnePassword: Boolean = false,
         keyPath: String? = null,
         leftKeyPath: String? = null,
-        rightKeyPath: String? = null
+        rightKeyPath: String? = null,
+        isUseOnePassword: Boolean = false
     ): Arguments {
         return Arguments(
             leftPath = leftPath,
@@ -149,7 +149,9 @@ class GetKeysUseCaseTest {
             isNoColoredOutput = false,
             keyPath = keyPath,
             leftKeyPath = leftKeyPath,
-            rightKeyPath = rightKeyPath
+            rightKeyPath = rightKeyPath,
+            isPrintHelp = false,
+            isPrintVersion = false
         )
     }
 

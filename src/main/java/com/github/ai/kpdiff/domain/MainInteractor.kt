@@ -24,22 +24,21 @@ class MainInteractor(
 
     // TODO: write tests
     fun process(rawArgs: Array<String>): Either<Unit> {
-        if (printHelpUseCase.shouldPrintHelp(rawArgs)) {
-            printHelpUseCase.printHelp(printer)
-            return Either.Right(Unit)
-        }
-
-        if (printVersionUseCase.shouldPrintVersion(rawArgs)) {
-            printVersionUseCase.printVersion(printer)
-            return Either.Right(Unit)
-        }
-
         val args = argumentParser.parse(rawArgs)
         if (args.isLeft()) {
             return args.mapToLeft()
         }
 
         val parsedArgs = args.unwrap()
+        if (parsedArgs.isPrintHelp) {
+            printHelpUseCase.printHelp(printer)
+            return Either.Right(Unit)
+        }
+
+        if (parsedArgs.isPrintVersion) {
+            printVersionUseCase.printVersion(printer)
+            return Either.Right(Unit)
+        }
 
         val keys = getKeysUseCase.getKeys(parsedArgs)
         if (keys.isLeft()) {
