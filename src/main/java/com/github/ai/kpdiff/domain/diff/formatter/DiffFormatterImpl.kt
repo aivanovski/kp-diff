@@ -5,6 +5,7 @@ import com.github.ai.kpdiff.domain.diff.formatter.TerminalOutputFormatter.Color
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
+import com.github.ai.kpdiff.entity.DiffResult
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
@@ -29,21 +30,19 @@ class DiffFormatterImpl(
     }
 
     override fun format(
-        diff: List<DiffEvent<DatabaseEntity>>,
-        lhs: KeepassDatabase,
-        rhs: KeepassDatabase,
+        diff: DiffResult<KeepassDatabase, DatabaseEntity>,
         options: DiffFormatterOptions
     ): List<String> {
-        val lhsGroupMap = lhs.buildAllGroupMap()
-        val lhsEntryMap = lhs.buildAllEntryMap()
-        val lhsUuidToParentMap = lhs.buildUuidToParentMap()
+        val lhsGroupMap = diff.lhs.buildAllGroupMap()
+        val lhsEntryMap = diff.lhs.buildAllEntryMap()
+        val lhsUuidToParentMap = diff.lhs.buildUuidToParentMap()
 
-        val rhsGroupMap = rhs.buildAllGroupMap()
-        val rhsEntryMap = rhs.buildAllEntryMap()
-        val rhsUuidToParentMap = rhs.buildUuidToParentMap()
+        val rhsGroupMap = diff.rhs.buildAllGroupMap()
+        val rhsEntryMap = diff.rhs.buildAllEntryMap()
+        val rhsUuidToParentMap = diff.rhs.buildUuidToParentMap()
 
         val eventsByParentUuid = LinkedHashMap<UUID?, MutableList<DiffEvent<DatabaseEntity>>>()
-        for (event in diff) {
+        for (event in diff.events) {
             val node = event.getNode()
 
             when (val value = node.value) {

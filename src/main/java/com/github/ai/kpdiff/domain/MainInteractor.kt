@@ -63,7 +63,7 @@ class MainInteractor(
         val formatterOptions = DiffFormatterOptions(
             isColorEnabled = !parsedArgs.isNoColoredOutput
         )
-        val diffLines = diffFormatter.format(diff, lhs, rhs, formatterOptions)
+        val diffLines = diffFormatter.format(diff, formatterOptions)
         diffLines.forEach { printer.printLine(it) }
 
         return Either.Right(Unit)
