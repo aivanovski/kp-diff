@@ -1,3 +1,5 @@
+![https://github.com/aivanovski/kp-diff/workflows/Build/badge.svg](https://github.com/aivanovski/kp-diff/workflows/Build/badge.svg) ![Coverage](.github/badges/jacoco.svg)
+
 # kp-diff
 **kp-diff** is a CLI utility that compares and prints diff for Keepass database files.
 
