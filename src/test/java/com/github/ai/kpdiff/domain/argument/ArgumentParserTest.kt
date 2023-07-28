@@ -201,6 +201,29 @@ internal class ArgumentParserTest {
     }
 
     @Test
+    fun `parse should return arguments if --verbose is specified`() {
+        listOf(
+            OptionalArgument.VERBOSE.cliFullName,
+            OptionalArgument.VERBOSE.cliShortName
+        ).forEach { argumentName ->
+            // arrange
+            val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH, isVerboseOutput = true)
+            val args = arrayOf(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                argumentName
+            )
+
+            // act
+            val result = ArgumentParser(newMockedProviderWithAllFiles())
+                .parse(args)
+
+            // assert
+            result shouldBe Either.Right(expected)
+        }
+    }
+
+    @Test
     fun `parse should return arguments if --one-password is specified`() {
         // arrange
         val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH, isUseOnePassword = true)
@@ -349,7 +372,8 @@ internal class ArgumentParserTest {
         isUseOnePassword: Boolean = false,
         isNoColoredOutput: Boolean = false,
         isPrintHelp: Boolean = false,
-        isPrintVersion: Boolean = false
+        isPrintVersion: Boolean = false,
+        isVerboseOutput: Boolean = false
     ): Arguments {
         return Arguments(
             leftPath = leftPath,
@@ -360,7 +384,8 @@ internal class ArgumentParserTest {
             isUseOnePassword = isUseOnePassword,
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,
-            isPrintVersion = isPrintVersion
+            isPrintVersion = isPrintVersion,
+            isVerboseOutput = isVerboseOutput
         )
     }
 

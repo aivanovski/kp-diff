@@ -62,7 +62,8 @@ class MainInteractor(
         printDiffUseCase.printDiff(
             diff = diff,
             options = DiffFormatterOptions(
-                isColorEnabled = !parsedArgs.isNoColoredOutput
+                isColorEnabled = !parsedArgs.isNoColoredOutput,
+                isVerboseOutput = parsedArgs.isVerboseOutput
             )
         )
 

@@ -186,7 +186,8 @@ class MainInteractorTest {
             isUseOnePassword = false,
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,
-            isPrintVersion = isPrintVersion
+            isPrintVersion = isPrintVersion,
+            isVerboseOutput = false
         )
 
     private fun newInteractor(): MainInteractor =

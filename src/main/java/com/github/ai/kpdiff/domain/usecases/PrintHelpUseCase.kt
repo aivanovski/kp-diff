@@ -32,7 +32,8 @@ class PrintHelpUseCase(
                 -k, --key-file                   Path to key file for <FILE-A> and <FILE-B>
                 -a, --key-file-a                 Path to key file for <FILE-A>
                 -b, --key-file-b                 Path to key file for <FILE-B>
-                -v, --version                    Print version
+                -v, --verbose                    Print verbose output (entry fields will be printed)
+                -V, --version                    Print version
                 -h, --help                       Print help information
         """.trimIndent()
     }
