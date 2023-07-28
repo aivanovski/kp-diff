@@ -28,7 +28,8 @@ class ArgumentParser(
                     isUseOnePassword = false,
                     isNoColoredOutput = false,
                     isPrintHelp = true,
-                    isPrintVersion = false
+                    isPrintVersion = false,
+                    isVerboseOutput = false
                 )
             )
         }
@@ -42,6 +43,7 @@ class ArgumentParser(
         var isNoColoredOutput = false
         var isPrintHelp = false
         var isPrintVersion = false
+        var isVerboseOutput = false
 
         while (queue.isNotEmpty()) {
             val arg = queue.poll()
@@ -58,6 +60,9 @@ class ArgumentParser(
                     }
                     OptionalArgument.VERSION -> {
                         isPrintVersion = true
+                    }
+                    OptionalArgument.VERBOSE -> {
+                        isVerboseOutput = true
                     }
                     OptionalArgument.KEY_FILE_A -> {
                         val path = checkPath(queue.poll())
@@ -134,7 +139,8 @@ class ArgumentParser(
                 isUseOnePassword = isUseOnePassword,
                 isNoColoredOutput = isNoColoredOutput,
                 isPrintHelp = isPrintHelp,
-                isPrintVersion = isPrintVersion
+                isPrintVersion = isPrintVersion,
+                isVerboseOutput = isVerboseOutput
             )
         )
     }
@@ -184,7 +190,10 @@ class ArgumentParser(
             OptionalArgument.KEY_FILE.cliFullName to OptionalArgument.KEY_FILE,
 
             OptionalArgument.NO_COLOR.cliShortName to OptionalArgument.NO_COLOR,
-            OptionalArgument.NO_COLOR.cliFullName to OptionalArgument.NO_COLOR
+            OptionalArgument.NO_COLOR.cliFullName to OptionalArgument.NO_COLOR,
+
+            OptionalArgument.VERBOSE.cliShortName to OptionalArgument.VERBOSE,
+            OptionalArgument.VERBOSE.cliFullName to OptionalArgument.VERBOSE
         )
     }
 }

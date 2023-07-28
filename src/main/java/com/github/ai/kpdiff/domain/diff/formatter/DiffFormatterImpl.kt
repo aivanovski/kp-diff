@@ -14,10 +14,11 @@ import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.entity.Parent
 import com.github.ai.kpdiff.utils.getColor
 import com.github.ai.kpdiff.utils.getEntity
+import com.github.ai.kpdiff.utils.getFields
 import com.github.ai.kpdiff.utils.traverseByValueType
 import com.github.ai.kpdiff.utils.traverseWithParents
-import java.util.Comparator
 import java.util.UUID
+import kotlin.Comparator
 
 class DiffFormatterImpl(
     private val formatterProvider: EntityFormatterProvider,
@@ -28,6 +29,9 @@ class DiffFormatterImpl(
     private val comparator = Comparator<DiffEvent<DatabaseEntity>> { lhs, rhs ->
         lhs.sortOrder().compareTo(rhs.sortOrder())
     }
+
+    private val defaultFieldComparator = DefaultFieldComparator()
+    private val otherFieldComparator = NameFieldComparator()
 
     override fun format(
         diff: DiffResult<KeepassDatabase, DatabaseEntity>,
@@ -92,6 +96,11 @@ class DiffFormatterImpl(
             val entryIndent = INDENT.repeat(entryLevel)
             for (event in events) {
                 lines.add(formatEvent(event, entryIndent, options))
+
+                if (shouldPrintAdditionalInformation(event, options)) {
+                    val infoIndent = INDENT.repeat(entryLevel + 1)
+                    lines.addAll(formatAdditionalInformation(event, infoIndent, options))
+                }
             }
         }
 
@@ -224,6 +233,54 @@ class DiffFormatterImpl(
         )
     }
 
+    private fun shouldPrintAdditionalInformation(
+        event: DiffEvent<*>,
+        options: DiffFormatterOptions,
+    ): Boolean {
+        return options.isVerboseOutput &&
+            (event is DiffEvent.Insert || event is DiffEvent.Delete) &&
+            event.getEntity() is EntryEntity
+    }
+
+    private fun <T : DatabaseEntity> formatAdditionalInformation(
+        event: DiffEvent<T>,
+        indent: String,
+        options: DiffFormatterOptions
+    ): List<String> {
+        val entity = event.getEntity()
+        if (entity !is EntryEntity) {
+            return emptyList()
+        }
+
+        if (event !is DiffEvent.Insert && event !is DiffEvent.Delete) {
+            return emptyList()
+        }
+
+        val result = mutableListOf<String>()
+
+        val allFields = entity.getFields()
+
+        val defaultFields = allFields.filter { field -> field.isDefault() }
+            .sortedWith(defaultFieldComparator)
+
+        val otherFields = allFields.filter { field -> !field.isDefault() }
+            .sortedWith(otherFieldComparator)
+
+        for (field in (defaultFields + otherFields)) {
+            val node = Node(field.uuid, field)
+
+            val newEvent = if (event is DiffEvent.Insert) {
+                DiffEvent.Insert(node)
+            } else {
+                DiffEvent.Delete(node)
+            }
+
+            result.add(formatEvent(newEvent, indent, options))
+        }
+
+        return result
+    }
+
     private fun <T : Any> DiffEvent<T>.getNode(): Node<T> {
         return when (this) {
             is DiffEvent.Insert -> node
@@ -273,6 +330,24 @@ class DiffFormatterImpl(
         }
     }
 
+    private fun FieldEntity.isDefault(): Boolean {
+        return DEFAULT_PROPERTIES.contains(this.name)
+    }
+
+    class NameFieldComparator : Comparator<FieldEntity> {
+        override fun compare(lhs: FieldEntity, rhs: FieldEntity): Int {
+            return lhs.name.compareTo(rhs.name)
+        }
+    }
+
+    class DefaultFieldComparator : Comparator<FieldEntity> {
+        override fun compare(lhs: FieldEntity, rhs: FieldEntity): Int {
+            val lhsOrder = DEFAULT_PROPERTIES_ORDER[lhs.name]
+            val rhsOrder = DEFAULT_PROPERTIES_ORDER[rhs.name]
+            return (lhsOrder ?: 0).compareTo(rhsOrder ?: 0)
+        }
+    }
+
     enum class OriginType {
         LEFT,
         RIGHT
@@ -280,5 +355,21 @@ class DiffFormatterImpl(
 
     companion object {
         private const val INDENT = "    "
+
+        private val DEFAULT_PROPERTIES_ORDER = mapOf(
+            EntryEntity.PROPERTY_TITLE to 1,
+            EntryEntity.PROPERTY_USERNAME to 2,
+            EntryEntity.PROPERTY_PASSWORD to 3,
+            EntryEntity.PROPERTY_URL to 4,
+            EntryEntity.PROPERTY_NOTES to 5
+        )
+
+        private val DEFAULT_PROPERTIES = setOf(
+            EntryEntity.PROPERTY_TITLE,
+            EntryEntity.PROPERTY_USERNAME,
+            EntryEntity.PROPERTY_PASSWORD,
+            EntryEntity.PROPERTY_URL,
+            EntryEntity.PROPERTY_NOTES
+        )
     }
 }

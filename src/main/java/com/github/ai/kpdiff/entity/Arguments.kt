@@ -9,5 +9,6 @@ data class Arguments(
     val isUseOnePassword: Boolean,
     val isNoColoredOutput: Boolean,
     val isPrintHelp: Boolean,
-    val isPrintVersion: Boolean
+    val isPrintVersion: Boolean,
+    val isVerboseOutput: Boolean
 )
