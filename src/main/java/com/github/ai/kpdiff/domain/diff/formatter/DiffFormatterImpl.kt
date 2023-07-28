@@ -235,7 +235,7 @@ class DiffFormatterImpl(
 
     private fun shouldPrintAdditionalInformation(
         event: DiffEvent<*>,
-        options: DiffFormatterOptions,
+        options: DiffFormatterOptions
     ): Boolean {
         return options.isVerboseOutput &&
             (event is DiffEvent.Insert || event is DiffEvent.Delete) &&
