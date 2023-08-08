@@ -1,15 +1,15 @@
 package com.github.ai.kpdiff.domain.diff.simpleDiffer
 
 import com.github.ai.kpdiff.entity.DiffEvent
-import com.github.ai.kpdiff.entity.Node
+import com.github.ai.kpdiff.entity.BasicNode
 import com.github.ai.kpdiff.utils.traverse
 import java.util.UUID
 
 class SimpleDiffer {
 
     fun <T : Any> diff(
-        lhsRoot: Node<T>,
-        rhsRoot: Node<T>
+        lhsRoot: BasicNode<T>,
+        rhsRoot: BasicNode<T>
     ): List<DiffEvent<T>> {
         return diff(
             listOf(lhsRoot),
@@ -19,8 +19,8 @@ class SimpleDiffer {
     }
 
     fun <T : Any> diff(
-        lhsRoots: List<Node<T>>,
-        rhsRoots: List<Node<T>>,
+        lhsRoots: List<BasicNode<T>>,
+        rhsRoots: List<BasicNode<T>>,
         visited: MutableSet<UUID>
     ): List<DiffEvent<T>> {
         val lhsNodes = lhsRoots.flatMap { it.traverse() }
@@ -50,7 +50,13 @@ class SimpleDiffer {
                         patchList.add(DiffEvent.Update(lhs, rhs))
                     }
 
-                    patchList.addAll(diff(lhs.nodes, rhs.nodes, visited))
+                    patchList.addAll(
+                        diff(
+                            lhsRoots = lhs.nodes,
+                            rhsRoots = rhs.nodes,
+                            visited = visited
+                        )
+                    )
                 }
 
                 // item was removed

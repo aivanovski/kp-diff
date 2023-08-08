@@ -11,7 +11,7 @@ import com.github.ai.kpdiff.domain.diff.formatter.EntryEntityFormatter.Companion
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.EntryEntity.Companion.PROPERTY_TITLE
-import com.github.ai.kpdiff.entity.Node
+import com.github.ai.kpdiff.entity.BasicNode
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -22,7 +22,7 @@ internal class EntryEntityFormatterTest {
         val entry = newEntity()
 
         newFormatter().format(
-            DiffEvent.Delete(Node(entry.uuid, entry)),
+            DiffEvent.Delete(BasicNode(entry.uuid, entry)),
             INDENT_EMPTY
         ) shouldBe "- $ENTRY '$TITLE'"
     }
@@ -32,7 +32,7 @@ internal class EntryEntityFormatterTest {
         val entry = newEntity()
 
         newFormatter().format(
-            DiffEvent.Insert(Node(entry.uuid, entry)),
+            DiffEvent.Insert(BasicNode(entry.uuid, entry)),
             INDENT_EMPTY
         ) shouldBe "+ $ENTRY '$TITLE'"
     }
@@ -43,7 +43,7 @@ internal class EntryEntityFormatterTest {
         val newEntry = newEntity(TITLE2)
 
         newFormatter().format(
-            DiffEvent.Update(Node(oldEntry.uuid, oldEntry), Node(newEntry.uuid, newEntry)),
+            DiffEvent.Update(BasicNode(oldEntry.uuid, oldEntry), BasicNode(newEntry.uuid, newEntry)),
             INDENT_EMPTY
         ) shouldBe "~ $ENTRY '$TITLE2'"
     }
@@ -53,12 +53,12 @@ internal class EntryEntityFormatterTest {
         val entry = newEntity()
 
         newFormatter().format(
-            DiffEvent.Delete(Node(entry.uuid, entry)),
+            DiffEvent.Delete(BasicNode(entry.uuid, entry)),
             INDENT_SINGLE
         ) shouldBe "-$INDENT_SINGLE $ENTRY '$TITLE'"
 
         newFormatter().format(
-            DiffEvent.Delete(Node(entry.uuid, entry)),
+            DiffEvent.Delete(BasicNode(entry.uuid, entry)),
             INDENT_DOUBLE
         ) shouldBe "-$INDENT_DOUBLE $ENTRY '$TITLE'"
     }

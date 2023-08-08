@@ -1,21 +1,21 @@
 package com.github.ai.kpdiff.utils
 
-import com.github.ai.kpdiff.entity.Node
+import com.github.ai.kpdiff.entity.BasicNode
 import java.util.LinkedList
 import kotlin.reflect.KClass
 
-fun <T1 : Any, T2 : Any> Node<T1>.traverseByValueType(type: KClass<T2>): List<Node<T2>> {
-    val nodes = LinkedList<Node<T1>>()
+fun <T1 : Any, T2 : Any> BasicNode<T1>.traverseByValueType(type: KClass<T2>): List<BasicNode<T2>> {
+    val nodes = LinkedList<BasicNode<T1>>()
     nodes.add(this)
 
-    val result = mutableListOf<Node<T2>>()
+    val result = mutableListOf<BasicNode<T2>>()
     while (nodes.isNotEmpty()) {
         repeat(nodes.size) {
             val node = nodes.removeFirst()
 
             if (node.value::class.java === type.java) {
                 @Suppress("UNCHECKED_CAST")
-                result.add(node as Node<T2>)
+                result.add(node as BasicNode<T2>)
             }
 
             nodes.addAll(node.nodes)
@@ -25,11 +25,11 @@ fun <T1 : Any, T2 : Any> Node<T1>.traverseByValueType(type: KClass<T2>): List<No
     return result
 }
 
-fun <T : Any> Node<T>.traverseWithParents(): List<Pair<Node<T>?, Node<T>>> {
-    val nodes = LinkedList<Pair<Node<T>?, Node<T>>>()
+fun <T : Any> BasicNode<T>.traverseWithParents(): List<Pair<BasicNode<T>?, BasicNode<T>>> {
+    val nodes = LinkedList<Pair<BasicNode<T>?, BasicNode<T>>>()
     nodes.add(Pair(null, this))
 
-    val result = mutableListOf<Pair<Node<T>?, Node<T>>>()
+    val result = mutableListOf<Pair<BasicNode<T>?, BasicNode<T>>>()
     while (nodes.isNotEmpty()) {
         repeat(nodes.size) {
             val (parent, node) = nodes.removeFirst()
@@ -44,11 +44,11 @@ fun <T : Any> Node<T>.traverseWithParents(): List<Pair<Node<T>?, Node<T>>> {
     return result
 }
 
-fun <T : Any> Node<T>.traverse(): List<Node<T>> {
-    val nodes = LinkedList<Node<T>>()
+fun <T : Any> BasicNode<T>.traverse(): List<BasicNode<T>> {
+    val nodes = LinkedList<BasicNode<T>>()
     nodes.add(this)
 
-    val result = mutableListOf<Node<T>>()
+    val result = mutableListOf<BasicNode<T>>()
     while (nodes.isNotEmpty()) {
         repeat(nodes.size) {
             val node = nodes.removeFirst()

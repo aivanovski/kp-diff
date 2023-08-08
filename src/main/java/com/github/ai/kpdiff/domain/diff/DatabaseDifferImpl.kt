@@ -24,8 +24,11 @@ class DatabaseDifferImpl : DatabaseDiffer {
                 event.newNode.value is EntryEntity &&
                 event.oldNode.value is EntryEntity
             ) {
-                val lhsTree = event.oldNode.value.getFieldNodes()
-                val rhsTree = event.newNode.value.getFieldNodes()
+                val oldEntry = event.oldNode.value as EntryEntity
+                val newEntry = event.newNode.value as EntryEntity
+
+                val lhsTree = oldEntry.getFieldNodes()
+                val rhsTree = newEntry.getFieldNodes()
 
                 val entryDiff = differ.diff(lhsTree, rhsTree, HashSet())
 
