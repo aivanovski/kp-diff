@@ -4,7 +4,7 @@ import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassKey
-import com.github.ai.kpdiff.entity.BasicNode
+import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.testEntities.TestKeepassDatabase
 import com.github.ai.kpdiff.testEntities.TestKeepassEntry
 import com.github.ai.kpdiff.testEntities.TestKeepassGroup
@@ -25,8 +25,8 @@ fun TestKeepassDatabase.open(): KeePassDatabase {
 }
 
 @Suppress("UNCHECKED_CAST")
-fun BasicNode<DatabaseEntity>.isContentEquals(expected: TestKeepassDatabase): Boolean {
-    val leftGroups = LinkedList<BasicNode<DatabaseEntity>>()
+fun Node<DatabaseEntity>.isContentEquals(expected: TestKeepassDatabase): Boolean {
+    val leftGroups = LinkedList<Node<DatabaseEntity>>()
     leftGroups.add(this)
 
     val rightGroups = LinkedList<TestKeepassGroup>()
@@ -52,7 +52,7 @@ fun BasicNode<DatabaseEntity>.isContentEquals(expected: TestKeepassDatabase): Bo
 
         val entryNodes = left.nodes
             .filter { it.value is EntryEntity }
-            .map { it as BasicNode<EntryEntity> }
+            .map { it as Node<EntryEntity> }
 
         val groupNodes = left.nodes
             .filter { it.value is GroupEntity }
