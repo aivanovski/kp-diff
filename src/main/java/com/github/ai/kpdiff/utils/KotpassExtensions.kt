@@ -7,7 +7,7 @@ import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassKey
-import com.github.ai.kpdiff.entity.BasicNode
+import com.github.ai.kpdiff.entity.SimpleNode
 import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.github.anvell.kotpass.database.Credentials
 import io.github.anvell.kotpass.models.Entry
@@ -34,17 +34,17 @@ fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Cre
     }
 }
 
-fun Group.buildNodeTree(): BasicNode<DatabaseEntity> {
-    val root: BasicNode<DatabaseEntity> = BasicNode(uuid, this.toEntity())
+fun Group.buildNodeTree(): SimpleNode<DatabaseEntity> {
+    val root: SimpleNode<DatabaseEntity> = SimpleNode(uuid, this.toEntity())
 
-    val groups = LinkedList<Pair<BasicNode<DatabaseEntity>, Group>>()
+    val groups = LinkedList<Pair<SimpleNode<DatabaseEntity>, Group>>()
     groups.add(Pair(root, this))
 
     while (groups.isNotEmpty()) {
         val (node, group) = groups.poll()
 
         for (childGroup in group.groups) {
-            val childNode = BasicNode<DatabaseEntity>(childGroup.uuid, childGroup.toEntity())
+            val childNode = SimpleNode<DatabaseEntity>(childGroup.uuid, childGroup.toEntity())
 
             node.nodes.add(childNode)
             groups.push(Pair(childNode, childGroup))
@@ -52,7 +52,7 @@ fun Group.buildNodeTree(): BasicNode<DatabaseEntity> {
 
         for (entry in group.entries) {
             val entryUid = entry.uuid
-            val entryNode = BasicNode<DatabaseEntity>(entryUid, entry.toEntity())
+            val entryNode = SimpleNode<DatabaseEntity>(entryUid, entry.toEntity())
 
             node.nodes.add(entryNode)
         }
@@ -61,14 +61,14 @@ fun Group.buildNodeTree(): BasicNode<DatabaseEntity> {
     return root
 }
 
-fun EntryEntity.getFieldNodes(): List<BasicNode<DatabaseEntity>> {
-    val result = mutableListOf<BasicNode<DatabaseEntity>>()
+fun EntryEntity.getFieldNodes(): List<SimpleNode<DatabaseEntity>> {
+    val result = mutableListOf<SimpleNode<DatabaseEntity>>()
 
     for ((name, value) in this.properties) {
         // TODO: resolve hash collision
         val fieldUid = UUID(uuid.mostSignificantBits, name.hashCode().toLong())
         val field = FieldEntity(fieldUid, uuid, name, value)
-        val fieldNode = BasicNode<DatabaseEntity>(fieldUid, field)
+        val fieldNode = SimpleNode<DatabaseEntity>(fieldUid, field)
 
         result.add(fieldNode)
     }

@@ -10,7 +10,7 @@ import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
-import com.github.ai.kpdiff.entity.BasicNode
+import com.github.ai.kpdiff.entity.SimpleNode
 import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.entity.Parent
 import com.github.ai.kpdiff.utils.getColor
@@ -268,7 +268,7 @@ class DiffFormatterImpl(
             .sortedWith(otherFieldComparator)
 
         for (field in (defaultFields + otherFields)) {
-            val node = BasicNode(field.uuid, field)
+            val node = SimpleNode(field.uuid, field)
 
             val newEvent = if (event is DiffEvent.Insert) {
                 DiffEvent.Insert(node)

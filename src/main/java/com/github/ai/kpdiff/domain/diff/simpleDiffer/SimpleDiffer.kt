@@ -1,15 +1,15 @@
 package com.github.ai.kpdiff.domain.diff.simpleDiffer
 
 import com.github.ai.kpdiff.entity.DiffEvent
-import com.github.ai.kpdiff.entity.BasicNode
+import com.github.ai.kpdiff.entity.SimpleNode
 import com.github.ai.kpdiff.utils.traverse
 import java.util.UUID
 
 class SimpleDiffer {
 
     fun <T : Any> diff(
-        lhsRoot: BasicNode<T>,
-        rhsRoot: BasicNode<T>
+        lhsRoot: SimpleNode<T>,
+        rhsRoot: SimpleNode<T>
     ): List<DiffEvent<T>> {
         return diff(
             listOf(lhsRoot),
@@ -19,8 +19,8 @@ class SimpleDiffer {
     }
 
     fun <T : Any> diff(
-        lhsRoots: List<BasicNode<T>>,
-        rhsRoots: List<BasicNode<T>>,
+        lhsRoots: List<SimpleNode<T>>,
+        rhsRoots: List<SimpleNode<T>>,
         visited: MutableSet<UUID>
     ): List<DiffEvent<T>> {
         val lhsNodes = lhsRoots.flatMap { it.traverse() }

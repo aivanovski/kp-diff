@@ -13,7 +13,7 @@ import com.github.ai.kpdiff.domain.diff.formatter.FieldEntityFormatter.Companion
 import com.github.ai.kpdiff.domain.diff.formatter.FieldEntityFormatter.Companion.FIELD
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.FieldEntity
-import com.github.ai.kpdiff.entity.BasicNode
+import com.github.ai.kpdiff.entity.SimpleNode
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -24,7 +24,7 @@ internal class FieldEntityFormatterTest {
         val entity = newEntity()
 
         newFormatter().format(
-            DiffEvent.Delete(BasicNode(entity.uuid, entity)),
+            DiffEvent.Delete(SimpleNode(entity.uuid, entity)),
             INDENT_EMPTY
         ) shouldBe "- $FIELD '$NAME': '$VALUE'"
     }
@@ -34,7 +34,7 @@ internal class FieldEntityFormatterTest {
         val entity = newEntity()
 
         newFormatter().format(
-            DiffEvent.Insert(BasicNode(entity.uuid, entity)),
+            DiffEvent.Insert(SimpleNode(entity.uuid, entity)),
             INDENT_EMPTY
         ) shouldBe "+ $FIELD '$NAME': '$VALUE'"
     }
@@ -45,7 +45,7 @@ internal class FieldEntityFormatterTest {
         val newEntity = newEntity(value = VALUE2)
 
         newFormatter().format(
-            DiffEvent.Update(BasicNode(oldEntity.uuid, oldEntity), BasicNode(newEntity.uuid, newEntity)),
+            DiffEvent.Update(SimpleNode(oldEntity.uuid, oldEntity), SimpleNode(newEntity.uuid, newEntity)),
             INDENT_EMPTY
         ) shouldBe "~ $FIELD '$NAME': '$VALUE1' $CHANGED_TO '$VALUE2'"
     }
@@ -55,12 +55,12 @@ internal class FieldEntityFormatterTest {
         val entity = newEntity()
 
         newFormatter().format(
-            DiffEvent.Delete(BasicNode(entity.uuid, entity)),
+            DiffEvent.Delete(SimpleNode(entity.uuid, entity)),
             INDENT_SINGLE
         ) shouldBe "-$INDENT_SINGLE $FIELD '$NAME': '$VALUE'"
 
         newFormatter().format(
-            DiffEvent.Delete(BasicNode(entity.uuid, entity)),
+            DiffEvent.Delete(SimpleNode(entity.uuid, entity)),
             INDENT_DOUBLE
         ) shouldBe "-$INDENT_DOUBLE $FIELD '$NAME': '$VALUE'"
     }

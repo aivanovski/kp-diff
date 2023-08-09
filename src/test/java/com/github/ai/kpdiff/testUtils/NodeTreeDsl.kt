@@ -1,6 +1,6 @@
 package com.github.ai.kpdiff.testUtils
 
-import com.github.ai.kpdiff.entity.BasicNode
+import com.github.ai.kpdiff.entity.SimpleNode
 import java.util.UUID
 
 object NodeTreeDsl {
@@ -8,7 +8,7 @@ object NodeTreeDsl {
     fun <T : Any> tree(
         value: T,
         content: TreeBuilder<T>.() -> Unit
-    ): BasicNode<T> {
+    ): SimpleNode<T> {
         val root = TreeBuilder(createUuidFrom(value), value)
             .apply {
                 content.invoke(this)
@@ -23,7 +23,7 @@ object NodeTreeDsl {
         private val root: T
     ) {
 
-        private val nodes = mutableListOf<BasicNode<T>>()
+        private val nodes = mutableListOf<SimpleNode<T>>()
 
         fun node(value: T, content: (TreeBuilder<T>.() -> Unit)? = null) {
             node(createUuidFrom(value), value, content)
@@ -43,8 +43,8 @@ object NodeTreeDsl {
             nodes.add(node)
         }
 
-        fun build(): BasicNode<T> {
-            return BasicNode(rootUid, root, nodes)
+        fun build(): SimpleNode<T> {
+            return SimpleNode(rootUid, root, nodes)
         }
     }
 }

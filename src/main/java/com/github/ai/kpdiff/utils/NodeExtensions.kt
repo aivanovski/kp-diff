@@ -1,6 +1,6 @@
 package com.github.ai.kpdiff.utils
 
-import com.github.ai.kpdiff.entity.BasicNode
+import com.github.ai.kpdiff.entity.SimpleNode
 import com.github.ai.kpdiff.entity.Node
 import java.util.LinkedList
 import kotlin.reflect.KClass
@@ -45,11 +45,11 @@ fun <T : Any> Node<T>.traverseWithParents(): List<Pair<Node<T>?, Node<T>>> {
     return result
 }
 
-fun <T : Any> BasicNode<T>.traverse(): List<BasicNode<T>> {
-    val nodes = LinkedList<BasicNode<T>>()
+fun <T : Any> SimpleNode<T>.traverse(): List<SimpleNode<T>> {
+    val nodes = LinkedList<SimpleNode<T>>()
     nodes.add(this)
 
-    val result = mutableListOf<BasicNode<T>>()
+    val result = mutableListOf<SimpleNode<T>>()
     while (nodes.isNotEmpty()) {
         repeat(nodes.size) {
             val node = nodes.removeFirst()
@@ -65,26 +65,26 @@ fun <T : Any> BasicNode<T>.traverse(): List<BasicNode<T>> {
     return result
 }
 
-fun <T : Any> Node<T>.convertToBasicNodeTree(): BasicNode<T> {
-    val nodes = LinkedList<Pair<BasicNode<T>?, Node<T>>>()
+fun <T : Any> Node<T>.convertToBasicNodeTree(): SimpleNode<T> {
+    val nodes = LinkedList<Pair<SimpleNode<T>?, Node<T>>>()
     nodes.add(Pair(null, this))
 
-    var root: BasicNode<T>? = null
+    var root: SimpleNode<T>? = null
     while (nodes.isNotEmpty()) {
         val (parent, node) = nodes.removeFirst()
 
-        val basicNode = BasicNode(
+        val simpleNode = SimpleNode(
             uuid = node.uuid,
             value = node.value
         )
 
-        parent?.nodes?.add(basicNode)
+        parent?.nodes?.add(simpleNode)
         if (root == null) {
-            root = basicNode
+            root = simpleNode
         }
 
         for (childNode in node.nodes) {
-            nodes.add(Pair(basicNode, childNode))
+            nodes.add(Pair(simpleNode, childNode))
         }
     }
 
