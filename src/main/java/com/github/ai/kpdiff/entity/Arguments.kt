@@ -6,6 +6,7 @@ data class Arguments(
     val keyPath: String?,
     val leftKeyPath: String?,
     val rightKeyPath: String?,
+    val differType: DifferType?,
     val isUseOnePassword: Boolean,
     val isNoColoredOutput: Boolean,
     val isPrintHelp: Boolean,

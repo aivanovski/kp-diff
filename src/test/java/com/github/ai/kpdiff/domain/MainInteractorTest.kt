@@ -45,28 +45,33 @@ class MainInteractorTest {
 
     @Test
     fun `process should finish successfully`() {
-        // arrange
-        val args = newArgs()
-        val options = DiffFormatterOptions(isColorEnabled = !args.isNoColoredOutput)
-        every { argumentParser.parse(RAW_ARGS) }.returns(Either.Right(args))
-        every { getKeysUseCase.getKeys(args) }.returns(Either.Right(leftKey to rightKey))
-        every {
-            openDatabasesUseCase.openDatabases(
-                leftPath = args.leftPath,
-                leftKey = leftKey,
-                rightPath = args.rightPath,
-                rightKey = rightKey
-            )
-        }.returns(Either.Right(leftDb to rightDb))
-        every { differProvider.getDiffer(DifferType.PATH) }.returns(differ)
-        every { differ.getDiff(leftDb, rightDb) }.returns(diff)
-        every { printDiffUseCase.printDiff(diff, options) }.returns(Unit)
+        listOf(
+            DifferType.PATH,
+            DifferType.UUID
+        ).forEach { differType ->
+            // arrange
+            val args = newArgs(differType = differType)
+            val options = DiffFormatterOptions(isColorEnabled = !args.isNoColoredOutput)
+            every { argumentParser.parse(RAW_ARGS) }.returns(Either.Right(args))
+            every { getKeysUseCase.getKeys(args) }.returns(Either.Right(leftKey to rightKey))
+            every {
+                openDatabasesUseCase.openDatabases(
+                    leftPath = args.leftPath,
+                    leftKey = leftKey,
+                    rightPath = args.rightPath,
+                    rightKey = rightKey
+                )
+            }.returns(Either.Right(leftDb to rightDb))
+            every { differProvider.getDiffer(differType) }.returns(differ)
+            every { differ.getDiff(leftDb, rightDb) }.returns(diff)
+            every { printDiffUseCase.printDiff(diff, options) }.returns(Unit)
 
-        // act
-        val result = newInteractor().process(RAW_ARGS)
+            // act
+            val result = newInteractor().process(RAW_ARGS)
 
-        // assert
-        result shouldBe Either.Right(Unit)
+            // assert
+            result shouldBe Either.Right(Unit)
+        }
     }
 
     @Test
@@ -180,7 +185,8 @@ class MainInteractorTest {
     private fun newArgs(
         isNoColoredOutput: Boolean = false,
         isPrintHelp: Boolean = false,
-        isPrintVersion: Boolean = false
+        isPrintVersion: Boolean = false,
+        differType: DifferType? = null
     ): Arguments =
         Arguments(
             leftPath = TestData.LEFT_FILE_PATH,
@@ -188,6 +194,7 @@ class MainInteractorTest {
             keyPath = null,
             leftKeyPath = null,
             rightKeyPath = null,
+            differType = differType,
             isUseOnePassword = false,
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,

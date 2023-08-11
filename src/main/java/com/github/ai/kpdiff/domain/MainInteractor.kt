@@ -59,7 +59,7 @@ class MainInteractor(
 
         val (lhs, rhs) = databases.unwrap()
         val diff = differProvider
-            .getDiffer(DifferType.PATH)
+            .getDiffer(parsedArgs.differType ?: DifferType.PATH)
             .getDiff(lhs, rhs)
 
         printDiffUseCase.printDiff(

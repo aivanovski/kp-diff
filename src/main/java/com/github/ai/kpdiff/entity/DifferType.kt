@@ -1,6 +1,6 @@
 package com.github.ai.kpdiff.entity
 
-enum class DifferType {
-    UUID,
-    PATH
+enum class DifferType(val cliName: String) {
+    UUID(cliName = "uid"),
+    PATH(cliName = "path")
 }
