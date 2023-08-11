@@ -1,15 +1,15 @@
-package com.github.ai.kpdiff.domain.diff.simpleDiffer
+package com.github.ai.kpdiff.domain.diff.uuidDiffer
 
 import com.github.ai.kpdiff.entity.DiffEvent
-import com.github.ai.kpdiff.entity.SimpleNode
+import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.utils.traverse
 import java.util.UUID
 
-class SimpleDiffer {
+class UuidDiffer {
 
     fun <T : Any> diff(
-        lhsRoot: SimpleNode<T>,
-        rhsRoot: SimpleNode<T>
+        lhsRoot: Node<T>,
+        rhsRoot: Node<T>
     ): List<DiffEvent<T>> {
         return diff(
             listOf(lhsRoot),
@@ -19,15 +19,15 @@ class SimpleDiffer {
     }
 
     fun <T : Any> diff(
-        lhsRoots: List<SimpleNode<T>>,
-        rhsRoots: List<SimpleNode<T>>,
+        lhsRoots: List<Node<T>>,
+        rhsRoots: List<Node<T>>,
         visited: MutableSet<UUID>
     ): List<DiffEvent<T>> {
-        val lhsNodes = lhsRoots.flatMap { it.traverse() }
-        val rhsNodes = rhsRoots.flatMap { it.traverse() }
+        val lhsNodes = lhsRoots.flatMap { node -> node.traverse() }
+        val rhsNodes = rhsRoots.flatMap { node -> node.traverse() }
 
-        val lhsNodesMap = lhsNodes.associateBy { it.uuid }
-        val rhsNodesMap = rhsNodes.associateBy { it.uuid }
+        val lhsNodesMap = lhsNodes.associateBy { node -> node.uuid }
+        val rhsNodesMap = rhsNodes.associateBy { node -> node.uuid }
 
         val uuids = HashSet<UUID>()
             .apply {

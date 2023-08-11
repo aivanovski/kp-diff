@@ -1,7 +1,8 @@
 package com.github.ai.kpdiff.domain
 
 import com.github.ai.kpdiff.domain.argument.ArgumentParser
-import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
+import com.github.ai.kpdiff.domain.diff.DatabaseDifferProvider
+import com.github.ai.kpdiff.entity.DifferType
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
 import com.github.ai.kpdiff.domain.usecases.OpenDatabasesUseCase
@@ -18,11 +19,10 @@ class MainInteractor(
     private val getKeysUseCase: GetKeysUseCase,
     private val openDatabasesUseCase: OpenDatabasesUseCase,
     private val printDiffUseCase: PrintDiffUseCase,
-    private val differ: DatabaseDiffer,
+    private val differProvider: DatabaseDifferProvider,
     private val printer: OutputPrinter
 ) {
 
-    // TODO: write tests
     fun process(rawArgs: Array<String>): Either<Unit> {
         val args = argumentParser.parse(rawArgs)
         if (args.isLeft()) {
@@ -58,7 +58,10 @@ class MainInteractor(
         }
 
         val (lhs, rhs) = databases.unwrap()
-        val diff = differ.getDiff(lhs, rhs)
+        val diff = differProvider
+            .getDiffer(DifferType.PATH)
+            .getDiff(lhs, rhs)
+
         printDiffUseCase.printDiff(
             diff = diff,
             options = DiffFormatterOptions(

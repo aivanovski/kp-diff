@@ -4,5 +4,5 @@ import java.util.UUID
 
 data class GroupEntity(
     override val uuid: UUID,
-    val name: String
+    override val name: String
 ) : DatabaseEntity

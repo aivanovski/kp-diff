@@ -5,6 +5,8 @@ import com.github.ai.kpdiff.TestData.LEFT_PASSWORD
 import com.github.ai.kpdiff.TestData.RIGHT_PASSWORD
 import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
+import com.github.ai.kpdiff.domain.diff.DatabaseDifferProvider
+import com.github.ai.kpdiff.entity.DifferType
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
 import com.github.ai.kpdiff.domain.usecases.OpenDatabasesUseCase
@@ -31,6 +33,7 @@ class MainInteractorTest {
     private val getKeysUseCase = mockk<GetKeysUseCase>()
     private val openDatabasesUseCase = mockk<OpenDatabasesUseCase>()
     private val printDiffUseCase = mockk<PrintDiffUseCase>()
+    private val differProvider = mockk<DatabaseDifferProvider>()
     private val differ = mockk<DatabaseDiffer>()
     private val printer = mockk<OutputPrinter>()
 
@@ -55,6 +58,7 @@ class MainInteractorTest {
                 rightKey = rightKey
             )
         }.returns(Either.Right(leftDb to rightDb))
+        every { differProvider.getDiffer(DifferType.PATH) }.returns(differ)
         every { differ.getDiff(leftDb, rightDb) }.returns(diff)
         every { printDiffUseCase.printDiff(diff, options) }.returns(Unit)
 
@@ -161,6 +165,7 @@ class MainInteractorTest {
                     rightKey = rightKey
                 )
             }.returns(Either.Right(leftDb to rightDb))
+            every { differProvider.getDiffer(DifferType.PATH) }.returns(differ)
             every { differ.getDiff(leftDb, rightDb) }.returns(diff)
             every { printDiffUseCase.printDiff(diff, options) }.returns(Unit)
 
@@ -198,7 +203,7 @@ class MainInteractorTest {
             getKeysUseCase = getKeysUseCase,
             openDatabasesUseCase = openDatabasesUseCase,
             printDiffUseCase = printDiffUseCase,
-            differ = differ,
+            differProvider = differProvider,
             printer = printer
         )
 

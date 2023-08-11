@@ -11,11 +11,12 @@ import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.SimpleNode
-import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.entity.Parent
 import com.github.ai.kpdiff.utils.getColor
 import com.github.ai.kpdiff.utils.getEntity
 import com.github.ai.kpdiff.utils.getFields
+import com.github.ai.kpdiff.utils.getNode
+import com.github.ai.kpdiff.utils.sortOrder
 import com.github.ai.kpdiff.utils.traverseByValueType
 import com.github.ai.kpdiff.utils.traverseWithParents
 import java.util.UUID
@@ -282,14 +283,6 @@ class DiffFormatterImpl(
         return result
     }
 
-    private fun <T : Any> DiffEvent<T>.getNode(): Node<T> {
-        return when (this) {
-            is DiffEvent.Insert -> node
-            is DiffEvent.Delete -> node
-            is DiffEvent.Update -> newNode
-        }
-    }
-
     private fun KeepassDatabase.buildAllGroupMap(): Map<UUID, GroupEntity> {
         return this.root.traverseByValueType(GroupEntity::class)
             .map { node -> node.value }
@@ -313,22 +306,6 @@ class DiffFormatterImpl(
         }
 
         return result
-    }
-
-    private fun DiffEvent<DatabaseEntity>.sortOrder(): Int {
-        return when (this) {
-            is DiffEvent.Update -> {
-                if (newNode.value is GroupEntity) 1 else 5
-            }
-
-            is DiffEvent.Delete -> {
-                if (node.value is GroupEntity) 10 else 15
-            }
-
-            is DiffEvent.Insert -> {
-                if (node.value is GroupEntity) 20 else 25
-            }
-        }
     }
 
     private fun FieldEntity.isDefault(): Boolean {

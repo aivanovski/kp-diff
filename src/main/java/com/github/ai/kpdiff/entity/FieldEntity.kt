@@ -5,6 +5,6 @@ import java.util.UUID
 data class FieldEntity(
     override val uuid: UUID,
     val entryUid: UUID,
-    val name: String,
+    override val name: String,
     val value: String
 ) : DatabaseEntity
