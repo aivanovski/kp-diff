@@ -1,6 +1,5 @@
 package com.github.ai.kpdiff.domain.argument
 
-import com.github.ai.kpdiff.TestData
 import com.github.ai.kpdiff.TestData.FILE_CONTENT
 import com.github.ai.kpdiff.TestData.INVALID
 import com.github.ai.kpdiff.TestData.LEFT_FILE_PATH
@@ -8,7 +7,6 @@ import com.github.ai.kpdiff.TestData.LEFT_KEY_PATH
 import com.github.ai.kpdiff.TestData.RIGHT_FILE_PATH
 import com.github.ai.kpdiff.TestData.RIGHT_KEY_PATH
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
-import com.github.ai.kpdiff.domain.Strings
 import com.github.ai.kpdiff.domain.Strings.FILE_DOES_NOT_EXIST
 import com.github.ai.kpdiff.domain.Strings.ILLEGAL_ARGUMENT_VALUE
 import com.github.ai.kpdiff.domain.Strings.MISSING_ARGUMENT
@@ -397,7 +395,7 @@ internal class ArgumentParserTest {
             Pair(
                 OptionalArgument.DIFF_BY.cliFullName,
                 DifferType.PATH.cliName.uppercase()
-            ) to DifferType.PATH,
+            ) to DifferType.PATH
         )
             .forEach { (input, expectedDifferType) ->
                 // arrange
@@ -453,7 +451,7 @@ internal class ArgumentParserTest {
         ).forEach { argumentValue ->
             // arrange
             val message = MISSING_ARGUMENT_VALUE.format(
-                OptionalArgument.DIFF_BY.cliFullName,
+                OptionalArgument.DIFF_BY.cliFullName
             )
             val args = mutableListOf(
                 LEFT_FILE_PATH,

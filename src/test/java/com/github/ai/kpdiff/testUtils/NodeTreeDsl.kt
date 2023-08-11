@@ -4,9 +4,9 @@ import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
-import com.github.ai.kpdiff.entity.SimpleNode
 import com.github.ai.kpdiff.entity.Named
 import com.github.ai.kpdiff.entity.PathNode
+import com.github.ai.kpdiff.entity.SimpleNode
 import java.util.UUID
 
 object NodeTreeDsl {

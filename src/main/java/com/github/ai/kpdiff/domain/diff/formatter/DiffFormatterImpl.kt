@@ -10,8 +10,8 @@ import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
-import com.github.ai.kpdiff.entity.SimpleNode
 import com.github.ai.kpdiff.entity.Parent
+import com.github.ai.kpdiff.entity.SimpleNode
 import com.github.ai.kpdiff.utils.getColor
 import com.github.ai.kpdiff.utils.getEntity
 import com.github.ai.kpdiff.utils.getFields

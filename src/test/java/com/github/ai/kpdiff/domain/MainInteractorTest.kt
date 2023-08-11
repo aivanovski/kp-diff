@@ -6,7 +6,6 @@ import com.github.ai.kpdiff.TestData.RIGHT_PASSWORD
 import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.DatabaseDifferProvider
-import com.github.ai.kpdiff.entity.DifferType
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
 import com.github.ai.kpdiff.domain.usecases.OpenDatabasesUseCase
@@ -17,6 +16,7 @@ import com.github.ai.kpdiff.entity.Arguments
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.DiffResult
+import com.github.ai.kpdiff.entity.DifferType
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.KeepassKey.PasswordKey

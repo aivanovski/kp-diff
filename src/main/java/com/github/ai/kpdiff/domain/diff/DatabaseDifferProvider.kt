@@ -12,5 +12,4 @@ class DatabaseDifferProvider {
             DifferType.PATH -> PathDatabaseDiffer()
         }
     }
-
 }

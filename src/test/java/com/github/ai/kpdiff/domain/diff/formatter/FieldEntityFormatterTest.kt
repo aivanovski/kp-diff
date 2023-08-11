@@ -45,7 +45,10 @@ internal class FieldEntityFormatterTest {
         val newEntity = newEntity(value = VALUE2)
 
         newFormatter().format(
-            DiffEvent.Update(SimpleNode(oldEntity.uuid, oldEntity), SimpleNode(newEntity.uuid, newEntity)),
+            DiffEvent.Update(
+                SimpleNode(oldEntity.uuid, oldEntity),
+                SimpleNode(newEntity.uuid, newEntity)
+            ),
             INDENT_EMPTY
         ) shouldBe "~ $FIELD '$NAME': '$VALUE1' $CHANGED_TO '$VALUE2'"
     }

@@ -1,8 +1,8 @@
 package com.github.ai.kpdiff.domain.diff
 
-import com.github.ai.kpdiff.entity.DifferType
 import com.github.ai.kpdiff.domain.diff.pathDiffer.PathDatabaseDiffer
 import com.github.ai.kpdiff.domain.diff.uuidDiffer.UuidDatabaseDiffer
+import com.github.ai.kpdiff.entity.DifferType
 import io.kotest.matchers.should
 import io.kotest.matchers.types.beInstanceOf
 import org.junit.jupiter.api.Test

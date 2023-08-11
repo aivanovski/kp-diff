@@ -1,9 +1,9 @@
 package com.github.ai.kpdiff.utils
 
-import com.github.ai.kpdiff.entity.SimpleNode
 import com.github.ai.kpdiff.entity.Named
 import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.entity.PathNode
+import com.github.ai.kpdiff.entity.SimpleNode
 import java.util.LinkedList
 import kotlin.reflect.KClass
 

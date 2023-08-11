@@ -41,7 +41,10 @@ internal class GroupEntityFormatterTest {
         val newGroup = newGroup(TITLE2)
 
         newFormatter().format(
-            DiffEvent.Update(SimpleNode(oldGroup.uuid, oldGroup), SimpleNode(newGroup.uuid, newGroup)),
+            DiffEvent.Update(
+                SimpleNode(oldGroup.uuid, oldGroup),
+                SimpleNode(newGroup.uuid, newGroup)
+            ),
             INDENT_EMPTY
         ) shouldBe "~ $GROUP '$TITLE2'"
     }

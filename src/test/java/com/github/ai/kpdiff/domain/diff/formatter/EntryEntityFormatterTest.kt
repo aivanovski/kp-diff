@@ -43,7 +43,10 @@ internal class EntryEntityFormatterTest {
         val newEntry = newEntity(TITLE2)
 
         newFormatter().format(
-            DiffEvent.Update(SimpleNode(oldEntry.uuid, oldEntry), SimpleNode(newEntry.uuid, newEntry)),
+            DiffEvent.Update(
+                SimpleNode(oldEntry.uuid, oldEntry),
+                SimpleNode(newEntry.uuid, newEntry)
+            ),
             INDENT_EMPTY
         ) shouldBe "~ $ENTRY '$TITLE2'"
     }

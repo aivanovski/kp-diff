@@ -57,8 +57,8 @@ fun List<DiffEvent<DatabaseEntity>>.sortForAssertion(): List<DiffEvent<DatabaseE
     return groupEventsSorted + entryEventsSorted + fieldEventsSorted
 }
 
-private fun List<DiffEvent<DatabaseEntity>>.splitByEventType(
-): Map<DiffEventType, List<DiffEvent<DatabaseEntity>>> {
+private fun List<DiffEvent<DatabaseEntity>>.splitByEventType():
+    Map<DiffEventType, List<DiffEvent<DatabaseEntity>>> {
     val updateEvents = this.mapNotNull { event ->
         if (event is DiffEvent.Update<*>) event else null
     }

@@ -577,8 +577,6 @@ internal class PathDatabaseDifferTest {
         }
     }
 
-
-
     companion object {
         private const val CUSTOM_PROPERTY_NAME = "custom-property-name"
         private const val CUSTOM_PROPERTY_VALUE = "custom-property-value"
@@ -644,7 +642,7 @@ internal class PathDatabaseDifferTest {
 
         private fun newEntry(
             id: Int,
-            title: String? = null,
+            title: String? = null
         ): EntryEntity {
             val index = id - ENTRY_UID_RANGE.first
             return EntryEntity(

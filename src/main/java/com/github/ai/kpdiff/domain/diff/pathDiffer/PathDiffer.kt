@@ -122,8 +122,8 @@ class PathDiffer {
 
                 val deletedEntity = deleteEvent.node.value
                 val insertedEntity = insertEvent.node.value
-                if ((deletedEntity is EntryEntity || deletedEntity is GroupEntity)
-                    && deletedEntity == insertedEntity
+                if ((deletedEntity is EntryEntity || deletedEntity is GroupEntity) &&
+                    deletedEntity == insertedEntity
                 ) {
                     result.addAll(eventsByUid)
                 } else {
