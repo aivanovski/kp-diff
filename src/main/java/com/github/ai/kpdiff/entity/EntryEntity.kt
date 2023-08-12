@@ -1,10 +1,12 @@
 package com.github.ai.kpdiff.entity
 
+import com.github.ai.kpdiff.utils.StringUtils.EMPTY
 import java.util.UUID
 
 data class EntryEntity(
     override val uuid: UUID,
-    val properties: Map<String, String>
+    val properties: Map<String, String>,
+    override val name: String = properties[PROPERTY_TITLE] ?: EMPTY
 ) : DatabaseEntity {
 
     companion object {
@@ -13,5 +15,6 @@ data class EntryEntity(
         const val PROPERTY_PASSWORD = "Password"
         const val PROPERTY_URL = "URL"
         const val PROPERTY_NOTES = "Notes"
+        const val UUID = "UUID"
     }
 }

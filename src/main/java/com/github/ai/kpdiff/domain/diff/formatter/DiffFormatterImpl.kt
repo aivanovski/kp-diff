@@ -10,11 +10,13 @@ import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
-import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.entity.Parent
+import com.github.ai.kpdiff.entity.SimpleNode
 import com.github.ai.kpdiff.utils.getColor
 import com.github.ai.kpdiff.utils.getEntity
 import com.github.ai.kpdiff.utils.getFields
+import com.github.ai.kpdiff.utils.getNode
+import com.github.ai.kpdiff.utils.sortOrder
 import com.github.ai.kpdiff.utils.traverseByValueType
 import com.github.ai.kpdiff.utils.traverseWithParents
 import java.util.UUID
@@ -48,6 +50,7 @@ class DiffFormatterImpl(
         val eventsByParentUuid = LinkedHashMap<UUID?, MutableList<DiffEvent<DatabaseEntity>>>()
         for (event in diff.events) {
             val node = event.getNode()
+            val originType = event.getOriginType()
 
             when (val value = node.value) {
                 is FieldEntity -> {
@@ -59,7 +62,11 @@ class DiffFormatterImpl(
                     eventsByParentUuid[value.entryUid] = events
                 }
                 else -> {
-                    val parentUid = rhsUuidToParentMap[node.uuid] ?: lhsUuidToParentMap[node.uuid]
+                    val parentUid = when (originType) {
+                        OriginType.LEFT -> lhsUuidToParentMap[node.uuid]
+                        OriginType.RIGHT -> rhsUuidToParentMap[node.uuid]
+                    }
+
                     val events = eventsByParentUuid.getOrDefault(parentUid, mutableListOf())
                         .apply {
                             add(event)
@@ -106,6 +113,8 @@ class DiffFormatterImpl(
 
         return lines
     }
+
+//    private fun determineP
 
     private fun getParents(
         firstParentUuid: UUID?,
@@ -267,7 +276,7 @@ class DiffFormatterImpl(
             .sortedWith(otherFieldComparator)
 
         for (field in (defaultFields + otherFields)) {
-            val node = Node(field.uuid, field)
+            val node = SimpleNode(field.uuid, field)
 
             val newEvent = if (event is DiffEvent.Insert) {
                 DiffEvent.Insert(node)
@@ -279,14 +288,6 @@ class DiffFormatterImpl(
         }
 
         return result
-    }
-
-    private fun <T : Any> DiffEvent<T>.getNode(): Node<T> {
-        return when (this) {
-            is DiffEvent.Insert -> node
-            is DiffEvent.Delete -> node
-            is DiffEvent.Update -> newNode
-        }
     }
 
     private fun KeepassDatabase.buildAllGroupMap(): Map<UUID, GroupEntity> {
@@ -312,22 +313,6 @@ class DiffFormatterImpl(
         }
 
         return result
-    }
-
-    private fun DiffEvent<DatabaseEntity>.sortOrder(): Int {
-        return when (this) {
-            is DiffEvent.Update -> {
-                if (newNode.value is GroupEntity) 1 else 5
-            }
-
-            is DiffEvent.Delete -> {
-                if (node.value is GroupEntity) 10 else 15
-            }
-
-            is DiffEvent.Insert -> {
-                if (node.value is GroupEntity) 20 else 25
-            }
-        }
     }
 
     private fun FieldEntity.isDefault(): Boolean {

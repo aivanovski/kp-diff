@@ -9,7 +9,7 @@ import com.github.ai.kpdiff.TestData.UUID1
 import com.github.ai.kpdiff.domain.diff.formatter.GroupEntityFormatter.Companion.GROUP
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.GroupEntity
-import com.github.ai.kpdiff.entity.Node
+import com.github.ai.kpdiff.entity.SimpleNode
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -20,7 +20,7 @@ internal class GroupEntityFormatterTest {
         val group = newGroup()
 
         newFormatter().format(
-            DiffEvent.Delete(Node(group.uuid, group)),
+            DiffEvent.Delete(SimpleNode(group.uuid, group)),
             INDENT_EMPTY
         ) shouldBe "- $GROUP '$TITLE1'"
     }
@@ -30,7 +30,7 @@ internal class GroupEntityFormatterTest {
         val group = newGroup()
 
         newFormatter().format(
-            DiffEvent.Insert(Node(group.uuid, group)),
+            DiffEvent.Insert(SimpleNode(group.uuid, group)),
             INDENT_EMPTY
         ) shouldBe "+ $GROUP '$TITLE1'"
     }
@@ -41,7 +41,10 @@ internal class GroupEntityFormatterTest {
         val newGroup = newGroup(TITLE2)
 
         newFormatter().format(
-            DiffEvent.Update(Node(oldGroup.uuid, oldGroup), Node(newGroup.uuid, newGroup)),
+            DiffEvent.Update(
+                SimpleNode(oldGroup.uuid, oldGroup),
+                SimpleNode(newGroup.uuid, newGroup)
+            ),
             INDENT_EMPTY
         ) shouldBe "~ $GROUP '$TITLE2'"
     }
@@ -51,12 +54,12 @@ internal class GroupEntityFormatterTest {
         val group = newGroup()
 
         newFormatter().format(
-            DiffEvent.Delete(Node(group.uuid, group)),
+            DiffEvent.Delete(SimpleNode(group.uuid, group)),
             INDENT_SINGLE
         ) shouldBe "-$INDENT_SINGLE $GROUP '$TITLE1'"
 
         newFormatter().format(
-            DiffEvent.Delete(Node(group.uuid, group)),
+            DiffEvent.Delete(SimpleNode(group.uuid, group)),
             INDENT_DOUBLE
         ) shouldBe "-$INDENT_DOUBLE $GROUP '$TITLE1'"
     }

@@ -1,7 +1,8 @@
 package com.github.ai.kpdiff.domain.diff.formatter
 
 import com.github.ai.kpdiff.TestData
-import com.github.ai.kpdiff.domain.diff.DatabaseDifferImpl
+import com.github.ai.kpdiff.domain.diff.pathDiffer.PathDatabaseDiffer
+import com.github.ai.kpdiff.domain.diff.uuidDiffer.UuidDatabaseDiffer
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.testUtils.open
@@ -14,10 +15,13 @@ class DiffFormatterImplTest {
     @Test
     fun `format should return diff between databases`() {
         listOf(
-            DiffFormatterOptions(isColorEnabled = false, isVerboseOutput = false) to OUTPUT,
-            DiffFormatterOptions(isColorEnabled = false, isVerboseOutput = true) to VERBOSE_OUTPUT
-        ).forEach { (options, expected) ->
+            Pair(defaultOptions(), UuidDatabaseDiffer()) to OUTPUT,
+            Pair(verboseOptions(), UuidDatabaseDiffer()) to VERBOSE_OUTPUT,
+            Pair(defaultOptions(), PathDatabaseDiffer()) to OUTPUT,
+            Pair(verboseOptions(), PathDatabaseDiffer()) to VERBOSE_OUTPUT
+        ).forEach { (data, expected) ->
             // arrange
+            val (options, differ) = data
             val lhs = KeepassDatabase(
                 root = TestData.DB_WITH_PASSWORD.open().content.group.buildNodeTree()
             )
@@ -26,7 +30,7 @@ class DiffFormatterImplTest {
             )
 
             // act
-            val diff = DatabaseDifferImpl().getDiff(lhs, rhs)
+            val diff = differ.getDiff(lhs, rhs)
             val result = DiffFormatterImpl(
                 formatterProvider = EntityFormatterProvider(),
                 parentFormatter = ParentFormatter(),
@@ -40,6 +44,12 @@ class DiffFormatterImplTest {
             result shouldBe expected
         }
     }
+
+    private fun defaultOptions(): DiffFormatterOptions =
+        DiffFormatterOptions(isColorEnabled = false, isVerboseOutput = false)
+
+    private fun verboseOptions(): DiffFormatterOptions =
+        DiffFormatterOptions(isColorEnabled = false, isVerboseOutput = true)
 
     companion object {
         private val OUTPUT = """

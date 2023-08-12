@@ -32,6 +32,9 @@ class PrintHelpUseCase(
                 -k, --key-file                   Path to key file for <FILE-A> and <FILE-B>
                 -a, --key-file-a                 Path to key file for <FILE-A>
                 -b, --key-file-b                 Path to key file for <FILE-B>
+                -d, --diff-by                    Type of differ, default is 'path'. Possible values:
+                                                      path - produces more accurate diff, considers entries identical if they have identical content but UUID differs
+                                                      uid - considers entries identical if they have identical content and UUID
                 -v, --verbose                    Print verbose output (entry fields will be printed)
                 -V, --version                    Print version
                 -h, --help                       Print help information

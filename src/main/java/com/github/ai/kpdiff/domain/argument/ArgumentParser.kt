@@ -2,10 +2,13 @@ package com.github.ai.kpdiff.domain.argument
 
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.domain.Strings.FILE_DOES_NOT_EXIST
+import com.github.ai.kpdiff.domain.Strings.ILLEGAL_ARGUMENT_VALUE
 import com.github.ai.kpdiff.domain.Strings.MISSING_ARGUMENT
+import com.github.ai.kpdiff.domain.Strings.MISSING_ARGUMENT_VALUE
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_ARGUMENT
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_OPTION
 import com.github.ai.kpdiff.entity.Arguments
+import com.github.ai.kpdiff.entity.DifferType
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.exception.ParsingException
 import com.github.ai.kpdiff.utils.StringUtils.EMPTY
@@ -25,6 +28,7 @@ class ArgumentParser(
                     keyPath = null,
                     leftKeyPath = null,
                     rightKeyPath = null,
+                    differType = null,
                     isUseOnePassword = false,
                     isNoColoredOutput = false,
                     isPrintHelp = true,
@@ -39,6 +43,7 @@ class ArgumentParser(
         var keyPath: String? = null
         var leftKeyPath: String? = null
         var rightKeyPath: String? = null
+        var differType: DifferType? = null
         var isUseOnePassword = false
         var isNoColoredOutput = false
         var isPrintHelp = false
@@ -52,18 +57,23 @@ class ArgumentParser(
                     OptionalArgument.ONE_PASSWORD -> {
                         isUseOnePassword = true
                     }
+
                     OptionalArgument.NO_COLOR -> {
                         isNoColoredOutput = true
                     }
+
                     OptionalArgument.HELP -> {
                         isPrintHelp = true
                     }
+
                     OptionalArgument.VERSION -> {
                         isPrintVersion = true
                     }
+
                     OptionalArgument.VERBOSE -> {
                         isVerboseOutput = true
                     }
+
                     OptionalArgument.KEY_FILE_A -> {
                         val path = checkPath(queue.poll())
                         if (path.isLeft()) {
@@ -72,6 +82,7 @@ class ArgumentParser(
 
                         leftKeyPath = path.unwrap()
                     }
+
                     OptionalArgument.KEY_FILE_B -> {
                         val path = checkPath(queue.poll())
                         if (path.isLeft()) {
@@ -80,6 +91,7 @@ class ArgumentParser(
 
                         rightKeyPath = path.unwrap()
                     }
+
                     OptionalArgument.KEY_FILE -> {
                         val path = checkPath(queue.poll())
                         if (path.isLeft()) {
@@ -88,6 +100,16 @@ class ArgumentParser(
 
                         keyPath = path.unwrap()
                     }
+
+                    OptionalArgument.DIFF_BY -> {
+                        val differTypeResult = parseDifferType(queue.poll())
+                        if (differTypeResult.isLeft()) {
+                            return differTypeResult.mapToLeft()
+                        }
+
+                        differType = differTypeResult.unwrap()
+                    }
+
                     null -> {
                         return Either.Left(
                             ParsingException(String.format(UNKNOWN_OPTION, arg))
@@ -104,6 +126,7 @@ class ArgumentParser(
 
                         leftPath = path.unwrap()
                     }
+
                     rightPath == null -> {
                         val path = checkPath(arg)
                         if (path.isLeft()) {
@@ -112,6 +135,7 @@ class ArgumentParser(
 
                         rightPath = path.unwrap()
                     }
+
                     else -> {
                         return Either.Left(
                             ParsingException(String.format(UNKNOWN_ARGUMENT, arg))
@@ -136,11 +160,53 @@ class ArgumentParser(
                 keyPath = keyPath,
                 leftKeyPath = leftKeyPath,
                 rightKeyPath = rightKeyPath,
+                differType = differType,
                 isUseOnePassword = isUseOnePassword,
                 isNoColoredOutput = isNoColoredOutput,
                 isPrintHelp = isPrintHelp,
                 isPrintVersion = isPrintVersion,
                 isVerboseOutput = isVerboseOutput
+            )
+        )
+    }
+
+    private fun parseDifferType(value: String?): Either<DifferType> {
+        if (value.isNullOrEmpty()) {
+            return missingArgumentValue(OptionalArgument.DIFF_BY.cliFullName)
+        }
+
+        return when (value.lowercase()) {
+            DifferType.PATH.cliName -> Either.Right(DifferType.PATH)
+            DifferType.UUID.cliName -> Either.Right(DifferType.UUID)
+            else -> illegalArgumentValue(
+                argumentName = OptionalArgument.DIFF_BY.cliFullName,
+                argumentValue = value
+            )
+        }
+    }
+
+    private fun <T> illegalArgumentValue(
+        argumentName: String,
+        argumentValue: String?
+    ): Either<T> {
+        return Either.Left(
+            ParsingException(
+                String.format(
+                    ILLEGAL_ARGUMENT_VALUE,
+                    argumentName,
+                    argumentValue
+                )
+            )
+        )
+    }
+
+    private fun <T> missingArgumentValue(argumentName: String): Either<T> {
+        return Either.Left(
+            ParsingException(
+                String.format(
+                    MISSING_ARGUMENT_VALUE,
+                    argumentName
+                )
             )
         )
     }
@@ -193,7 +259,10 @@ class ArgumentParser(
             OptionalArgument.NO_COLOR.cliFullName to OptionalArgument.NO_COLOR,
 
             OptionalArgument.VERBOSE.cliShortName to OptionalArgument.VERBOSE,
-            OptionalArgument.VERBOSE.cliFullName to OptionalArgument.VERBOSE
+            OptionalArgument.VERBOSE.cliFullName to OptionalArgument.VERBOSE,
+
+            OptionalArgument.DIFF_BY.cliShortName to OptionalArgument.DIFF_BY,
+            OptionalArgument.DIFF_BY.cliFullName to OptionalArgument.DIFF_BY
         )
     }
 }

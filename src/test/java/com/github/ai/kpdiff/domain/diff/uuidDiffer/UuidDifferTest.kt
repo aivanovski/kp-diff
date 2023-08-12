@@ -1,12 +1,13 @@
-package com.github.ai.kpdiff.domain.diff.simpleDiffer
+package com.github.ai.kpdiff.domain.diff.uuidDiffer
 
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.testUtils.NodeTreeDsl.tree
+import com.github.ai.kpdiff.testUtils.createUuidFrom
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.shouldBeInstanceOf
 import org.junit.jupiter.api.Test
 
-internal class SimpleDifferTest {
+internal class UuidDifferTest {
 
     @Test
     fun `diff should detect deletion and insertion`() {
@@ -26,7 +27,7 @@ internal class SimpleDifferTest {
         }
 
         // act
-        val diff = SimpleDiffer().diff(left, right)
+        val diff = UuidDiffer().diff(left, right)
 
         // assert
         diff.size shouldBe 2
@@ -56,7 +57,7 @@ internal class SimpleDifferTest {
         }
 
         // act
-        val diff = SimpleDiffer().diff(left, right)
+        val diff = UuidDiffer().diff(left, right)
 
         // assert
         diff.size shouldBe 0
@@ -67,20 +68,20 @@ internal class SimpleDifferTest {
         // arrange
         val left = tree("A") {
             node("B") {
-                node("D", value = "D0")
+                node(uid = createUuidFrom("D"), value = "D0")
             }
             node("C")
         }
 
         val right = tree("A") {
             node("B") {
-                node("D", value = "D1")
+                node(uid = createUuidFrom("D"), value = "D1")
             }
             node("C")
         }
 
         // act
-        val diff = SimpleDiffer().diff(left, right)
+        val diff = UuidDiffer().diff(left, right)
 
         // assert
         diff.size shouldBe 1

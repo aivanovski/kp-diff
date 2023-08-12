@@ -7,8 +7,7 @@ import com.github.ai.kpdiff.data.keepass.KotpassDatabaseFactory
 import com.github.ai.kpdiff.domain.ErrorHandler
 import com.github.ai.kpdiff.domain.MainInteractor
 import com.github.ai.kpdiff.domain.argument.ArgumentParser
-import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
-import com.github.ai.kpdiff.domain.diff.DatabaseDifferImpl
+import com.github.ai.kpdiff.domain.diff.DatabaseDifferProvider
 import com.github.ai.kpdiff.domain.diff.DiffFormatter
 import com.github.ai.kpdiff.domain.diff.formatter.DiffFormatterImpl
 import com.github.ai.kpdiff.domain.diff.formatter.EntityFormatterProvider
@@ -35,7 +34,7 @@ object KoinModule {
         single { ErrorHandler(get()) }
         single<FileSystemProvider> { FileSystemProviderImpl() }
         single<KeepassDatabaseFactory> { KotpassDatabaseFactory(get()) }
-        single<DatabaseDiffer> { DatabaseDifferImpl() }
+        single { DatabaseDifferProvider() }
         single { EntityFormatterProvider() }
         single { TerminalOutputFormatter() }
         single { ParentFormatter() }
