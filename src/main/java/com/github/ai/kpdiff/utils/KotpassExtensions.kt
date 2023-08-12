@@ -4,7 +4,6 @@ import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassKey
 import com.github.ai.kpdiff.entity.SimpleNode
@@ -13,7 +12,6 @@ import io.github.anvell.kotpass.database.Credentials
 import io.github.anvell.kotpass.models.Entry
 import io.github.anvell.kotpass.models.Group
 import java.util.LinkedList
-import java.util.UUID
 
 fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Credentials> {
     return when (this) {
@@ -59,21 +57,6 @@ fun Group.buildNodeTree(): SimpleNode<DatabaseEntity> {
     }
 
     return root
-}
-
-fun EntryEntity.getFieldNodes(): List<SimpleNode<DatabaseEntity>> {
-    val result = mutableListOf<SimpleNode<DatabaseEntity>>()
-
-    for ((name, value) in this.properties) {
-        // TODO: resolve hash collision
-        val fieldUid = UUID(uuid.mostSignificantBits, name.hashCode().toLong())
-        val field = FieldEntity(fieldUid, uuid, name, value)
-        val fieldNode = SimpleNode<DatabaseEntity>(fieldUid, field)
-
-        result.add(fieldNode)
-    }
-
-    return result
 }
 
 private fun Group.toEntity(): GroupEntity {

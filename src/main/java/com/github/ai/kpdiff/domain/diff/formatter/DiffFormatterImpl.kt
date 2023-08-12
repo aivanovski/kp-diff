@@ -50,6 +50,7 @@ class DiffFormatterImpl(
         val eventsByParentUuid = LinkedHashMap<UUID?, MutableList<DiffEvent<DatabaseEntity>>>()
         for (event in diff.events) {
             val node = event.getNode()
+            val originType = event.getOriginType()
 
             when (val value = node.value) {
                 is FieldEntity -> {
@@ -61,7 +62,11 @@ class DiffFormatterImpl(
                     eventsByParentUuid[value.entryUid] = events
                 }
                 else -> {
-                    val parentUid = rhsUuidToParentMap[node.uuid] ?: lhsUuidToParentMap[node.uuid]
+                    val parentUid = when (originType) {
+                        OriginType.LEFT -> lhsUuidToParentMap[node.uuid]
+                        OriginType.RIGHT -> rhsUuidToParentMap[node.uuid]
+                    }
+
                     val events = eventsByParentUuid.getOrDefault(parentUid, mutableListOf())
                         .apply {
                             add(event)
@@ -108,6 +113,8 @@ class DiffFormatterImpl(
 
         return lines
     }
+
+//    private fun determineP
 
     private fun getParents(
         firstParentUuid: UUID?,

@@ -269,6 +269,66 @@ internal class PathDatabaseDifferTest {
     }
 
     @Test
+    fun `diff should detect uuid update for entry`() {
+        // arrange
+        val modifiedEntry = ENTRY_1.copy(
+            uuid = createUuidFrom(ENTRY_2.uuid)
+        )
+        val lhs = dbTree(ROOT) {
+            entry(ENTRY_1)
+        }
+        val rhs = dbTree(ROOT) {
+            entry(modifiedEntry)
+        }
+
+        // act
+        val events = PathDatabaseDiffer().getDiff(lhs, rhs).events.sortForAssertion()
+
+        // assert
+        events.size shouldBe 1
+
+        with(events.first()) {
+            shouldBeInstanceOf<DiffEvent.Update<FieldEntity>>()
+
+            oldNode.value.name shouldBe EntryEntity.UUID
+            oldNode.value.value shouldBe ENTRY_1.uuid.toString()
+
+            newNode.value.name shouldBe EntryEntity.UUID
+            newNode.value.value shouldBe modifiedEntry.uuid.toString()
+        }
+    }
+
+    @Test
+    fun `diff should detect uuid update for group`() {
+        // arrange
+        val modifiedGroup = GROUP_A.copy(
+            uuid = createUuidFrom(GROUP_B.uuid)
+        )
+        val lhs = dbTree(ROOT) {
+            group(GROUP_A)
+        }
+        val rhs = dbTree(ROOT) {
+            group(modifiedGroup)
+        }
+
+        // act
+        val events = PathDatabaseDiffer().getDiff(lhs, rhs).events.sortForAssertion()
+
+        // assert
+        events.size shouldBe 1
+
+        with(events.first()) {
+            shouldBeInstanceOf<DiffEvent.Update<FieldEntity>>()
+
+            oldNode.value.name shouldBe EntryEntity.UUID
+            oldNode.value.value shouldBe GROUP_A.uuid.toString()
+
+            newNode.value.name shouldBe EntryEntity.UUID
+            newNode.value.value shouldBe modifiedGroup.uuid.toString()
+        }
+    }
+
+    @Test
     fun `diff should detect group insertion`() {
         // arrange
         val lhs = dbTree(ROOT)
@@ -340,6 +400,45 @@ internal class PathDatabaseDifferTest {
         with(iterator.next()) {
             shouldBeInstanceOf<DiffEvent.Insert<GroupEntity>>()
             node.value shouldBe GROUP_C
+        }
+    }
+
+    @Test
+    fun `diff should detect group field update`() {
+        // arrange
+        val modifiedGroup = GROUP_A.copy(
+            name = GROUP_A.name + " modified"
+        )
+        val lhs = dbTree(ROOT) {
+            group(GROUP_A) {
+                group(GROUP_B) {
+                    group(GROUP_C)
+                }
+            }
+        }
+        val rhs = dbTree(ROOT) {
+            group(modifiedGroup) {
+                group(GROUP_B) {
+                    group(GROUP_C)
+                }
+            }
+        }
+
+        // act
+        val events = PathDatabaseDiffer().getDiff(lhs, rhs).events.sortForAssertion()
+
+        // assert
+        events.size shouldBe 1
+
+        val iterator = events.iterator()
+
+        with(iterator.next()) {
+            shouldBeInstanceOf<DiffEvent.Update<FieldEntity>>()
+            oldNode.value.name shouldBe PROPERTY_TITLE
+            oldNode.value.value shouldBe GROUP_A.name
+
+            newNode.value.name shouldBe PROPERTY_TITLE
+            newNode.value.value shouldBe modifiedGroup.name
         }
     }
 
@@ -520,7 +619,7 @@ internal class PathDatabaseDifferTest {
         val events = PathDatabaseDiffer().getDiff(lhs, rhs).events.sortForAssertion()
 
         // assert
-        events.size shouldBe 9
+        events.size shouldBe 7
 
         // groups
         val iterator = events.iterator()
@@ -544,12 +643,6 @@ internal class PathDatabaseDifferTest {
             node.value shouldBe GROUP_E
         }
 
-        // entries
-        with(iterator.next()) {
-            shouldBeInstanceOf<DiffEvent.Delete<EntryEntity>>()
-            node.value shouldBe ENTRY_5
-        }
-
         with(iterator.next()) {
             shouldBeInstanceOf<DiffEvent.Delete<EntryEntity>>()
             node.value shouldBe ENTRY_6
@@ -558,11 +651,6 @@ internal class PathDatabaseDifferTest {
         with(iterator.next()) {
             shouldBeInstanceOf<DiffEvent.Insert<EntryEntity>>()
             node.value shouldBe ENTRY_1_COPY
-        }
-
-        with(iterator.next()) {
-            shouldBeInstanceOf<DiffEvent.Insert<EntryEntity>>()
-            node.value shouldBe ENTRY_5
         }
 
         // fields
@@ -584,12 +672,12 @@ internal class PathDatabaseDifferTest {
         private val GROUP_UID_RANGE = (0..99)
         private val ENTRY_UID_RANGE = (100..200)
 
-        private val ROOT = GroupEntity(createUuidFrom(1), "Root Group")
-        private val GROUP_A = GroupEntity(createUuidFrom(2), "Group A")
-        private val GROUP_B = GroupEntity(createUuidFrom(3), "Group B")
-        private val GROUP_C = GroupEntity(createUuidFrom(4), "Group C")
-        private val GROUP_D = GroupEntity(createUuidFrom(5), "Group D")
-        private val GROUP_E = GroupEntity(createUuidFrom(6), "Group E")
+        private val ROOT = GroupEntity(createUuidFrom(-1), "Root Group")
+        private val GROUP_A = GroupEntity(createUuidFrom(1), "Group A")
+        private val GROUP_B = GroupEntity(createUuidFrom(2), "Group B")
+        private val GROUP_C = GroupEntity(createUuidFrom(3), "Group C")
+        private val GROUP_D = GroupEntity(createUuidFrom(4), "Group D")
+        private val GROUP_E = GroupEntity(createUuidFrom(5), "Group E")
 
         private val GROUP_ENTRY_1 = GroupEntity(createUuidFrom(81), "Entry 1")
         private val GROUP_ENTRY_2 = GroupEntity(createUuidFrom(82), "Entry 2")

@@ -4,9 +4,12 @@ import com.github.ai.kpdiff.domain.diff.uuidDiffer.UuidDiffer
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
+import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.entity.PathNode
+import com.github.ai.kpdiff.utils.getEntity
 import com.github.ai.kpdiff.utils.getNode
 import com.github.ai.kpdiff.utils.traversePathNode
+import com.github.ai.kpdiff.utils.traverseWithParents
 import java.util.UUID
 
 class PathDiffer {
@@ -29,8 +32,8 @@ class PathDiffer {
         rhsRoots: List<PathNode<T>>,
         visited: MutableSet<String>
     ): List<DiffEvent<T>> {
-        val allLhsNodes = lhsRoots.flatMap { it.traversePathNode() }
-        val allRhsNodes = rhsRoots.flatMap { it.traversePathNode() }
+        val allLhsNodes = lhsRoots.flatMap { node -> node.traversePathNode() }
+        val allRhsNodes = rhsRoots.flatMap { node -> node.traversePathNode() }
 
         val lhsNodesMap = groupNodesByPath(allLhsNodes)
         val rhsNodesMap = groupNodesByPath(allRhsNodes)
@@ -47,7 +50,7 @@ class PathDiffer {
             val lhsNodes = lhsNodesMap[path] ?: emptyList()
             val rhsNodes = rhsNodesMap[path] ?: emptyList()
 
-            // Process case when there are several
+            // Process case when there are several nodes with the same path
             if (lhsNodes.size > 1 || rhsNodes.size > 1) {
                 if (path !in visited) {
                     val visitedUuids = HashSet<UUID>()
@@ -69,7 +72,7 @@ class PathDiffer {
 
             when {
                 lhs != null && rhs != null && !isLhsVisited && !isRhsVisited -> {
-                    if (lhs.value != rhs.value || lhs.uuid != rhs.uuid) {
+                    if (lhs.value != rhs.value) {
                         events.add(DiffEvent.Update(lhs, rhs))
                     }
 
@@ -91,13 +94,33 @@ class PathDiffer {
             rhs?.let { node -> visited.add(node.path) }
         }
 
-        return substituteEventsByUid(events)
+        val lhsNodeToParentMap = buildUuidToParentMap(lhsRoots)
+        val rhsNodeToParentMap = buildUuidToParentMap(rhsRoots)
+
+        return events.substituteInsertAndDeleterWithUpdate(
+            lhsNodeToParentMap = lhsNodeToParentMap,
+            rhsNodeToParentMap = rhsNodeToParentMap
+        )
     }
 
-    private fun <T : Any> substituteEventsByUid(
-        events: List<DiffEvent<T>>
+    private fun <T : Any> buildUuidToParentMap(roots: List<Node<T>>): Map<UUID, UUID> {
+        val result = HashMap<UUID, UUID>()
+
+        val parentToNodePairs = roots.flatMap { root -> root.traverseWithParents() }
+        for ((parentNode, node) in parentToNodePairs) {
+            if (parentNode == null) continue
+
+            result[node.uuid] = parentNode.uuid
+        }
+
+        return result
+    }
+
+    private fun <T : Any> List<DiffEvent<T>>.substituteInsertAndDeleterWithUpdate(
+        lhsNodeToParentMap: Map<UUID, UUID>,
+        rhsNodeToParentMap: Map<UUID, UUID>
     ): List<DiffEvent<T>> {
-        val uidToEventsMap = groupEventsByUid(events)
+        val uidToEventsMap = groupEventsByUid(this)
         val result = mutableListOf<DiffEvent<T>>()
 
         for ((_, eventsByUid) in uidToEventsMap) {
@@ -120,19 +143,33 @@ class PathDiffer {
                     }
                 }
 
-                val deletedEntity = deleteEvent.node.value
-                val insertedEntity = insertEvent.node.value
-                if ((deletedEntity is EntryEntity || deletedEntity is GroupEntity) &&
-                    deletedEntity == insertedEntity
-                ) {
-                    result.addAll(eventsByUid)
-                } else {
-                    result.add(
-                        DiffEvent.Update(
-                            oldNode = deleteEvent.node,
-                            newNode = insertEvent.node
+                val deletedEntity = deleteEvent.getEntity()
+                val insertedEntity = insertEvent.getEntity()
+
+                val oldParent = lhsNodeToParentMap[deleteEvent.node.uuid]
+                val newParent = rhsNodeToParentMap[insertEvent.node.uuid]
+
+                val isParentSame = (oldParent == newParent)
+                val isEntryOrGroup = (deletedEntity is EntryEntity || deletedEntity is GroupEntity)
+
+                when {
+                    isParentSame && isEntryOrGroup && deletedEntity == insertedEntity -> {
+                        // Some of the parents were changed, but the entity is the same
+                        continue
+                    }
+
+                    isEntryOrGroup && deletedEntity == insertedEntity -> {
+                        result.addAll(eventsByUid)
+                    }
+
+                    else -> {
+                        result.add(
+                            DiffEvent.Update(
+                                oldNode = deleteEvent.node,
+                                newNode = insertEvent.node
+                            )
                         )
-                    )
+                    }
                 }
             } else {
                 result.addAll(eventsByUid)

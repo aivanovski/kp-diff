@@ -97,7 +97,7 @@ class PathDifferTest {
     }
 
     @Test
-    fun `diff should detect uuid change`() {
+    fun `diff should not detect uuid change`() {
         // arrange
         val left = pathTree(Entity("A")) {
             node(Entity("B")) {
@@ -117,16 +117,7 @@ class PathDifferTest {
         val diff = PathDiffer().diff(left, right)
 
         // assert
-        diff.size shouldBe 1
-
-        val first = diff.first()
-        first.shouldBeInstanceOf<DiffEvent.Update<Entity>>()
-
-        first.oldNode.uuid shouldBe createUuidFrom("D0")
-        first.oldNode.value.name shouldBe "D"
-
-        first.newNode.uuid shouldBe createUuidFrom("D1")
-        first.newNode.value.name shouldBe "D"
+        diff.size shouldBe 0
     }
 
     @Test

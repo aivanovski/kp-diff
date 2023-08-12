@@ -4,7 +4,8 @@ import java.util.UUID
 
 data class FieldEntity(
     override val uuid: UUID,
-    val entryUid: UUID,
     override val name: String,
     val value: String
-) : DatabaseEntity
+) : DatabaseEntity {
+    var entryUid: UUID = UUID(0, 0)
+}

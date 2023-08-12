@@ -53,3 +53,7 @@ fun DiffEvent<DatabaseEntity>.sortOrder(): Int {
         }
     }
 }
+
+fun <T : Any> DiffEvent<T>.asUpdate(): DiffEvent.Update<T> {
+    return this as DiffEvent.Update<T>
+}

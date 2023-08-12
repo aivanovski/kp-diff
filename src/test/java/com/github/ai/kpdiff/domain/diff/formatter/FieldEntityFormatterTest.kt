@@ -76,6 +76,9 @@ internal class FieldEntityFormatterTest {
         name: String = NAME,
         value: String = VALUE
     ): FieldEntity {
-        return FieldEntity(UUID_CHILD, UUID_PARENT, name, value)
+        return FieldEntity(UUID_CHILD, name, value)
+            .apply {
+                entryUid = UUID_PARENT
+            }
     }
 }

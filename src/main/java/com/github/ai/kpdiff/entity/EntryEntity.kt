@@ -15,5 +15,6 @@ data class EntryEntity(
         const val PROPERTY_PASSWORD = "Password"
         const val PROPERTY_URL = "URL"
         const val PROPERTY_NOTES = "Notes"
+        const val UUID = "UUID"
     }
 }
