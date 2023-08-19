@@ -6,10 +6,10 @@ import com.github.ai.kpdiff.TestData.INDENT_SINGLE
 import com.github.ai.kpdiff.TestData.TITLE1
 import com.github.ai.kpdiff.TestData.TITLE2
 import com.github.ai.kpdiff.TestData.UUID1
+import com.github.ai.kpdiff.TestData.UUID_PARENT
 import com.github.ai.kpdiff.domain.diff.formatter.GroupEntityFormatter.Companion.GROUP
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.GroupEntity
-import com.github.ai.kpdiff.entity.SimpleNode
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -20,7 +20,7 @@ internal class GroupEntityFormatterTest {
         val group = newGroup()
 
         newFormatter().format(
-            DiffEvent.Delete(SimpleNode(group.uuid, group)),
+            DiffEvent.Delete(UUID_PARENT, group),
             INDENT_EMPTY
         ) shouldBe "- $GROUP '$TITLE1'"
     }
@@ -30,7 +30,7 @@ internal class GroupEntityFormatterTest {
         val group = newGroup()
 
         newFormatter().format(
-            DiffEvent.Insert(SimpleNode(group.uuid, group)),
+            DiffEvent.Insert(UUID_PARENT, group),
             INDENT_EMPTY
         ) shouldBe "+ $GROUP '$TITLE1'"
     }
@@ -42,8 +42,10 @@ internal class GroupEntityFormatterTest {
 
         newFormatter().format(
             DiffEvent.Update(
-                SimpleNode(oldGroup.uuid, oldGroup),
-                SimpleNode(newGroup.uuid, newGroup)
+                oldParentUuid = UUID_PARENT,
+                newParentUuid = UUID_PARENT,
+                oldEntity = oldGroup,
+                newEntity = newGroup
             ),
             INDENT_EMPTY
         ) shouldBe "~ $GROUP '$TITLE2'"
@@ -54,12 +56,12 @@ internal class GroupEntityFormatterTest {
         val group = newGroup()
 
         newFormatter().format(
-            DiffEvent.Delete(SimpleNode(group.uuid, group)),
+            DiffEvent.Delete(UUID_PARENT, group),
             INDENT_SINGLE
         ) shouldBe "-$INDENT_SINGLE $GROUP '$TITLE1'"
 
         newFormatter().format(
-            DiffEvent.Delete(SimpleNode(group.uuid, group)),
+            DiffEvent.Delete(UUID_PARENT, group),
             INDENT_DOUBLE
         ) shouldBe "-$INDENT_DOUBLE $GROUP '$TITLE1'"
     }

@@ -1,12 +1,12 @@
 package com.github.ai.kpdiff.utils
 
-import com.github.ai.kpdiff.entity.SimpleNode
+import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.testUtils.NodeTreeDsl.tree
 import com.github.ai.kpdiff.testUtils.createUuidFrom
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
-internal class SimpleNodeExtensionsKtTest {
+internal class NodeExtensionsKtTest {
 
     @Test
     fun `traverseByValueType should return all nodes`() {
@@ -21,16 +21,16 @@ internal class SimpleNodeExtensionsKtTest {
     @Test
     fun `traverseAllByType should filter node by value type`() {
         // arrange
-        val tree = SimpleNode(
+        val tree = Node(
             uuid = createUuidFrom("A"),
             value = "A",
-            nodes = mutableListOf<SimpleNode<Any>>(
-                SimpleNode(
+            nodes = mutableListOf<Node<Any>>(
+                Node(
                     uuid = createUuidFrom("B"),
                     value = "B",
                     nodes = mutableListOf()
                 ),
-                SimpleNode(
+                Node(
                     uuid = createUuidFrom(1),
                     value = 1,
                     nodes = mutableListOf()

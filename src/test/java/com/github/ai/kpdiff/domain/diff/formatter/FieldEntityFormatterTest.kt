@@ -13,7 +13,6 @@ import com.github.ai.kpdiff.domain.diff.formatter.FieldEntityFormatter.Companion
 import com.github.ai.kpdiff.domain.diff.formatter.FieldEntityFormatter.Companion.FIELD
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.FieldEntity
-import com.github.ai.kpdiff.entity.SimpleNode
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -24,7 +23,7 @@ internal class FieldEntityFormatterTest {
         val entity = newEntity()
 
         newFormatter().format(
-            DiffEvent.Delete(SimpleNode(entity.uuid, entity)),
+            DiffEvent.Delete(UUID_PARENT, entity),
             INDENT_EMPTY
         ) shouldBe "- $FIELD '$NAME': '$VALUE'"
     }
@@ -34,7 +33,7 @@ internal class FieldEntityFormatterTest {
         val entity = newEntity()
 
         newFormatter().format(
-            DiffEvent.Insert(SimpleNode(entity.uuid, entity)),
+            DiffEvent.Insert(UUID_PARENT, entity),
             INDENT_EMPTY
         ) shouldBe "+ $FIELD '$NAME': '$VALUE'"
     }
@@ -46,8 +45,10 @@ internal class FieldEntityFormatterTest {
 
         newFormatter().format(
             DiffEvent.Update(
-                SimpleNode(oldEntity.uuid, oldEntity),
-                SimpleNode(newEntity.uuid, newEntity)
+                oldParentUuid = UUID_PARENT,
+                newParentUuid = UUID_PARENT,
+                oldEntity = oldEntity,
+                newEntity = newEntity
             ),
             INDENT_EMPTY
         ) shouldBe "~ $FIELD '$NAME': '$VALUE1' $CHANGED_TO '$VALUE2'"
@@ -58,12 +59,12 @@ internal class FieldEntityFormatterTest {
         val entity = newEntity()
 
         newFormatter().format(
-            DiffEvent.Delete(SimpleNode(entity.uuid, entity)),
+            DiffEvent.Delete(UUID_PARENT, entity),
             INDENT_SINGLE
         ) shouldBe "-$INDENT_SINGLE $FIELD '$NAME': '$VALUE'"
 
         newFormatter().format(
-            DiffEvent.Delete(SimpleNode(entity.uuid, entity)),
+            DiffEvent.Delete(UUID_PARENT, entity),
             INDENT_DOUBLE
         ) shouldBe "-$INDENT_DOUBLE $FIELD '$NAME': '$VALUE'"
     }
@@ -77,8 +78,5 @@ internal class FieldEntityFormatterTest {
         value: String = VALUE
     ): FieldEntity {
         return FieldEntity(UUID_CHILD, name, value)
-            .apply {
-                entryUid = UUID_PARENT
-            }
     }
 }
