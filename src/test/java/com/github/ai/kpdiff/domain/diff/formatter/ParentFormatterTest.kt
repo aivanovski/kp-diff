@@ -10,8 +10,8 @@ import com.github.ai.kpdiff.domain.diff.formatter.ParentFormatter.Companion.GROU
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
-import com.github.ai.kpdiff.utils.Properties.PROPERTY_TITLE
 import com.github.ai.kpdiff.entity.Parent
+import com.github.ai.kpdiff.utils.Properties.PROPERTY_TITLE
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test

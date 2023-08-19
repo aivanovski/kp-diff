@@ -1,10 +1,10 @@
 package com.github.ai.kpdiff.domain.diff.differ
 
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
-import com.github.aivanovski.keepasstreediff.PathDiffer
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffResult
 import com.github.ai.kpdiff.entity.KeepassDatabase
+import com.github.aivanovski.keepasstreediff.PathDiffer
 
 class PathDatabaseDiffer(
     private val differ: PathDiffer

@@ -46,7 +46,11 @@ object NodeTreeDsl {
             node(createUuidFrom(value), value, content)
         }
 
-        private fun node(uid: UUID, value: T, content: (SimpleNodeTreeBuilder<T>.() -> Unit)? = null) {
+        private fun node(
+            uid: UUID,
+            value: T,
+            content: (SimpleNodeTreeBuilder<T>.() -> Unit)? = null
+        ) {
             val node = SimpleNodeTreeBuilder(uid, value)
                 .apply {
                     content?.invoke(this)

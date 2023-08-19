@@ -1,11 +1,5 @@
 package com.github.ai.kpdiff.domain.diff.differ
 
-import com.github.aivanovski.keepasstreediff.entity.GroupEntity as ExternalGroupEntity
-import com.github.aivanovski.keepasstreediff.entity.EntryEntity as ExternalEntryEntity
-import com.github.aivanovski.keepasstreediff.entity.FieldEntity as ExternalFieldEntity
-import com.github.aivanovski.keepasstreediff.entity.DiffEvent as ExternalDiffEvent
-import com.github.aivanovski.keepasstreediff.entity.Entity as ExternalEntity
-import com.github.aivanovski.keepasstreediff.entity.TreeNode as ExternalNode
 import com.github.ai.kpdiff.TestEntityFactory.newEntry
 import com.github.ai.kpdiff.TestEntityFactory.newField
 import com.github.ai.kpdiff.TestEntityFactory.newGroup
@@ -16,6 +10,12 @@ import com.github.ai.kpdiff.utils.Properties.PROPERTY_PASSWORD
 import com.github.ai.kpdiff.utils.Properties.PROPERTY_TITLE
 import com.github.ai.kpdiff.utils.Properties.PROPERTY_USERNAME
 import com.github.ai.kpdiff.utils.traverse
+import com.github.aivanovski.keepasstreediff.entity.DiffEvent as ExternalDiffEvent
+import com.github.aivanovski.keepasstreediff.entity.Entity as ExternalEntity
+import com.github.aivanovski.keepasstreediff.entity.EntryEntity as ExternalEntryEntity
+import com.github.aivanovski.keepasstreediff.entity.FieldEntity as ExternalFieldEntity
+import com.github.aivanovski.keepasstreediff.entity.GroupEntity as ExternalGroupEntity
+import com.github.aivanovski.keepasstreediff.entity.TreeNode as ExternalNode
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import java.util.LinkedList

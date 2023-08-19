@@ -12,7 +12,7 @@ object TestEntityFactory {
     fun newGroup(id: Int): GroupEntity =
         GroupEntity(
             uuid = createUuidFrom(id),
-            name = "Group $id",
+            name = "Group $id"
         )
 
     fun newEntry(id: Int): EntryEntity =
