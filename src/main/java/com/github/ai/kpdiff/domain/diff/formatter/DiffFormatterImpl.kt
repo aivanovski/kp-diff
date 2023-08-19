@@ -11,11 +11,11 @@ import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.Parent
-import com.github.ai.kpdiff.entity.SimpleNode
+import com.github.ai.kpdiff.utils.Properties
 import com.github.ai.kpdiff.utils.getColor
 import com.github.ai.kpdiff.utils.getEntity
 import com.github.ai.kpdiff.utils.getFields
-import com.github.ai.kpdiff.utils.getNode
+import com.github.ai.kpdiff.utils.getParentUuid
 import com.github.ai.kpdiff.utils.sortOrder
 import com.github.ai.kpdiff.utils.traverseByValueType
 import com.github.ai.kpdiff.utils.traverseWithParents
@@ -49,23 +49,20 @@ class DiffFormatterImpl(
 
         val eventsByParentUuid = LinkedHashMap<UUID?, MutableList<DiffEvent<DatabaseEntity>>>()
         for (event in diff.events) {
-            val node = event.getNode()
-            val originType = event.getOriginType()
-
-            when (val value = node.value) {
+            when (event.getEntity()) {
                 is FieldEntity -> {
-                    val events = eventsByParentUuid.getOrDefault(value.entryUid, mutableListOf())
+                    val entryUid = event.getParentUuid()
+
+                    val events = eventsByParentUuid.getOrDefault(entryUid, mutableListOf())
                         .apply {
                             add(event)
                         }
 
-                    eventsByParentUuid[value.entryUid] = events
+                    eventsByParentUuid[entryUid] = events
                 }
+
                 else -> {
-                    val parentUid = when (originType) {
-                        OriginType.LEFT -> lhsUuidToParentMap[node.uuid]
-                        OriginType.RIGHT -> rhsUuidToParentMap[node.uuid]
-                    }
+                    val parentUid = event.getParentUuid()
 
                     val events = eventsByParentUuid.getOrDefault(parentUid, mutableListOf())
                         .apply {
@@ -276,12 +273,22 @@ class DiffFormatterImpl(
             .sortedWith(otherFieldComparator)
 
         for (field in (defaultFields + otherFields)) {
-            val node = SimpleNode(field.uuid, field)
+            val newEvent = when (event) {
+                is DiffEvent.Insert -> {
+                    DiffEvent.Insert(
+                        parentUuid = event.parentUuid,
+                        entity = field
+                    )
+                }
 
-            val newEvent = if (event is DiffEvent.Insert) {
-                DiffEvent.Insert(node)
-            } else {
-                DiffEvent.Delete(node)
+                is DiffEvent.Delete -> {
+                    DiffEvent.Delete(
+                        parentUuid = event.parentUuid,
+                        entity = field
+                    )
+                }
+
+                else -> throw IllegalStateException()
             }
 
             result.add(formatEvent(newEvent, indent, options))
@@ -342,19 +349,19 @@ class DiffFormatterImpl(
         private const val INDENT = "    "
 
         private val DEFAULT_PROPERTIES_ORDER = mapOf(
-            EntryEntity.PROPERTY_TITLE to 1,
-            EntryEntity.PROPERTY_USERNAME to 2,
-            EntryEntity.PROPERTY_PASSWORD to 3,
-            EntryEntity.PROPERTY_URL to 4,
-            EntryEntity.PROPERTY_NOTES to 5
+            Properties.PROPERTY_TITLE to 1,
+            Properties.PROPERTY_USERNAME to 2,
+            Properties.PROPERTY_PASSWORD to 3,
+            Properties.PROPERTY_URL to 4,
+            Properties.PROPERTY_NOTES to 5
         )
 
         private val DEFAULT_PROPERTIES = setOf(
-            EntryEntity.PROPERTY_TITLE,
-            EntryEntity.PROPERTY_USERNAME,
-            EntryEntity.PROPERTY_PASSWORD,
-            EntryEntity.PROPERTY_URL,
-            EntryEntity.PROPERTY_NOTES
+            Properties.PROPERTY_TITLE,
+            Properties.PROPERTY_USERNAME,
+            Properties.PROPERTY_PASSWORD,
+            Properties.PROPERTY_URL,
+            Properties.PROPERTY_NOTES
         )
     }
 }

@@ -3,10 +3,20 @@ package com.github.ai.kpdiff.utils
 import com.github.ai.kpdiff.domain.diff.formatter.TerminalOutputFormatter.Color
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
+import com.github.ai.kpdiff.entity.EntryEntity
+import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
-import com.github.ai.kpdiff.entity.Node
+import java.util.UUID
 
-fun <T : Any> DiffEvent<T>.getTypeCharacter(): String {
+fun DiffEvent<*>.getParentUuid(): UUID? {
+    return when (this) {
+        is DiffEvent.Insert -> parentUuid
+        is DiffEvent.Delete -> parentUuid
+        is DiffEvent.Update -> newParentUuid
+    }
+}
+
+fun DiffEvent<*>.getTypeCharacter(): String {
     return when (this) {
         is DiffEvent.Insert -> "+"
         is DiffEvent.Delete -> "-"
@@ -14,7 +24,7 @@ fun <T : Any> DiffEvent<T>.getTypeCharacter(): String {
     }
 }
 
-fun <T : Any> DiffEvent<T>.getColor(): Color {
+fun DiffEvent<*>.getColor(): Color {
     return when (this) {
         is DiffEvent.Insert -> Color.GREEN
         is DiffEvent.Delete -> Color.RED
@@ -24,36 +34,32 @@ fun <T : Any> DiffEvent<T>.getColor(): Color {
 
 fun <T : Any> DiffEvent<T>.getEntity(): T {
     return when (this) {
-        is DiffEvent.Insert -> node.value
-        is DiffEvent.Delete -> node.value
-        is DiffEvent.Update -> newNode.value
-    }
-}
-
-fun <T : Any> DiffEvent<T>.getNode(): Node<T> {
-    return when (this) {
-        is DiffEvent.Insert -> node
-        is DiffEvent.Delete -> node
-        is DiffEvent.Update -> newNode
+        is DiffEvent.Insert -> entity
+        is DiffEvent.Delete -> entity
+        is DiffEvent.Update -> newEntity
     }
 }
 
 fun DiffEvent<DatabaseEntity>.sortOrder(): Int {
     return when (this) {
         is DiffEvent.Update -> {
-            if (newNode.value is GroupEntity) 1 else 5
+            newEntity.sortOrder()
         }
 
         is DiffEvent.Delete -> {
-            if (node.value is GroupEntity) 10 else 15
+            10 + entity.sortOrder()
         }
 
         is DiffEvent.Insert -> {
-            if (node.value is GroupEntity) 20 else 25
+            20 + entity.sortOrder()
         }
     }
 }
 
-fun <T : Any> DiffEvent<T>.asUpdate(): DiffEvent.Update<T> {
-    return this as DiffEvent.Update<T>
+private fun DatabaseEntity.sortOrder(): Int {
+    return when (this) {
+        is GroupEntity -> 1
+        is EntryEntity -> 2
+        is FieldEntity -> 3
+    }
 }

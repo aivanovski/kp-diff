@@ -4,9 +4,7 @@ import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
-import com.github.ai.kpdiff.entity.Named
-import com.github.ai.kpdiff.entity.PathNode
-import com.github.ai.kpdiff.entity.SimpleNode
+import com.github.ai.kpdiff.entity.Node
 import java.util.UUID
 
 object NodeTreeDsl {
@@ -14,21 +12,8 @@ object NodeTreeDsl {
     fun <T : Any> tree(
         value: T,
         content: SimpleNodeTreeBuilder<T>.() -> Unit
-    ): SimpleNode<T> {
+    ): Node<T> {
         val root = SimpleNodeTreeBuilder(createUuidFrom(value), value)
-            .apply {
-                content.invoke(this)
-            }
-            .build()
-
-        return root
-    }
-
-    fun <T : Named> pathTree(
-        value: T,
-        content: PathNodeTreeBuilder<T>.() -> Unit
-    ): PathNode<T> {
-        val root = PathNodeTreeBuilder(createUuidFrom(value), value.name, value)
             .apply {
                 content.invoke(this)
             }
@@ -55,13 +40,13 @@ object NodeTreeDsl {
         private val root: T
     ) {
 
-        private val nodes = mutableListOf<SimpleNode<T>>()
+        private val nodes = mutableListOf<Node<T>>()
 
         fun node(value: T, content: (SimpleNodeTreeBuilder<T>.() -> Unit)? = null) {
             node(createUuidFrom(value), value, content)
         }
 
-        fun node(uid: UUID, value: T, content: (SimpleNodeTreeBuilder<T>.() -> Unit)? = null) {
+        private fun node(uid: UUID, value: T, content: (SimpleNodeTreeBuilder<T>.() -> Unit)? = null) {
             val node = SimpleNodeTreeBuilder(uid, value)
                 .apply {
                     content?.invoke(this)
@@ -71,38 +56,8 @@ object NodeTreeDsl {
             nodes.add(node)
         }
 
-        fun build(): SimpleNode<T> {
-            return SimpleNode(rootUid, root, nodes)
-        }
-    }
-
-    class PathNodeTreeBuilder<T : Named>(
-        private val rootUid: UUID,
-        private val path: String,
-        private val root: T
-    ) {
-        private val nodes = mutableListOf<PathNode<T>>()
-
-        fun node(value: T, content: (PathNodeTreeBuilder<T>.() -> Unit)? = null) {
-            node(createUuidFrom(value), value, content)
-        }
-
-        fun node(
-            uid: UUID,
-            value: T,
-            content: (PathNodeTreeBuilder<T>.() -> Unit)? = null
-        ) {
-            val node = PathNodeTreeBuilder(uid, path + "/" + value.name, value)
-                .apply {
-                    content?.invoke(this)
-                }
-                .build()
-
-            nodes.add(node)
-        }
-
-        fun build(): PathNode<T> {
-            return PathNode(rootUid, path, root, nodes)
+        fun build(): Node<T> {
+            return Node(rootUid, root, nodes)
         }
     }
 
@@ -111,7 +66,7 @@ object NodeTreeDsl {
         private val root: DatabaseEntity
     ) {
 
-        private val nodes = mutableListOf<SimpleNode<DatabaseEntity>>()
+        private val nodes = mutableListOf<Node<DatabaseEntity>>()
 
         fun group(
             group: GroupEntity,
@@ -124,8 +79,8 @@ object NodeTreeDsl {
             add(entry.uuid, entry)
         }
 
-        fun build(): SimpleNode<DatabaseEntity> {
-            return SimpleNode(rootUid, root, nodes)
+        fun build(): Node<DatabaseEntity> {
+            return Node(rootUid, root, nodes)
         }
 
         private fun add(

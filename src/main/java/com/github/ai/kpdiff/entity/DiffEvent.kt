@@ -1,17 +1,23 @@
 package com.github.ai.kpdiff.entity
 
+import java.util.UUID
+
 sealed class DiffEvent<T : Any> {
 
     data class Insert<T : Any>(
-        val node: Node<T>
+        val parentUuid: UUID?,
+        val entity: T
     ) : DiffEvent<T>()
 
     data class Delete<T : Any>(
-        val node: Node<T>
+        val parentUuid: UUID?,
+        val entity: T
     ) : DiffEvent<T>()
 
     data class Update<T : Any>(
-        val oldNode: Node<T>,
-        val newNode: Node<T>
+        val oldParentUuid: UUID?,
+        val newParentUuid: UUID?,
+        val oldEntity: T,
+        val newEntity: T
     ) : DiffEvent<T>()
 }

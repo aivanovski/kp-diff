@@ -7,11 +7,11 @@ import com.github.ai.kpdiff.TestData.TITLE
 import com.github.ai.kpdiff.TestData.TITLE1
 import com.github.ai.kpdiff.TestData.TITLE2
 import com.github.ai.kpdiff.TestData.UUID1
+import com.github.ai.kpdiff.TestData.UUID_PARENT
 import com.github.ai.kpdiff.domain.diff.formatter.EntryEntityFormatter.Companion.ENTRY
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.EntryEntity.Companion.PROPERTY_TITLE
-import com.github.ai.kpdiff.entity.SimpleNode
+import com.github.ai.kpdiff.utils.Properties
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -22,7 +22,7 @@ internal class EntryEntityFormatterTest {
         val entry = newEntity()
 
         newFormatter().format(
-            DiffEvent.Delete(SimpleNode(entry.uuid, entry)),
+            DiffEvent.Delete(UUID_PARENT, entry),
             INDENT_EMPTY
         ) shouldBe "- $ENTRY '$TITLE'"
     }
@@ -32,7 +32,7 @@ internal class EntryEntityFormatterTest {
         val entry = newEntity()
 
         newFormatter().format(
-            DiffEvent.Insert(SimpleNode(entry.uuid, entry)),
+            DiffEvent.Insert(UUID_PARENT, entry),
             INDENT_EMPTY
         ) shouldBe "+ $ENTRY '$TITLE'"
     }
@@ -44,8 +44,10 @@ internal class EntryEntityFormatterTest {
 
         newFormatter().format(
             DiffEvent.Update(
-                SimpleNode(oldEntry.uuid, oldEntry),
-                SimpleNode(newEntry.uuid, newEntry)
+                oldParentUuid = UUID_PARENT,
+                newParentUuid = UUID_PARENT,
+                oldEntity = oldEntry,
+                newEntity = newEntry
             ),
             INDENT_EMPTY
         ) shouldBe "~ $ENTRY '$TITLE2'"
@@ -56,12 +58,12 @@ internal class EntryEntityFormatterTest {
         val entry = newEntity()
 
         newFormatter().format(
-            DiffEvent.Delete(SimpleNode(entry.uuid, entry)),
+            DiffEvent.Delete(UUID_PARENT, entry),
             INDENT_SINGLE
         ) shouldBe "-$INDENT_SINGLE $ENTRY '$TITLE'"
 
         newFormatter().format(
-            DiffEvent.Delete(SimpleNode(entry.uuid, entry)),
+            DiffEvent.Delete(UUID_PARENT, entry),
             INDENT_DOUBLE
         ) shouldBe "-$INDENT_DOUBLE $ENTRY '$TITLE'"
     }
@@ -72,7 +74,7 @@ internal class EntryEntityFormatterTest {
     private fun newEntity(title: String = TITLE): EntryEntity {
         return EntryEntity(
             UUID1,
-            mapOf(PROPERTY_TITLE to title)
+            mapOf(Properties.PROPERTY_TITLE to title)
         )
     }
 }

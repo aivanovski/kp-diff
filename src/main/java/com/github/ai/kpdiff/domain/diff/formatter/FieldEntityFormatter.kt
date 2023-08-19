@@ -14,8 +14,8 @@ class FieldEntityFormatter : EntityFormatter<FieldEntity> {
         val result = StringBuilder("$type$indentation $FIELD '${entity.name}'")
 
         if (event is DiffEvent.Update) {
-            val oldEntity = event.oldNode.value
-            val newEntity = event.newNode.value
+            val oldEntity = event.oldEntity
+            val newEntity = event.newEntity
 
             result.append(": '${oldEntity.value}' $CHANGED_TO '${newEntity.value}'")
         } else {

@@ -9,8 +9,8 @@ import com.github.ai.kpdiff.domain.diff.formatter.ParentFormatter.Companion.ENTR
 import com.github.ai.kpdiff.domain.diff.formatter.ParentFormatter.Companion.GROUP
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.EntryEntity.Companion.PROPERTY_TITLE
 import com.github.ai.kpdiff.entity.GroupEntity
+import com.github.ai.kpdiff.utils.Properties.PROPERTY_TITLE
 import com.github.ai.kpdiff.entity.Parent
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe

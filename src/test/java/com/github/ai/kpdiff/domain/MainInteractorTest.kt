@@ -46,8 +46,7 @@ class MainInteractorTest {
     @Test
     fun `process should finish successfully`() {
         listOf(
-            DifferType.PATH,
-            DifferType.UUID
+            DifferType.PATH
         ).forEach { differType ->
             // arrange
             val args = newArgs(differType = differType)

@@ -1,12 +1,12 @@
 package com.github.ai.kpdiff.domain.diff.formatter
 
 import com.github.ai.kpdiff.TestData
-import com.github.ai.kpdiff.domain.diff.pathDiffer.PathDatabaseDiffer
-import com.github.ai.kpdiff.domain.diff.uuidDiffer.UuidDatabaseDiffer
+import com.github.ai.kpdiff.domain.diff.differ.PathDatabaseDiffer
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.testUtils.open
 import com.github.ai.kpdiff.utils.buildNodeTree
+import com.github.aivanovski.keepasstreediff.PathDiffer
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -15,10 +15,8 @@ class DiffFormatterImplTest {
     @Test
     fun `format should return diff between databases`() {
         listOf(
-            Pair(defaultOptions(), UuidDatabaseDiffer()) to OUTPUT,
-            Pair(verboseOptions(), UuidDatabaseDiffer()) to VERBOSE_OUTPUT,
-            Pair(defaultOptions(), PathDatabaseDiffer()) to OUTPUT,
-            Pair(verboseOptions(), PathDatabaseDiffer()) to VERBOSE_OUTPUT
+            Pair(defaultOptions(), newPathDiffer()) to OUTPUT,
+            Pair(verboseOptions(), newPathDiffer()) to VERBOSE_OUTPUT
         ).forEach { (data, expected) ->
             // arrange
             val (options, differ) = data
@@ -44,6 +42,9 @@ class DiffFormatterImplTest {
             result shouldBe expected
         }
     }
+
+    private fun newPathDiffer(): PathDatabaseDiffer =
+        PathDatabaseDiffer(PathDiffer())
 
     private fun defaultOptions(): DiffFormatterOptions =
         DiffFormatterOptions(isColorEnabled = false, isVerboseOutput = false)

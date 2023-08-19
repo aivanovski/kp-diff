@@ -6,7 +6,7 @@ import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassKey
-import com.github.ai.kpdiff.entity.SimpleNode
+import com.github.ai.kpdiff.entity.Node
 import io.github.anvell.kotpass.cryptography.EncryptedValue
 import io.github.anvell.kotpass.database.Credentials
 import io.github.anvell.kotpass.models.Entry
@@ -32,17 +32,17 @@ fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Cre
     }
 }
 
-fun Group.buildNodeTree(): SimpleNode<DatabaseEntity> {
-    val root: SimpleNode<DatabaseEntity> = SimpleNode(uuid, this.toEntity())
+fun Group.buildNodeTree(): Node<DatabaseEntity> {
+    val root: Node<DatabaseEntity> = Node(uuid, this.toEntity())
 
-    val groups = LinkedList<Pair<SimpleNode<DatabaseEntity>, Group>>()
+    val groups = LinkedList<Pair<Node<DatabaseEntity>, Group>>()
     groups.add(Pair(root, this))
 
     while (groups.isNotEmpty()) {
         val (node, group) = groups.poll()
 
         for (childGroup in group.groups) {
-            val childNode = SimpleNode<DatabaseEntity>(childGroup.uuid, childGroup.toEntity())
+            val childNode = Node<DatabaseEntity>(childGroup.uuid, childGroup.toEntity())
 
             node.nodes.add(childNode)
             groups.push(Pair(childNode, childGroup))
@@ -50,7 +50,7 @@ fun Group.buildNodeTree(): SimpleNode<DatabaseEntity> {
 
         for (entry in group.entries) {
             val entryUid = entry.uuid
-            val entryNode = SimpleNode<DatabaseEntity>(entryUid, entry.toEntity())
+            val entryNode = Node<DatabaseEntity>(entryUid, entry.toEntity())
 
             node.nodes.add(entryNode)
         }
