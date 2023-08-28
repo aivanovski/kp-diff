@@ -67,14 +67,14 @@ private fun Group.toEntity(): GroupEntity {
 }
 
 private fun Entry.toEntity(): EntryEntity {
-    val properties = mutableMapOf<String, String>()
+    val fields = mutableMapOf<String, String>()
 
-    for ((key, value) in fields.entries) {
-        properties[key] = value.content
+    for ((key, value) in this.fields.entries) {
+        fields[key] = value.content
     }
 
     return EntryEntity(
         uuid = uuid,
-        properties = properties
+        fields = fields
     )
 }

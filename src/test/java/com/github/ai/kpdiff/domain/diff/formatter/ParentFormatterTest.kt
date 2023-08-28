@@ -11,7 +11,7 @@ import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.Parent
-import com.github.ai.kpdiff.utils.Properties.PROPERTY_TITLE
+import com.github.ai.kpdiff.utils.Fields.FIELD_TITLE
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
@@ -20,7 +20,7 @@ internal class ParentFormatterTest {
 
     @Test
     fun `format should format entry`() {
-        val parent = newParent(EntryEntity(UUID1, mapOf(PROPERTY_TITLE to TITLE)))
+        val parent = newParent(EntryEntity(UUID1, mapOf(FIELD_TITLE to TITLE)))
         newFormatter().format(
             parent,
             INDENT_EMPTY

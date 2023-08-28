@@ -6,7 +6,7 @@ import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.Node
-import com.github.ai.kpdiff.utils.Properties.PROPERTY_TITLE
+import com.github.ai.kpdiff.utils.Fields.FIELD_TITLE
 import com.github.aivanovski.keepasstreediff.entity.DiffEvent as ExternalDiffEvent
 import com.github.aivanovski.keepasstreediff.entity.Entity as ExternalEntity
 import com.github.aivanovski.keepasstreediff.entity.EntryEntity as ExternalEntryEntity
@@ -51,8 +51,8 @@ fun DatabaseEntity.toExternalEntity(): ExternalTreeEntity {
             ExternalGroupEntity(
                 uuid = uuid,
                 fields = mapOf(
-                    PROPERTY_TITLE to ExternalFieldEntity(
-                        name = PROPERTY_TITLE,
+                    FIELD_TITLE to ExternalFieldEntity(
+                        name = FIELD_TITLE,
                         value = this.name
                     )
                 )
@@ -62,7 +62,7 @@ fun DatabaseEntity.toExternalEntity(): ExternalTreeEntity {
         is EntryEntity -> {
             ExternalEntryEntity(
                 uuid = uuid,
-                fields = properties.map { (name, value) ->
+                fields = fields.map { (name, value) ->
                     name to ExternalFieldEntity(name, value)
                 }
                     .toMap()
@@ -79,14 +79,14 @@ fun ExternalEntity.toInternalEntity(): DatabaseEntity {
             GroupEntity(
                 uuid = uuid,
                 // ExternalGroupEntity should always have PROPERTY_TITLE
-                name = fields[PROPERTY_TITLE]!!.value
+                name = fields[FIELD_TITLE]!!.value
             )
         }
 
         is ExternalEntryEntity -> {
             EntryEntity(
                 uuid = uuid,
-                properties = fields.map { (name, field) ->
+                fields = fields.map { (name, field) ->
                     Pair(
                         name,
                         field.value

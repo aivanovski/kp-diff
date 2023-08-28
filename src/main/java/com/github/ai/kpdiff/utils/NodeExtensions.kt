@@ -2,6 +2,7 @@ package com.github.ai.kpdiff.utils
 
 import com.github.ai.kpdiff.entity.Node
 import java.util.LinkedList
+import java.util.UUID
 import kotlin.reflect.KClass
 
 fun <T1 : Any, T2 : Any> Node<T1>.traverseByValueType(type: KClass<T2>): List<Node<T2>> {
@@ -62,4 +63,30 @@ fun <T : Any> Node<T>.traverse(): List<Node<T>> {
     }
 
     return result
+}
+
+fun Node<*>.buildDepthMap(): Map<UUID, Int> {
+    val depthMap = HashMap<UUID, Int>()
+
+    val nodes = LinkedList<Node<*>>()
+    nodes.add(this)
+
+    var level = 0
+    val result = mutableListOf<Node<*>>()
+    while (nodes.isNotEmpty()) {
+        repeat(nodes.size) {
+            val node = nodes.removeFirst()
+
+            depthMap[node.uuid] = level
+            result.add(node)
+
+            for (child in node.nodes) {
+                nodes.add(child)
+            }
+        }
+
+        level++
+    }
+
+    return depthMap
 }

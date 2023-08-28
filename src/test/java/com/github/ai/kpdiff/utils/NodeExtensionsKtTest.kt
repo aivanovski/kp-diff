@@ -74,6 +74,27 @@ internal class NodeExtensionsKtTest {
         nodes shouldBe TREE_NODES_BFS
     }
 
+    @Test
+    fun `buildDepthMap should map uuid to depth`() {
+        // arrange
+
+        // act
+        val depthMap = TREE.buildDepthMap()
+
+        // assert
+        depthMap shouldBe mapOf(
+            createUuidFrom("A") to 0,
+
+            createUuidFrom("B") to 1,
+            createUuidFrom("C") to 1,
+
+            createUuidFrom("D") to 2,
+            createUuidFrom("E") to 2,
+            createUuidFrom("F") to 2,
+            createUuidFrom("G") to 2
+        )
+    }
+
     companion object {
         private val TREE = tree("A") {
             node("B") {

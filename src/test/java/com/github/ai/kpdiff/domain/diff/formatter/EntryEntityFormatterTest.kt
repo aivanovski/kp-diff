@@ -11,7 +11,7 @@ import com.github.ai.kpdiff.TestData.UUID_PARENT
 import com.github.ai.kpdiff.domain.diff.formatter.EntryEntityFormatter.Companion.ENTRY
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.utils.Properties
+import com.github.ai.kpdiff.utils.Fields.FIELD_TITLE
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
@@ -74,7 +74,7 @@ internal class EntryEntityFormatterTest {
     private fun newEntity(title: String = TITLE): EntryEntity {
         return EntryEntity(
             UUID1,
-            mapOf(Properties.PROPERTY_TITLE to title)
+            mapOf(FIELD_TITLE to title)
         )
     }
 }
