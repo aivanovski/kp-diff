@@ -89,7 +89,8 @@ class DiffEventSorter {
         }
     }
 
-    private fun List<DiffEvent<out DatabaseEntity>>.sortByName(): List<DiffEvent<out DatabaseEntity>> {
+    private fun List<DiffEvent<out DatabaseEntity>>.sortByName():
+        List<DiffEvent<out DatabaseEntity>> {
         return this.sortedBy { event -> event.getEntity().name }
     }
 
@@ -107,7 +108,8 @@ class DiffEventSorter {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun List<DiffEvent<out DatabaseEntity>>.asEntityEvents(): List<DiffEvent<DatabaseEntity>> {
+    private fun List<DiffEvent<out DatabaseEntity>>.asEntityEvents():
+        List<DiffEvent<DatabaseEntity>> {
         return this as List<DiffEvent<DatabaseEntity>>
     }
 

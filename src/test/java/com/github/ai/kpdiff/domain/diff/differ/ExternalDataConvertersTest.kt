@@ -146,7 +146,6 @@ class ExternalDataConvertersTest {
         )
     }
 
-
     private fun newExternalField(id: Int): ExternalFieldEntity {
         val field = newField(id)
 

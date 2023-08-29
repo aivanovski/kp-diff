@@ -35,7 +35,7 @@ class DiffDecoratorTest {
                     id = ENTRY1,
                     custom = mapOf(
                         "A" to "A",
-                        "C" to "C",
+                        "C" to "C"
                     )
                 )
             )
@@ -82,7 +82,6 @@ class DiffDecoratorTest {
         }
 
         val rhs = dbTree(newGroup(ROOT)) {
-
         }
 
         // act

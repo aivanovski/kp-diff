@@ -19,7 +19,6 @@ import com.github.ai.kpdiff.utils.getColor
 import com.github.ai.kpdiff.utils.getEntity
 import com.github.ai.kpdiff.utils.getFieldEntities
 import java.util.UUID
-import kotlin.Comparator
 
 class DiffFormatterImpl(
     private val formatterProvider: EntityFormatterProvider,
@@ -45,7 +44,6 @@ class DiffFormatterImpl(
 
         val lines = mutableListOf<String>()
         for ((parentUuid, events) in eventsByParentUuid) {
-
             val parents = getParents(
                 firstParentUuid = parentUuid,
                 originType = events.getOriginType(),

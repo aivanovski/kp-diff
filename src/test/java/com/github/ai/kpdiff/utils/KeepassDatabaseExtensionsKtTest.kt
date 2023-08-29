@@ -24,7 +24,7 @@ class KeepassDatabaseExtensionsKtTest {
             newGroup(GROUP1),
             newGroup(GROUP2),
             newGroup(GROUP3),
-            newGroup(GROUP4),
+            newGroup(GROUP4)
         )
             .associateBy { it.uuid }
 
@@ -42,7 +42,7 @@ class KeepassDatabaseExtensionsKtTest {
             newEntry(ENTRY1),
             newEntry(ENTRY2),
             newEntry(ENTRY3),
-            newEntry(ENTRY4),
+            newEntry(ENTRY4)
         )
             .associateBy { it.uuid }
 
@@ -67,9 +67,8 @@ class KeepassDatabaseExtensionsKtTest {
             createUuidFrom(GROUP4) to createUuidFrom(GROUP2),
             createUuidFrom(ENTRY2) to createUuidFrom(GROUP2),
 
-
             createUuidFrom(ENTRY3) to createUuidFrom(GROUP3),
-            createUuidFrom(ENTRY4) to createUuidFrom(GROUP3),
+            createUuidFrom(ENTRY4) to createUuidFrom(GROUP3)
         )
     }
 
