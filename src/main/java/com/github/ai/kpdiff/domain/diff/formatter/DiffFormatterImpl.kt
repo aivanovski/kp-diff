@@ -11,16 +11,14 @@ import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.Parent
-import com.github.ai.kpdiff.utils.Properties
+import com.github.ai.kpdiff.utils.Fields
+import com.github.ai.kpdiff.utils.buildAllEntryMap
+import com.github.ai.kpdiff.utils.buildAllGroupMap
+import com.github.ai.kpdiff.utils.buildUuidToParentMap
 import com.github.ai.kpdiff.utils.getColor
 import com.github.ai.kpdiff.utils.getEntity
-import com.github.ai.kpdiff.utils.getFields
-import com.github.ai.kpdiff.utils.getParentUuid
-import com.github.ai.kpdiff.utils.sortOrder
-import com.github.ai.kpdiff.utils.traverseByValueType
-import com.github.ai.kpdiff.utils.traverseWithParents
+import com.github.ai.kpdiff.utils.getFieldEntities
 import java.util.UUID
-import kotlin.Comparator
 
 class DiffFormatterImpl(
     private val formatterProvider: EntityFormatterProvider,
@@ -28,12 +26,7 @@ class DiffFormatterImpl(
     private val terminalOutputFormatter: TerminalOutputFormatter
 ) : DiffFormatter {
 
-    private val comparator = Comparator<DiffEvent<DatabaseEntity>> { lhs, rhs ->
-        lhs.sortOrder().compareTo(rhs.sortOrder())
-    }
-
-    private val defaultFieldComparator = DefaultFieldComparator()
-    private val otherFieldComparator = NameFieldComparator()
+    private val decorator = DiffDecorator()
 
     override fun format(
         diff: DiffResult<KeepassDatabase, DatabaseEntity>,
@@ -47,39 +40,10 @@ class DiffFormatterImpl(
         val rhsEntryMap = diff.rhs.buildAllEntryMap()
         val rhsUuidToParentMap = diff.rhs.buildUuidToParentMap()
 
-        val eventsByParentUuid = LinkedHashMap<UUID?, MutableList<DiffEvent<DatabaseEntity>>>()
-        for (event in diff.events) {
-            when (event.getEntity()) {
-                is FieldEntity -> {
-                    val entryUid = event.getParentUuid()
-
-                    val events = eventsByParentUuid.getOrDefault(entryUid, mutableListOf())
-                        .apply {
-                            add(event)
-                        }
-
-                    eventsByParentUuid[entryUid] = events
-                }
-
-                else -> {
-                    val parentUid = event.getParentUuid()
-
-                    val events = eventsByParentUuid.getOrDefault(parentUid, mutableListOf())
-                        .apply {
-                            add(event)
-                        }
-
-                    eventsByParentUuid[parentUid] = events
-                }
-            }
-        }
+        val eventsByParentUuid = decorator.decorate(diff)
 
         val lines = mutableListOf<String>()
-        for (parentUuid in eventsByParentUuid.keys) {
-            val events = eventsByParentUuid[parentUuid] ?: continue
-
-            events.sortWith(comparator)
-
+        for ((parentUuid, events) in eventsByParentUuid) {
             val parents = getParents(
                 firstParentUuid = parentUuid,
                 originType = events.getOriginType(),
@@ -110,8 +74,6 @@ class DiffFormatterImpl(
 
         return lines
     }
-
-//    private fun determineP
 
     private fun getParents(
         firstParentUuid: UUID?,
@@ -264,59 +226,36 @@ class DiffFormatterImpl(
 
         val result = mutableListOf<String>()
 
-        val allFields = entity.getFields()
+        val allFields = entity.getFieldEntities()
 
         val defaultFields = allFields.filter { field -> field.isDefault() }
-            .sortedWith(defaultFieldComparator)
-
         val otherFields = allFields.filter { field -> !field.isDefault() }
-            .sortedWith(otherFieldComparator)
 
-        for (field in (defaultFields + otherFields)) {
-            val newEvent = when (event) {
-                is DiffEvent.Insert -> {
-                    DiffEvent.Insert(
-                        parentUuid = event.parentUuid,
-                        entity = field
-                    )
+        val fieldEvents = (defaultFields + otherFields)
+            .map { field ->
+                when (event) {
+                    is DiffEvent.Insert -> {
+                        DiffEvent.Insert(
+                            parentUuid = event.parentUuid,
+                            entity = field as DatabaseEntity
+                        )
+                    }
+
+                    is DiffEvent.Delete -> {
+                        DiffEvent.Delete(
+                            parentUuid = event.parentUuid,
+                            entity = field as DatabaseEntity
+                        )
+                    }
+
+                    else -> throw IllegalStateException()
                 }
-
-                is DiffEvent.Delete -> {
-                    DiffEvent.Delete(
-                        parentUuid = event.parentUuid,
-                        entity = field
-                    )
-                }
-
-                else -> throw IllegalStateException()
             }
 
-            result.add(formatEvent(newEvent, indent, options))
-        }
+        val sortedFieldEvents = DiffEventSorter().sort(fieldEvents)
 
-        return result
-    }
-
-    private fun KeepassDatabase.buildAllGroupMap(): Map<UUID, GroupEntity> {
-        return this.root.traverseByValueType(GroupEntity::class)
-            .map { node -> node.value }
-            .associateBy { group -> group.uuid }
-    }
-
-    private fun KeepassDatabase.buildAllEntryMap(): Map<UUID, EntryEntity> {
-        return this.root.traverseByValueType(EntryEntity::class)
-            .map { node -> node.value }
-            .associateBy { entry -> entry.uuid }
-    }
-
-    private fun KeepassDatabase.buildUuidToParentMap(): Map<UUID, UUID> {
-        val result = HashMap<UUID, UUID>()
-
-        val parentToNodePairs = root.traverseWithParents()
-        for ((parentNode, node) in parentToNodePairs) {
-            if (parentNode == null) continue
-
-            result[node.uuid] = parentNode.uuid
+        for (fieldEvent in sortedFieldEvents) {
+            result.add(formatEvent(fieldEvent, indent, options))
         }
 
         return result
@@ -324,20 +263,6 @@ class DiffFormatterImpl(
 
     private fun FieldEntity.isDefault(): Boolean {
         return DEFAULT_PROPERTIES.contains(this.name)
-    }
-
-    class NameFieldComparator : Comparator<FieldEntity> {
-        override fun compare(lhs: FieldEntity, rhs: FieldEntity): Int {
-            return lhs.name.compareTo(rhs.name)
-        }
-    }
-
-    class DefaultFieldComparator : Comparator<FieldEntity> {
-        override fun compare(lhs: FieldEntity, rhs: FieldEntity): Int {
-            val lhsOrder = DEFAULT_PROPERTIES_ORDER[lhs.name]
-            val rhsOrder = DEFAULT_PROPERTIES_ORDER[rhs.name]
-            return (lhsOrder ?: 0).compareTo(rhsOrder ?: 0)
-        }
     }
 
     enum class OriginType {
@@ -349,19 +274,19 @@ class DiffFormatterImpl(
         private const val INDENT = "    "
 
         private val DEFAULT_PROPERTIES_ORDER = mapOf(
-            Properties.PROPERTY_TITLE to 1,
-            Properties.PROPERTY_USERNAME to 2,
-            Properties.PROPERTY_PASSWORD to 3,
-            Properties.PROPERTY_URL to 4,
-            Properties.PROPERTY_NOTES to 5
+            Fields.FIELD_TITLE to 1,
+            Fields.FIELD_USERNAME to 2,
+            Fields.FIELD_PASSWORD to 3,
+            Fields.FIELD_URL to 4,
+            Fields.FIELD_NOTES to 5
         )
 
         private val DEFAULT_PROPERTIES = setOf(
-            Properties.PROPERTY_TITLE,
-            Properties.PROPERTY_USERNAME,
-            Properties.PROPERTY_PASSWORD,
-            Properties.PROPERTY_URL,
-            Properties.PROPERTY_NOTES
+            Fields.FIELD_TITLE,
+            Fields.FIELD_USERNAME,
+            Fields.FIELD_PASSWORD,
+            Fields.FIELD_URL,
+            Fields.FIELD_NOTES
         )
     }
 }

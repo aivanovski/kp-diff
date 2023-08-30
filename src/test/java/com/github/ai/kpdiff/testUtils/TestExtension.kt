@@ -77,9 +77,9 @@ fun Node<DatabaseEntity>.isContentEquals(expected: TestKeepassDatabase): Boolean
 private fun EntryEntity.toMap(): Map<String, Any> {
     return mapOf(
         "UUID" to uuid.toString(),
-        "Title" to properties.getOrDefault("Title", ""),
-        "UserName" to properties.getOrDefault("UserName", ""),
-        "Password" to properties.getOrDefault("Password", ""),
+        "Title" to fields.getOrDefault("Title", ""),
+        "UserName" to fields.getOrDefault("UserName", ""),
+        "Password" to fields.getOrDefault("Password", ""),
         "URL" to "",
         "Notes" to ""
     )

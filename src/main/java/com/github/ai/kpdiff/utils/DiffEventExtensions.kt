@@ -12,6 +12,8 @@ fun DiffEvent<*>.getParentUuid(): UUID? {
     return when (this) {
         is DiffEvent.Insert -> parentUuid
         is DiffEvent.Delete -> parentUuid
+
+        // Only for fields, newParentUuid should always match oldParentUuid
         is DiffEvent.Update -> newParentUuid
     }
 }
@@ -61,5 +63,16 @@ private fun DatabaseEntity.sortOrder(): Int {
         is GroupEntity -> 1
         is EntryEntity -> 2
         is FieldEntity -> 3
+    }
+}
+
+fun <T> DiffEvent<DatabaseEntity>.chooseSourceByEventType(
+    lhs: T,
+    rhs: T
+): T {
+    return when (this) {
+        is DiffEvent.Delete -> lhs
+        is DiffEvent.Insert -> rhs
+        is DiffEvent.Update -> rhs
     }
 }

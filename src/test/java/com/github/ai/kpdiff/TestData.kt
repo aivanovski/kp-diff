@@ -30,6 +30,8 @@ object TestData {
     const val VALUE2 = "field-value2"
     const val TITLE1 = "entry-title1"
     const val TITLE2 = "entry-title2"
+    const val CUSTOM_PROPERTY_NAME = "custom-property-name"
+    const val CUSTOM_PROPERTY_VALUE = "custom-property-value"
     val UUID1 = UUID.fromString("00000000-0000-0000-0000-000000000001")
     val UUID_CHILD = UUID.fromString("00000000-0000-0000-0000-100000000001")
     val UUID_PARENT = UUID.fromString("00000000-0000-0000-0000-100000000002")

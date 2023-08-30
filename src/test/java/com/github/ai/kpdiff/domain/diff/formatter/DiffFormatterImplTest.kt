@@ -55,32 +55,35 @@ class DiffFormatterImplTest {
     companion object {
         private val OUTPUT = """
             ~ Group 'Root'
+            +     Entry 'Entry 5'
+            ~ Group 'Root'
             ~     Group 'Root group 1'
             -         Group 'Inner group 2'
             +         Group 'Inner group 3'
-            ~ Group 'Root'
-            ~     Group 'Root group 1'
-            ~         Group 'Inner group 1'
-            ~             Entry 'Entry 4 modified'
-            ~                 Field 'Title': 'Entry 4' Changed to 'Entry 4 modified'
             ~ Group 'Root'
             ~     Group 'Root group 1'
             ~         Group 'Inner group 1'
             -             Entry 'Entry 3'
             ~ Group 'Root'
-            +     Entry 'Entry 5'
-        """.transformOutput()
-
-        private val VERBOSE_OUTPUT = """
-            ~ Group 'Root'
-            ~     Group 'Root group 1'
-            -         Group 'Inner group 2'
-            +         Group 'Inner group 3'
-            ~ Group 'Root'
             ~     Group 'Root group 1'
             ~         Group 'Inner group 1'
             ~             Entry 'Entry 4 modified'
             ~                 Field 'Title': 'Entry 4' Changed to 'Entry 4 modified'
+
+        """.transformOutput()
+
+        private val VERBOSE_OUTPUT = """
+            ~ Group 'Root'
+            +     Entry 'Entry 5'
+            +         Field 'Title': 'Entry 5'
+            +         Field 'UserName': 'scott'
+            +         Field 'Password': 'tiger'
+            +         Field 'URL': ''
+            +         Field 'Notes': ''
+            ~ Group 'Root'
+            ~     Group 'Root group 1'
+            -         Group 'Inner group 2'
+            +         Group 'Inner group 3'
             ~ Group 'Root'
             ~     Group 'Root group 1'
             ~         Group 'Inner group 1'
@@ -91,12 +94,10 @@ class DiffFormatterImplTest {
             -                 Field 'URL': ''
             -                 Field 'Notes': ''
             ~ Group 'Root'
-            +     Entry 'Entry 5'
-            +         Field 'Title': 'Entry 5'
-            +         Field 'UserName': 'scott'
-            +         Field 'Password': 'tiger'
-            +         Field 'URL': ''
-            +         Field 'Notes': ''
+            ~     Group 'Root group 1'
+            ~         Group 'Inner group 1'
+            ~             Entry 'Entry 4 modified'
+            ~                 Field 'Title': 'Entry 4' Changed to 'Entry 4 modified'
         """.transformOutput()
 
         private fun String.transformOutput(): List<String> {

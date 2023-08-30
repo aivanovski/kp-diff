@@ -1,14 +1,12 @@
 package com.github.ai.kpdiff.domain.diff.differ
 
-import com.github.ai.kpdiff.TestEntityFactory.newEntry
-import com.github.ai.kpdiff.TestEntityFactory.newField
-import com.github.ai.kpdiff.TestEntityFactory.newGroup
+import com.github.ai.kpdiff.TestDataFactory.newEntry
+import com.github.ai.kpdiff.TestDataFactory.newField
+import com.github.ai.kpdiff.TestDataFactory.newGroup
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.testUtils.NodeTreeDsl.dbTree
 import com.github.ai.kpdiff.testUtils.createUuidFrom
-import com.github.ai.kpdiff.utils.Properties.PROPERTY_PASSWORD
-import com.github.ai.kpdiff.utils.Properties.PROPERTY_TITLE
-import com.github.ai.kpdiff.utils.Properties.PROPERTY_USERNAME
+import com.github.ai.kpdiff.utils.Fields.FIELD_TITLE
 import com.github.ai.kpdiff.utils.traverse
 import com.github.aivanovski.keepasstreediff.entity.DiffEvent as ExternalDiffEvent
 import com.github.aivanovski.keepasstreediff.entity.Entity as ExternalEntity
@@ -22,6 +20,7 @@ import java.util.LinkedList
 import org.junit.jupiter.api.Test
 
 class ExternalDataConvertersTest {
+
     @Test
     fun `toExternalEntity should convert internal entry and group to external entry and group`() {
         newEntry(ENTRY1_ID).toExternalEntity() shouldBe newExternalEntry(ENTRY1_ID)
@@ -121,41 +120,40 @@ class ExternalDataConvertersTest {
         return result
     }
 
-    private fun newExternalGroup(id: Int): ExternalGroupEntity =
-        ExternalGroupEntity(
-            uuid = createUuidFrom(id),
+    private fun newExternalGroup(id: Int): ExternalGroupEntity {
+        val group = newGroup(id)
+
+        return ExternalGroupEntity(
+            uuid = group.uuid,
             fields = mapOf(
-                PROPERTY_TITLE to ExternalFieldEntity(
-                    name = PROPERTY_TITLE,
-                    value = "Group $id"
+                FIELD_TITLE to ExternalFieldEntity(
+                    name = FIELD_TITLE,
+                    value = group.name
                 )
             )
         )
+    }
 
-    private fun newExternalEntry(id: Int): ExternalEntryEntity =
-        ExternalEntryEntity(
-            uuid = createUuidFrom(id),
-            fields = mapOf(
-                PROPERTY_TITLE to ExternalFieldEntity(
-                    name = PROPERTY_TITLE,
-                    value = "Title $id"
-                ),
-                PROPERTY_USERNAME to ExternalFieldEntity(
-                    name = PROPERTY_USERNAME,
-                    value = "Username $id"
-                ),
-                PROPERTY_PASSWORD to ExternalFieldEntity(
-                    name = PROPERTY_PASSWORD,
-                    value = "Password $id"
-                )
-            )
-        )
+    private fun newExternalEntry(id: Int): ExternalEntryEntity {
+        val entry = newEntry(id)
 
-    private fun newExternalField(id: Int): ExternalFieldEntity =
-        ExternalFieldEntity(
-            name = "Field name $id",
-            value = "Filed value $id"
+        return ExternalEntryEntity(
+            uuid = entry.uuid,
+            fields = entry.fields.map { (name, value) ->
+                Pair(name, ExternalFieldEntity(name, value))
+            }
+                .toMap()
         )
+    }
+
+    private fun newExternalField(id: Int): ExternalFieldEntity {
+        val field = newField(id)
+
+        return ExternalFieldEntity(
+            name = field.name,
+            value = field.value
+        )
+    }
 
     companion object {
         private const val GROUP1_ID = 1

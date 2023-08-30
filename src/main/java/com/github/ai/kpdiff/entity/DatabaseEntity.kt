@@ -1,7 +1,7 @@
 package com.github.ai.kpdiff.entity
 
-import com.github.ai.kpdiff.utils.Properties.PROPERTY_TITLE
-import com.github.ai.kpdiff.utils.StringUtils
+import com.github.ai.kpdiff.utils.Fields.FIELD_TITLE
+import com.github.ai.kpdiff.utils.StringUtils.EMPTY
 import java.util.UUID
 
 sealed interface DatabaseEntity {
@@ -16,8 +16,8 @@ data class GroupEntity(
 
 data class EntryEntity(
     override val uuid: UUID,
-    val properties: Map<String, String>,
-    override val name: String = properties[PROPERTY_TITLE] ?: StringUtils.EMPTY
+    val fields: Map<String, String>,
+    override val name: String = fields[FIELD_TITLE] ?: EMPTY
 ) : DatabaseEntity
 
 data class FieldEntity(
