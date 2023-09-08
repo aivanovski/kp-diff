@@ -163,8 +163,52 @@ jobs:
           name: kp-diff_${{env.VERSION}}-amd64.deb
           path: kp-diff_${{env.VERSION}}.deb
 
-  create-coverage-badge:
+  create-artifacts-bundle:
     needs: [ create-deb-package ]
+    name: 'Create artifacts bundle'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup version variable
+        run: |
+          echo "VERSION=$(grep '^version=' src/main/resources/version.properties | cut -d= -f2)" >> $GITHUB_ENV
+
+      - name: Get .jar file
+        uses: actions/download-artifact@v3
+        with:
+          name: kp-diff-${{env.VERSION}}.jar
+          path: kp-diff-${{env.VERSION}}
+
+      - name: Get binary file
+        uses: actions/download-artifact@v3
+        with:
+          name: kp-diff-${{env.VERSION}}-linux-amd64
+          path: kp-diff-${{env.VERSION}}
+
+      - name: Get .deb file
+        uses: actions/download-artifact@v3
+        with:
+          name: kp-diff_${{env.VERSION}}-amd64.deb
+          path: kp-diff-${{env.VERSION}}
+
+      - name: Create zip archive
+        run: |
+          mv kp-diff-${{env.VERSION}}/kp-diff-${{env.VERSION}}.jar kp-diff-${{env.VERSION}}/kp-diff.jar
+          mv kp-diff-${{env.VERSION}}/kp-diff-${{env.VERSION}} kp-diff-${{env.VERSION}}/kp-diff-linux-amd64
+          mv kp-diff-${{env.VERSION}}/kp-diff_${{env.VERSION}}.deb kp-diff-${{env.VERSION}}/kp-diff-linux-amd64.deb
+
+          zip -r kp-diff-${{env.VERSION}}.zip kp-diff-${{env.VERSION}}
+
+      - name: Publish archive with artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: kp-diff-${{env.VERSION}}.zip
+          path: kp-diff-${{env.VERSION}}.zip
+
+  create-coverage-badge:
+    needs: [ create-artifacts-bundle ]
     name: 'Create coverage badge'
     runs-on: ubuntu-latest
     steps:
