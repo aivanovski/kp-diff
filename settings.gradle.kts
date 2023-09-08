@@ -1,1 +1,1 @@
-rootProject.name = "kpdiff"
+rootProject.name = "kp-diff"
