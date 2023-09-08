@@ -195,9 +195,13 @@ jobs:
 
       - name: Create zip archive
         run: |
+          mv kp-diff-${{env.VERSION}}/kp-diff-${{env.VERSION}}.jar kp-diff-${{env.VERSION}}/kp-diff.jar
+          mv kp-diff-${{env.VERSION}}/kp-diff-${{env.VERSION}} kp-diff-${{env.VERSION}}/kp-diff-linux-amd64
+          mv kp-diff-${{env.VERSION}}/kp-diff_${{env.VERSION}}.deb kp-diff-${{env.VERSION}}/kp-diff-amd64.deb
+
           zip -r kp-diff-${{env.VERSION}}.zip kp-diff-${{env.VERSION}}
 
-      - name: Publish .deb file
+      - name: Publish archive with artifacts
         uses: actions/upload-artifact@v3
         with:
           name: kp-diff-${{env.VERSION}}.zip
