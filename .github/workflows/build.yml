@@ -91,10 +91,6 @@ jobs:
           graalvm: '21.0.0.2'
           java: 'java11'
 
-      - name: Install Native Image utility
-        run: |
-          gu install native-image
-
       - name: Get JAR Artifact
         uses: actions/download-artifact@v3
         with:
@@ -102,13 +98,24 @@ jobs:
 
       - name: Build binary file
         run: |
+          # Build binary
+          gu install native-image
           native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --enable-all-security-services --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
+
+          # Create tar.gz archive
+          cp kp-diff-${{env.VERSION}}-linux-amd64 kp-diff-linux-amd-64
+          tar -zcvf kp-diff-linux-${{env.VERSION}}-amd64.tar.gz kp-diff-linux-amd-64
 
       - name: Publish binary file
         uses: actions/upload-artifact@v3
         with:
           name: kp-diff-${{env.VERSION}}-linux-amd64
           path: kp-diff-${{env.VERSION}}
+
+      - name: Publish .tar.gz file
+        uses: actions/upload-artifact@v3
+          name: kp-diff-${{env.VERSION}}-linux-amd64.tar.gz
+          path: kp-diff-${{env.VERSION}}-linux-amd64.tar.gz
 
   create-deb-package:
     needs: [ build-native-images ]
@@ -181,11 +188,11 @@ jobs:
           name: kp-diff-${{env.VERSION}}.jar
           path: kp-diff-${{env.VERSION}}
 
-      - name: Get binary file
+      - name: Get .tar.gz file
         uses: actions/download-artifact@v3
         with:
-          name: kp-diff-${{env.VERSION}}-linux-amd64
-          path: kp-diff-${{env.VERSION}}
+          name: kp-diff-${{env.VERSION}}-linux-amd64.tar.gz
+          paht: kp-diff-${{env.VERSION}}
 
       - name: Get .deb file
         uses: actions/download-artifact@v3
@@ -196,7 +203,7 @@ jobs:
       - name: Create zip archive
         run: |
           mv kp-diff-${{env.VERSION}}/kp-diff-${{env.VERSION}}.jar kp-diff-${{env.VERSION}}/kp-diff.jar
-          mv kp-diff-${{env.VERSION}}/kp-diff-${{env.VERSION}} kp-diff-${{env.VERSION}}/kp-diff-linux-amd64
+          mv kp-diff-${{env.VERSION}}/kp-diff-${{env.VERSION}}-linux-amd64.tar.gz kp-diff-${{env.VERSION}}/kp-diff-linux-amd64.tar.gz
           mv kp-diff-${{env.VERSION}}/kp-diff_${{env.VERSION}}.deb kp-diff-${{env.VERSION}}/kp-diff-linux-amd64.deb
 
           zip -r kp-diff-${{env.VERSION}}.zip kp-diff-${{env.VERSION}}
