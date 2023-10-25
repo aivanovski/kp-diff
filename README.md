@@ -10,6 +10,12 @@
 
 ### Linux
 
+##### Arch Linux
+`kp-diff` is available in the [Arch User Repository](https://aur.archlinux.org/) and could be installed with any [AUR](https://aur.archlinux.org/) helper.
+```
+yay -S kp-diff-bin
+```
+
 ##### Manual installation
 All releases of `kp-diff` can be downloaded from [releases](https://github.com/aivanovski/kp-diff/releases) page
 
