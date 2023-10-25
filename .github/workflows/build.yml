@@ -73,8 +73,8 @@ jobs:
           name: kp-diff-${{env.VERSION}}.jar
           path: ./build/libs/kp-diff-${{env.VERSION}}.jar
 
-  build-native-images:
-    name: 'Build native images'
+  build-native-image:
+    name: 'Build native image'
     needs: [ build-jar ]
     runs-on: ubuntu-latest
     steps:
@@ -103,8 +103,8 @@ jobs:
           native-image --no-server --no-fallback -H:IncludeResources=".*\.properties" --enable-all-security-services --allow-incomplete-classpath -jar kp-diff-${{env.VERSION}}.jar
 
           # Create tar.gz archive
-          cp kp-diff-${{env.VERSION}}-linux-amd64 kp-diff-linux-amd-64
-          tar -zcvf kp-diff-linux-${{env.VERSION}}-amd64.tar.gz kp-diff-linux-amd-64
+          cp kp-diff-${{env.VERSION}} kp-diff-linux-amd64
+          tar -zcvf kp-diff-${{env.VERSION}}-linux-amd64.tar.gz kp-diff-linux-amd64
 
       - name: Publish binary file
         uses: actions/upload-artifact@v3
@@ -114,11 +114,12 @@ jobs:
 
       - name: Publish .tar.gz file
         uses: actions/upload-artifact@v3
+        with:
           name: kp-diff-${{env.VERSION}}-linux-amd64.tar.gz
           path: kp-diff-${{env.VERSION}}-linux-amd64.tar.gz
 
   create-deb-package:
-    needs: [ build-native-images ]
+    needs: [ build-native-image ]
     name: 'Create deb package'
     runs-on: ubuntu-latest
     steps:
@@ -192,7 +193,7 @@ jobs:
         uses: actions/download-artifact@v3
         with:
           name: kp-diff-${{env.VERSION}}-linux-amd64.tar.gz
-          paht: kp-diff-${{env.VERSION}}
+          path: kp-diff-${{env.VERSION}}
 
       - name: Get .deb file
         uses: actions/download-artifact@v3
