@@ -15,9 +15,7 @@ class EntityFormatterProvider {
 
     @Suppress("UNCHECKED_CAST")
     fun <T : Any> getFormatter(type: KClass<T>): EntityFormatter<T> {
-        if (!formatters.containsKey(type)) {
-            throw IllegalArgumentException()
-        }
+        require(formatters.containsKey(type))
 
         return formatters[type] as EntityFormatter<T>
     }

@@ -248,7 +248,7 @@ class DiffFormatterImpl(
                         )
                     }
 
-                    else -> throw IllegalStateException()
+                    else -> error("Illegal event type: $event")
                 }
             }
 
@@ -272,14 +272,6 @@ class DiffFormatterImpl(
 
     companion object {
         private const val INDENT = "    "
-
-        private val DEFAULT_PROPERTIES_ORDER = mapOf(
-            Fields.FIELD_TITLE to 1,
-            Fields.FIELD_USERNAME to 2,
-            Fields.FIELD_PASSWORD to 3,
-            Fields.FIELD_URL to 4,
-            Fields.FIELD_NOTES to 5
-        )
 
         private val DEFAULT_PROPERTIES = setOf(
             Fields.FIELD_TITLE,

@@ -8,11 +8,13 @@ import com.github.ai.kpdiff.domain.Strings.MISSING_ARGUMENT_VALUE
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_ARGUMENT
 import com.github.ai.kpdiff.domain.Strings.UNKNOWN_OPTION
 import com.github.ai.kpdiff.entity.Arguments
+import com.github.ai.kpdiff.entity.Arguments.Companion.EMPTY_ARGUMENTS
 import com.github.ai.kpdiff.entity.DifferType
 import com.github.ai.kpdiff.entity.Either
+import com.github.ai.kpdiff.entity.MutableArguments
 import com.github.ai.kpdiff.entity.exception.ParsingException
-import com.github.ai.kpdiff.utils.StringUtils.EMPTY
 import java.util.LinkedList
+import java.util.Queue
 
 class ArgumentParser(
     private val fsProvider: FileSystemProvider
@@ -22,163 +24,185 @@ class ArgumentParser(
         val queue = LinkedList(args.toList())
         if (args.isEmpty()) {
             return Either.Right(
-                Arguments(
-                    leftPath = EMPTY,
-                    rightPath = EMPTY,
-                    keyPath = null,
-                    leftKeyPath = null,
-                    rightKeyPath = null,
-                    differType = null,
-                    isUseOnePassword = false,
-                    isNoColoredOutput = false,
-                    isPrintHelp = true,
-                    isPrintVersion = false,
-                    isVerboseOutput = false
+                EMPTY_ARGUMENTS.copy(
+                    isPrintHelp = true
                 )
             )
         }
 
-        var leftPath: String? = null
-        var rightPath: String? = null
-        var keyPath: String? = null
-        var leftKeyPath: String? = null
-        var rightKeyPath: String? = null
-        var differType: DifferType? = null
-        var isUseOnePassword = false
-        var isNoColoredOutput = false
-        var isPrintHelp = false
-        var isPrintVersion = false
-        var isVerboseOutput = false
+        val values = MutableArguments()
 
         while (queue.isNotEmpty()) {
-            val arg = queue.poll()
-            if (arg.startsWith("-") || arg.startsWith("--")) {
-                when (OPTIONAL_ARGUMENTS_MAP[arg]) {
-                    OptionalArgument.ONE_PASSWORD -> {
-                        isUseOnePassword = true
-                    }
-
-                    OptionalArgument.NO_COLOR -> {
-                        isNoColoredOutput = true
-                    }
-
-                    OptionalArgument.HELP -> {
-                        isPrintHelp = true
-                    }
-
-                    OptionalArgument.VERSION -> {
-                        isPrintVersion = true
-                    }
-
-                    OptionalArgument.VERBOSE -> {
-                        isVerboseOutput = true
-                    }
-
-                    OptionalArgument.KEY_FILE_A -> {
-                        val path = checkPath(queue.poll())
-                        if (path.isLeft()) {
-                            return path.mapToLeft()
-                        }
-
-                        leftKeyPath = path.unwrap()
-                    }
-
-                    OptionalArgument.KEY_FILE_B -> {
-                        val path = checkPath(queue.poll())
-                        if (path.isLeft()) {
-                            return path.mapToLeft()
-                        }
-
-                        rightKeyPath = path.unwrap()
-                    }
-
-                    OptionalArgument.KEY_FILE -> {
-                        val path = checkPath(queue.poll())
-                        if (path.isLeft()) {
-                            return path.mapToLeft()
-                        }
-
-                        keyPath = path.unwrap()
-                    }
-
-                    OptionalArgument.DIFF_BY -> {
-                        val differTypeResult = parseDifferType(queue.poll())
-                        if (differTypeResult.isLeft()) {
-                            return differTypeResult.mapToLeft()
-                        }
-
-                        differType = differTypeResult.unwrap()
-                    }
-
-                    null -> {
-                        return Either.Left(
-                            ParsingException(String.format(UNKNOWN_OPTION, arg))
-                        )
-                    }
-                }
-            } else {
-                when {
-                    leftPath == null -> {
-                        val path = checkPath(arg)
-                        if (path.isLeft()) {
-                            return path.mapToLeft()
-                        }
-
-                        leftPath = path.unwrap()
-                    }
-
-                    rightPath == null -> {
-                        val path = checkPath(arg)
-                        if (path.isLeft()) {
-                            return path.mapToLeft()
-                        }
-
-                        rightPath = path.unwrap()
-                    }
-
-                    else -> {
-                        return Either.Left(
-                            ParsingException(String.format(UNKNOWN_ARGUMENT, arg))
-                        )
-                    }
-                }
+            val result = parseNextArgument(queue, values)
+            if (result.isLeft()) {
+                return result.mapToLeft()
             }
         }
 
-        if (leftPath == null && !isPrintHelp && !isPrintVersion) {
+        if (values.leftPath == null && !values.isPrintHelp && !values.isPrintVersion) {
             return missingArgumentError(ARGUMENT_FILE_A)
         }
 
-        if (rightPath == null && !isPrintHelp && !isPrintVersion) {
+        if (values.rightPath == null && !values.isPrintHelp && !values.isPrintVersion) {
             return missingArgumentError(ARGUMENT_FILE_B)
         }
 
-        return Either.Right(
-            Arguments(
-                leftPath = leftPath ?: EMPTY,
-                rightPath = rightPath ?: EMPTY,
-                keyPath = keyPath,
-                leftKeyPath = leftKeyPath,
-                rightKeyPath = rightKeyPath,
-                differType = differType,
-                isUseOnePassword = isUseOnePassword,
-                isNoColoredOutput = isNoColoredOutput,
-                isPrintHelp = isPrintHelp,
-                isPrintVersion = isPrintVersion,
-                isVerboseOutput = isVerboseOutput
-            )
-        )
+        return Either.Right(values.toArguments())
     }
 
-    private fun parseDifferType(value: String?): Either<DifferType> {
+    private fun parseNextArgument(
+        queue: Queue<String>,
+        values: MutableArguments
+    ): Either<Unit> {
+        val argument = queue.poll()
+        val isOption = argument.startsWith("-")
+
+        return when {
+            isOption -> parseOption(argument, queue, values)
+            values.leftPath == null -> parseLeftPath(argument, values)
+            values.rightPath == null -> parseRightPath(argument, values)
+
+            else -> {
+                Either.Left(
+                    ParsingException(String.format(UNKNOWN_ARGUMENT, argument))
+                )
+            }
+        }
+    }
+
+    private fun parseOption(
+        name: String,
+        queue: Queue<String>,
+        values: MutableArguments
+    ): Either<Unit> {
+        val type = OPTIONAL_ARGUMENT_NAMES[name]
+
+        return when (type) {
+            OptionalArgument.ONE_PASSWORD -> parseOnePassword(values)
+            OptionalArgument.NO_COLOR -> parseNoColor(values)
+            OptionalArgument.HELP -> parseHelp(values)
+            OptionalArgument.VERSION -> parseVersion(values)
+            OptionalArgument.VERBOSE -> parseVerbose(values)
+            OptionalArgument.KEY_FILE_A -> parseLeftKeyPath(queue.poll(), values)
+            OptionalArgument.KEY_FILE_B -> parseRightKeyPath(queue.poll(), values)
+            OptionalArgument.KEY_FILE -> parseKeyPath(queue.poll(), values)
+            OptionalArgument.DIFF_BY -> parseDifferType(queue.poll(), values)
+            else -> {
+                Either.Left(
+                    ParsingException(String.format(UNKNOWN_OPTION, name))
+                )
+            }
+        }
+    }
+
+    private fun parseOnePassword(arguments: MutableArguments): Either<Unit> {
+        arguments.isUseOnePassword = true
+        return Either.Right(Unit)
+    }
+
+    private fun parseNoColor(arguments: MutableArguments): Either<Unit> {
+        arguments.isNoColoredOutput = true
+        return Either.Right(Unit)
+    }
+
+    private fun parseHelp(arguments: MutableArguments): Either<Unit> {
+        arguments.isPrintHelp = true
+        return Either.Right(Unit)
+    }
+
+    private fun parseVersion(arguments: MutableArguments): Either<Unit> {
+        arguments.isPrintVersion = true
+        return Either.Right(Unit)
+    }
+
+    private fun parseVerbose(arguments: MutableArguments): Either<Unit> {
+        arguments.isVerboseOutput = true
+        return Either.Right(Unit)
+    }
+
+    private fun parseLeftKeyPath(
+        path: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
+        val checkPathResult = checkPath(path)
+
+        if (checkPathResult.isRight()) {
+            arguments.leftKeyPath = checkPathResult.unwrap()
+        }
+
+        return checkPathResult.mapWith(Unit)
+    }
+
+    private fun parseRightKeyPath(
+        path: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
+        val checkPathResult = checkPath(path)
+
+        if (checkPathResult.isRight()) {
+            arguments.rightKeyPath = checkPathResult.unwrap()
+        }
+
+        return checkPathResult.mapWith(Unit)
+    }
+
+    private fun parseKeyPath(
+        path: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
+        val checkPathResult = checkPath(path)
+
+        if (checkPathResult.isRight()) {
+            arguments.keyPath = checkPathResult.unwrap()
+        }
+
+        return checkPathResult.mapWith(Unit)
+    }
+
+    private fun parseLeftPath(
+        path: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
+        val checkPathResult = checkPath(path)
+
+        if (checkPathResult.isRight()) {
+            arguments.leftPath = checkPathResult.unwrap()
+        }
+
+        return checkPathResult.mapWith(Unit)
+    }
+
+    private fun parseRightPath(
+        path: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
+        val checkPathResult = checkPath(path)
+
+        if (checkPathResult.isRight()) {
+            arguments.rightPath = checkPathResult.unwrap()
+        }
+
+        return checkPathResult.mapWith(Unit)
+    }
+
+    private fun parseDifferType(
+        value: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
         if (value.isNullOrEmpty()) {
             return missingArgumentValue(OptionalArgument.DIFF_BY.cliFullName)
         }
 
-        return when (value.lowercase()) {
-            DifferType.PATH.cliName -> Either.Right(DifferType.PATH)
-            DifferType.UUID.cliName -> Either.Right(DifferType.UUID)
-            else -> illegalArgumentValue(
+        arguments.differType = when (value.lowercase()) {
+            DifferType.PATH.cliName -> DifferType.PATH
+            DifferType.UUID.cliName -> DifferType.UUID
+            else -> null
+        }
+
+        return if (arguments.differType != null) {
+            Either.Right(Unit)
+        } else {
+            illegalArgumentValue(
                 argumentName = OptionalArgument.DIFF_BY.cliFullName,
                 argumentValue = value
             )
@@ -236,33 +260,13 @@ class ArgumentParser(
         internal const val ARGUMENT_FILE_A = "FILE-A"
         internal const val ARGUMENT_FILE_B = "FILE-B"
 
-        private val OPTIONAL_ARGUMENTS_MAP = mapOf(
-            OptionalArgument.HELP.cliShortName to OptionalArgument.HELP,
-            OptionalArgument.HELP.cliFullName to OptionalArgument.HELP,
-
-            OptionalArgument.VERSION.cliShortName to OptionalArgument.VERSION,
-            OptionalArgument.VERSION.cliFullName to OptionalArgument.VERSION,
-
-            OptionalArgument.ONE_PASSWORD.cliShortName to OptionalArgument.ONE_PASSWORD,
-            OptionalArgument.ONE_PASSWORD.cliFullName to OptionalArgument.ONE_PASSWORD,
-
-            OptionalArgument.KEY_FILE_A.cliShortName to OptionalArgument.KEY_FILE_A,
-            OptionalArgument.KEY_FILE_A.cliFullName to OptionalArgument.KEY_FILE_A,
-
-            OptionalArgument.KEY_FILE_B.cliShortName to OptionalArgument.KEY_FILE_B,
-            OptionalArgument.KEY_FILE_B.cliFullName to OptionalArgument.KEY_FILE_B,
-
-            OptionalArgument.KEY_FILE.cliShortName to OptionalArgument.KEY_FILE,
-            OptionalArgument.KEY_FILE.cliFullName to OptionalArgument.KEY_FILE,
-
-            OptionalArgument.NO_COLOR.cliShortName to OptionalArgument.NO_COLOR,
-            OptionalArgument.NO_COLOR.cliFullName to OptionalArgument.NO_COLOR,
-
-            OptionalArgument.VERBOSE.cliShortName to OptionalArgument.VERBOSE,
-            OptionalArgument.VERBOSE.cliFullName to OptionalArgument.VERBOSE,
-
-            OptionalArgument.DIFF_BY.cliShortName to OptionalArgument.DIFF_BY,
-            OptionalArgument.DIFF_BY.cliFullName to OptionalArgument.DIFF_BY
-        )
+        private val OPTIONAL_ARGUMENT_NAMES = OptionalArgument.values()
+            .flatMap { argument ->
+                listOf(
+                    argument.cliShortName to argument,
+                    argument.cliFullName to argument
+                )
+            }
+            .toMap()
     }
 }

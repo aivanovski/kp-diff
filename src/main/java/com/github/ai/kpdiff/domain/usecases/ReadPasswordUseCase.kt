@@ -27,7 +27,7 @@ class ReadPasswordUseCase(
 
         val inputType = determineInputTypeUseCase.getInputReaderType()
         val inputReader = inputReaderFactory.createReader(inputType)
-        for (attempt in 1..MAX_ATTEMPTS) {
+        (1..MAX_ATTEMPTS).forEach { _ ->
             if (paths.size == 1) {
                 printer.printLine(
                     String.format(

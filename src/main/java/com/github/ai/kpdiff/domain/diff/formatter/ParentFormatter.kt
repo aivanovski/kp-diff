@@ -14,7 +14,7 @@ class ParentFormatter {
                 val title = parent.entity.getTitle()
                 "~$indentation $ENTRY '$title'"
             }
-            else -> throw IllegalArgumentException()
+            else -> error("Should not be called for ${parent.entity}")
         }
     }
 

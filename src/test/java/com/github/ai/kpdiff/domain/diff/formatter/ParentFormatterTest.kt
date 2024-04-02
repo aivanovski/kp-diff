@@ -39,7 +39,7 @@ internal class ParentFormatterTest {
     @Test
     fun `format should throw IllegalArgumentException`() {
         val parent = newParent(null)
-        shouldThrow<IllegalArgumentException> {
+        shouldThrow<IllegalStateException> {
             newFormatter().format(
                 parent,
                 INDENT_EMPTY
