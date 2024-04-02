@@ -1,7 +1,5 @@
 package com.github.ai.kpdiff.entity
 
-import com.github.ai.kpdiff.entity.DifferType
-
 data class MutableArguments(
     var leftPath: String? = null,
     var rightPath: String? = null,
