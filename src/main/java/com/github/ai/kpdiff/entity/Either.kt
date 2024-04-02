@@ -2,7 +2,6 @@ package com.github.ai.kpdiff.entity
 
 import kotlin.Exception
 
-// TODO: write tests
 sealed class Either<out T : Any?> {
 
     data class Left(val exception: Exception) : Either<Nothing>()

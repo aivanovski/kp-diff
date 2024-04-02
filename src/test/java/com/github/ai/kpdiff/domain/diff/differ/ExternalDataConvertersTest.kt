@@ -29,7 +29,7 @@ class ExternalDataConvertersTest {
 
     @Test
     fun `toExternalEntity should throw exception for field`() {
-        shouldThrow<IllegalArgumentException> {
+        shouldThrow<IllegalStateException> {
             newField(FIELD1_ID).toExternalEntity()
         }
     }

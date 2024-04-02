@@ -69,7 +69,7 @@ fun DatabaseEntity.toExternalEntity(): ExternalTreeEntity {
             )
         }
 
-        else -> throw IllegalArgumentException()
+        else -> error("Should not be called for $this")
     }
 }
 
@@ -104,7 +104,7 @@ fun ExternalEntity.toInternalEntity(): DatabaseEntity {
             )
         }
 
-        else -> throw IllegalStateException()
+        else -> error("Illegal type: $this")
     }
 }
 
@@ -130,5 +130,7 @@ fun <T : DatabaseEntity> Node<T>.toExternalNode(): ExternalTreeNode {
         }
     }
 
-    return root ?: throw IllegalStateException()
+    checkNotNull(root)
+
+    return root
 }

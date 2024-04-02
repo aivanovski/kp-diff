@@ -8,6 +8,14 @@ import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import java.util.UUID
 
+private const val UPDATE_EVENT_BASE_ORDER = 0
+private const val DELETE_EVENT_BASE_ORDER = 10
+private const val INSERT_EVENT_BASE_ORDER = 20
+
+private const val GROUP_SORT_ORDER = 1
+private const val ENTRY_SORT_ORDER = 2
+private const val FIELD_SORT_ORDER = 3
+
 fun DiffEvent<*>.getParentUuid(): UUID? {
     return when (this) {
         is DiffEvent.Insert -> parentUuid
@@ -45,24 +53,24 @@ fun <T : Any> DiffEvent<T>.getEntity(): T {
 fun DiffEvent<DatabaseEntity>.sortOrder(): Int {
     return when (this) {
         is DiffEvent.Update -> {
-            newEntity.sortOrder()
+            UPDATE_EVENT_BASE_ORDER + newEntity.sortOrder()
         }
 
         is DiffEvent.Delete -> {
-            10 + entity.sortOrder()
+            DELETE_EVENT_BASE_ORDER + entity.sortOrder()
         }
 
         is DiffEvent.Insert -> {
-            20 + entity.sortOrder()
+            INSERT_EVENT_BASE_ORDER + entity.sortOrder()
         }
     }
 }
 
 private fun DatabaseEntity.sortOrder(): Int {
     return when (this) {
-        is GroupEntity -> 1
-        is EntryEntity -> 2
-        is FieldEntity -> 3
+        is GroupEntity -> GROUP_SORT_ORDER
+        is EntryEntity -> ENTRY_SORT_ORDER
+        is FieldEntity -> FIELD_SORT_ORDER
     }
 }
 
