@@ -24,15 +24,19 @@ jobs:
       - name: Run ktlint
         run: ./ktlint --editorconfig=".editorconfig"
 
-      - name: Download detekt jar
-        run: |
-          curl -sSLO https://github.com/detekt/detekt/releases/download/v1.23.6/detekt-cli-1.23.6-all.jar
-
+  run-detekt:
+    name: 'Run detekt'
+    runs-on: ubuntu-latest
+    steps:
       - name: Set up JDK 11
         uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: 11
+
+      - name: Download detekt jar
+        run: |
+          curl -sSLO https://github.com/detekt/detekt/releases/download/v1.23.6/detekt-cli-1.23.6-all.jar
 
       - name: Run detekt
         run: java -jar detekt-cli-1.23.6-all.jar --config detekt.yml
@@ -61,7 +65,7 @@ jobs:
 
   build-jar:
     name: 'Build jar'
-    needs: [ check-code-style, run-tests ]
+    needs: [ check-code-style, run-detekt, run-tests ]
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
