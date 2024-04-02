@@ -12,4 +12,11 @@ sealed class Either<out T : Any?> {
     fun unwrap(): T = (this as Right).data
     fun unwrapError(): Exception = (this as Left).exception
     fun mapToLeft(): Left = (this as Left)
+    fun <T2> mapWith(newData: T2): Either<T2> {
+        return if (isRight()) {
+            Right(newData)
+        } else {
+            mapToLeft()
+        }
+    }
 }
