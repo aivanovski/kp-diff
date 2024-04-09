@@ -26,11 +26,11 @@ curl -sSLO https://github.com/aivanovski/kp-diff/releases/download/0.5.0/kp-diff
 ```
 
 ### macOS
-##### Installation
-At the moment `kp-diff` on macOS can be used only with pre-installed JVM
-- Install JVM version >= 11
-- Dowload `kp-diff.jar` file from [releases](https://github.com/aivanovski/kp-diff/releases) page
-- Run it from terminal: `java -jar kp-diff.jar [OPTIONS]`
+`kp-diff` is available as Homebrew formula (formulas [repositry](https://github.com/aivanovski/homebrew-brew))
+```
+brew tap aivanovski/brew
+brew install kp-diff
+```
 
 ## Usage
 ```
