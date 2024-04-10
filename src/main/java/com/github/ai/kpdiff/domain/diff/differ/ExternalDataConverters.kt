@@ -79,7 +79,7 @@ fun ExternalEntity.toInternalEntity(): DatabaseEntity {
             GroupEntity(
                 uuid = uuid,
                 // ExternalGroupEntity should always have PROPERTY_TITLE
-                name = fields[FIELD_TITLE]!!.value
+                name = fields[FIELD_TITLE]?.value.orEmpty()
             )
         }
 
