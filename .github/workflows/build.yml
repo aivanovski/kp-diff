@@ -37,12 +37,8 @@ jobs:
           distribution: 'zulu'
           java-version: 11
 
-      - name: Download detekt jar
-        run: |
-          curl -sSLO https://github.com/detekt/detekt/releases/download/v1.23.6/detekt-cli-1.23.6-all.jar
-
       - name: Run detekt
-        run: java -jar detekt-cli-1.23.6-all.jar --config detekt.yml
+        run: ./gradlew detektMain
 
   run-tests:
     name: 'Run tests'
