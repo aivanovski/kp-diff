@@ -7,10 +7,10 @@ import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassKey
 import com.github.ai.kpdiff.entity.Node
-import io.github.anvell.kotpass.cryptography.EncryptedValue
-import io.github.anvell.kotpass.database.Credentials
-import io.github.anvell.kotpass.models.Entry
-import io.github.anvell.kotpass.models.Group
+import app.keemobile.kotpass.cryptography.EncryptedValue
+import app.keemobile.kotpass.database.Credentials
+import app.keemobile.kotpass.models.Entry
+import app.keemobile.kotpass.models.Group
 import java.util.LinkedList
 
 fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Credentials> {

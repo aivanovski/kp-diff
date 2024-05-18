@@ -8,7 +8,7 @@ import com.github.ai.kpdiff.testUtils.asFileKey
 import com.github.ai.kpdiff.testUtils.contentStream
 import com.github.ai.kpdiff.testUtils.convert
 import com.github.ai.kpdiff.testUtils.isContentEquals
-import io.github.anvell.kotpass.errors.CryptoError
+import app.keemobile.kotpass.errors.CryptoError
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf

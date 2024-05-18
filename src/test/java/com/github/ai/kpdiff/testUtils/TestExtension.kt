@@ -10,8 +10,8 @@ import com.github.ai.kpdiff.testEntities.TestKeepassEntry
 import com.github.ai.kpdiff.testEntities.TestKeepassGroup
 import com.github.ai.kpdiff.testEntities.TestKeepassKey
 import com.github.ai.kpdiff.utils.toCredentials
-import io.github.anvell.kotpass.database.KeePassDatabase
-import io.github.anvell.kotpass.database.decode
+import app.keemobile.kotpass.database.KeePassDatabase
+import app.keemobile.kotpass.database.decode
 import java.io.InputStream
 import java.util.LinkedList
 import java.util.UUID
