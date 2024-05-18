@@ -1,13 +1,13 @@
 package com.github.ai.kpdiff.data.keepass
 
+import app.keemobile.kotpass.database.KeePassDatabase
+import app.keemobile.kotpass.database.decode
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.KeepassKey
 import com.github.ai.kpdiff.utils.buildNodeTree
 import com.github.ai.kpdiff.utils.toCredentials
-import io.github.anvell.kotpass.database.KeePassDatabase
-import io.github.anvell.kotpass.database.decode
 
 class KotpassDatabaseFactory(
     private val fsProvider: FileSystemProvider
