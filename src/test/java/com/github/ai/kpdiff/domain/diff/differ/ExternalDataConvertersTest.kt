@@ -1,8 +1,8 @@
 package com.github.ai.kpdiff.domain.diff.differ
 
-import com.github.ai.kpdiff.TestDataFactory.newEntry
-import com.github.ai.kpdiff.TestDataFactory.newField
-import com.github.ai.kpdiff.TestDataFactory.newGroup
+import com.github.ai.kpdiff.TestEntityFactory.newEntry
+import com.github.ai.kpdiff.TestEntityFactory.newField
+import com.github.ai.kpdiff.TestEntityFactory.newGroup
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.testUtils.NodeTreeDsl.dbTree
 import com.github.ai.kpdiff.testUtils.createUuidFrom

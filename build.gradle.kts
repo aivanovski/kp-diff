@@ -101,5 +101,6 @@ dependencies {
 
     implementation("io.insert-koin:koin-core:3.1.5")
     implementation("com.github.aivanovski:keepass-tree-diff:0.3.0")
+    implementation("com.github.aivanovski:keepass-tree-builder:0.2.0")
     implementation("com.github.anvell:kotpass:0.7.0")
 }

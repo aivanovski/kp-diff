@@ -2,9 +2,9 @@ package com.github.ai.kpdiff.domain.diff.formatter
 
 import com.github.ai.kpdiff.TestData.CUSTOM_PROPERTY_NAME
 import com.github.ai.kpdiff.TestData.CUSTOM_PROPERTY_VALUE
-import com.github.ai.kpdiff.TestDataFactory.newEntry
-import com.github.ai.kpdiff.TestDataFactory.newField
-import com.github.ai.kpdiff.TestDataFactory.newGroup
+import com.github.ai.kpdiff.TestEntityFactory.newEntry
+import com.github.ai.kpdiff.TestEntityFactory.newField
+import com.github.ai.kpdiff.TestEntityFactory.newGroup
 import com.github.ai.kpdiff.domain.diff.formatter.ParentProvider.Companion.UNKNOWN_ENTITY
 import com.github.ai.kpdiff.domain.diff.formatter.ParentProviderTest.Ids.ENTRY1
 import com.github.ai.kpdiff.domain.diff.formatter.ParentProviderTest.Ids.ENTRY2

@@ -1,14 +1,16 @@
 package com.github.ai.kpdiff.data.keepass
 
 import app.keemobile.kotpass.errors.CryptoError
-import com.github.ai.kpdiff.TestData
+import com.github.ai.kpdiff.DatabaseFactory.FILE_KEY
+import com.github.ai.kpdiff.DatabaseFactory.PASSWORD_KEY
+import com.github.ai.kpdiff.DatabaseFactory.createDatabase
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.KeepassKey
-import com.github.ai.kpdiff.testUtils.asFileKey
-import com.github.ai.kpdiff.testUtils.contentStream
+import com.github.ai.kpdiff.testUtils.buildNodeTree
 import com.github.ai.kpdiff.testUtils.convert
 import com.github.ai.kpdiff.testUtils.isContentEquals
+import com.github.ai.kpdiff.testUtils.toInputStream
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf
@@ -24,24 +26,24 @@ internal class KotpassDatabaseFactoryTest {
     @Test
     fun `createDatabase should read database with password`() {
         // arrange
-        val testDb = TestData.DB_WITH_PASSWORD
-        val key = testDb.key.convert()
-        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.contentStream()))
+        val testDb = createDatabase(PASSWORD_KEY)
+        val key = PASSWORD_KEY.convert()
+        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.toInputStream()))
 
         // act
         val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, key)
 
         // assert
         db.isRight() shouldBe true
-        db.unwrap().root.isContentEquals(testDb) shouldBe true
+        db.unwrap().root.isContentEquals(testDb.buildNodeTree()) shouldBe true
     }
 
     @Test
     fun `createDatabase should return error if password is not correct`() {
         // arrange
-        val testDb = TestData.DB_WITH_PASSWORD
+        val testDb = createDatabase(PASSWORD_KEY)
         val key = KeepassKey.PasswordKey(INVALID_PASSWORD)
-        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.contentStream()))
+        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.toInputStream()))
 
         // act
         val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, key)
@@ -54,8 +56,7 @@ internal class KotpassDatabaseFactoryTest {
     @Test
     fun `createDatabase should return error if db file is not exist`() {
         // arrange
-        val testDb = TestData.DB_WITH_PASSWORD
-        val key = testDb.key.convert()
+        val key = PASSWORD_KEY.convert()
         val exception = FileNotFoundException()
         every { fsProvider.open(PATH) }.returns(Either.Left(exception))
 
@@ -70,27 +71,26 @@ internal class KotpassDatabaseFactoryTest {
     @Test
     fun `createDatabase should read database with key file`() {
         // arrange
-        val testDb = TestData.DB_WITH_KEY
-        val key = testDb.key.asFileKey()
-        val kotpassKey = key.convert()
-        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.contentStream()))
-        every { fsProvider.open(key.path) }.returns(Either.Right(key.contentStream()))
+        val key = KeepassKey.FileKey(KEY_PATH)
+        val testDb = createDatabase(FILE_KEY)
+        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.toInputStream()))
+        every { fsProvider.open(KEY_PATH) }.returns(Either.Right(FILE_KEY.toInputStream()))
 
         // act
-        val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, kotpassKey)
+        val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, key)
 
         // assert
         db.isRight() shouldBe true
-        db.unwrap().root.isContentEquals(testDb) shouldBe true
+        db.unwrap().root.isContentEquals(testDb.buildNodeTree()) shouldBe true
     }
 
     @Test
     fun `createDatabase should return error if key is invalid`() {
         // arrange
-        val testDb = TestData.DB_WITH_KEY
+        val testDb = createDatabase(FILE_KEY)
         val invalidKey = KeepassKey.FileKey(KEY_PATH)
         val keyContent = INVALID_KEY_CONTENT.byteInputStream()
-        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.contentStream()))
+        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.toInputStream()))
         every { fsProvider.open(KEY_PATH) }.returns(Either.Right(keyContent))
 
         // act
@@ -104,14 +104,12 @@ internal class KotpassDatabaseFactoryTest {
     @Test
     fun `createDatabase should return error if key file is missing`() {
         // arrange
-        val testDb = TestData.DB_WITH_KEY
-        val key = testDb.key.asFileKey()
-        val kotpassKey = key.convert()
+        val key = KeepassKey.FileKey(KEY_PATH)
         val exception = FileNotFoundException()
-        every { fsProvider.open(key.path) }.returns(Either.Left(exception))
+        every { fsProvider.open(KEY_PATH) }.returns(Either.Left(exception))
 
         // act
-        val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, kotpassKey)
+        val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, key)
 
         // assert
         db.isLeft() shouldBe true

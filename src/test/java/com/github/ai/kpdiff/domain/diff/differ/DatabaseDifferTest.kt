@@ -1,21 +1,30 @@
 package com.github.ai.kpdiff.domain.diff.differ
 
-import com.github.ai.kpdiff.TestData.DB_WITH_PASSWORD
-import com.github.ai.kpdiff.TestData.DB_WITH_PASSWORD_MODIFIED
+import com.github.ai.kpdiff.DatabaseFactory.PASSWORD_KEY
+import com.github.ai.kpdiff.DatabaseFactory.createDatabase
+import com.github.ai.kpdiff.DatabaseFactory.createModifiedDatabase
+import com.github.ai.kpdiff.TestData.ENTRY_FACEBOOK
+import com.github.ai.kpdiff.TestData.ENTRY_GITHUB
+import com.github.ai.kpdiff.TestData.ENTRY_GITLAB
+import com.github.ai.kpdiff.TestData.ENTRY_GOOGLE
+import com.github.ai.kpdiff.TestData.ENTRY_GOOGLE_MODIFIED
+import com.github.ai.kpdiff.TestData.GROUP_CODING
+import com.github.ai.kpdiff.TestData.GROUP_EMAIL
+import com.github.ai.kpdiff.TestData.GROUP_INTERNET
+import com.github.ai.kpdiff.TestData.GROUP_ROOT
+import com.github.ai.kpdiff.TestData.GROUP_SHOPPING
+import com.github.ai.kpdiff.TestData.GROUP_SOCIAL
+import com.github.ai.kpdiff.TestEntityFactory.newField
+import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
-import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.FieldEntity
-import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
-import com.github.ai.kpdiff.testUtils.open
+import com.github.ai.kpdiff.testUtils.buildNodeTree
 import com.github.ai.kpdiff.testUtils.sortForAssertion
-import com.github.ai.kpdiff.utils.buildNodeTree
-import com.github.ai.kpdiff.utils.getTitle
+import com.github.ai.kpdiff.utils.Fields.FIELD_NOTES
+import com.github.ai.kpdiff.utils.StringUtils
 import com.github.aivanovski.keepasstreediff.PathDiffer
 import com.github.aivanovski.keepasstreediff.UuidDiffer
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.types.shouldBeInstanceOf
-import java.util.UUID
 import org.junit.jupiter.api.Test
 
 internal class DatabaseDifferTest {
@@ -28,11 +37,12 @@ internal class DatabaseDifferTest {
         ).forEach { differ ->
 
             // arrange
+            val expectedEvents = createExpectedEvents()
             val lhs = KeepassDatabase(
-                root = DB_WITH_PASSWORD.open().content.group.buildNodeTree()
+                root = createDatabase(PASSWORD_KEY).buildNodeTree()
             )
             val rhs = KeepassDatabase(
-                root = DB_WITH_PASSWORD_MODIFIED.open().content.group.buildNodeTree()
+                root = createModifiedDatabase(PASSWORD_KEY).buildNodeTree()
             )
 
             // act
@@ -43,44 +53,50 @@ internal class DatabaseDifferTest {
             diff.rhs shouldBe rhs
 
             val events = diff.events.sortForAssertion()
-            events.size shouldBe 5
+            events shouldBe expectedEvents
+        }
+    }
 
-            val iterator = events.iterator()
-            with(iterator.next()) {
-                shouldBeInstanceOf<DiffEvent.Delete<GroupEntity>>()
-                parentUuid shouldBe UUID.fromString("a5f9fa21-73cf-4da8-9c5c-39f8dd61e9c2")
-                entity.name shouldBe "Inner group 2"
-            }
+    companion object {
 
-            with(iterator.next()) {
-                shouldBeInstanceOf<DiffEvent.Insert<GroupEntity>>()
-                parentUuid shouldBe UUID.fromString("a5f9fa21-73cf-4da8-9c5c-39f8dd61e9c2")
-                entity.name shouldBe "Inner group 3"
-            }
+        private fun createExpectedEvents(): List<DiffEvent<DatabaseEntity>> {
+            return listOf(
+                DiffEvent.Delete(
+                    parentUuid = GROUP_ROOT.uuid,
+                    entity = GROUP_EMAIL
+                ),
+                DiffEvent.Insert(
+                    parentUuid = GROUP_INTERNET.uuid,
+                    entity = GROUP_SHOPPING
+                ),
 
-            with(iterator.next()) {
-                shouldBeInstanceOf<DiffEvent.Delete<EntryEntity>>()
-                parentUuid shouldBe UUID.fromString("f7adcc56-92da-4ac9-b72e-441a3add52ca")
-                entity.getTitle() shouldBe "Entry 3"
-            }
+                DiffEvent.Delete(
+                    parentUuid = GROUP_CODING.uuid,
+                    entity = ENTRY_GITHUB
+                ),
 
-            with(iterator.next()) {
-                shouldBeInstanceOf<DiffEvent.Insert<EntryEntity>>()
-                parentUuid shouldBe UUID.fromString("6a09a1cd-b39e-5564-f736-a9fd0993bd80")
-                entity.getTitle() shouldBe "Entry 5"
-            }
+                DiffEvent.Insert(
+                    parentUuid = GROUP_SOCIAL.uuid,
+                    entity = ENTRY_FACEBOOK
+                ),
+                DiffEvent.Insert(
+                    parentUuid = GROUP_CODING.uuid,
+                    entity = ENTRY_GITLAB
+                ),
 
-            with(iterator.next()) {
-                shouldBeInstanceOf<DiffEvent.Update<FieldEntity>>()
-
-                oldParentUuid shouldBe UUID.fromString("a97f8961-018e-411c-be10-59a4b6777433")
-                oldEntity.name shouldBe "Title"
-                oldEntity.value shouldBe "Entry 4"
-
-                newParentUuid shouldBe UUID.fromString("a97f8961-018e-411c-be10-59a4b6777433")
-                newEntity.name shouldBe "Title"
-                newEntity.value shouldBe "Entry 4 modified"
-            }
+                DiffEvent.Update(
+                    oldParentUuid = ENTRY_GOOGLE.uuid,
+                    newParentUuid = ENTRY_GOOGLE.uuid,
+                    oldEntity = newField(
+                        name = FIELD_NOTES,
+                        value = ENTRY_GOOGLE.fields[FIELD_NOTES] ?: StringUtils.EMPTY
+                    ),
+                    newEntity = newField(
+                        name = FIELD_NOTES,
+                        value = ENTRY_GOOGLE_MODIFIED.fields[FIELD_NOTES] ?: StringUtils.EMPTY
+                    )
+                ),
+            )
         }
     }
 }

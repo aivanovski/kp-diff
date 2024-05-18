@@ -1,23 +1,25 @@
 package com.github.ai.kpdiff.utils
 
-import com.github.ai.kpdiff.TestData
+import com.github.ai.kpdiff.DatabaseFactory.createDatabase
+import com.github.ai.kpdiff.testUtils.buildNodeTree
 import com.github.ai.kpdiff.testUtils.isContentEquals
-import com.github.ai.kpdiff.testUtils.open
 import io.kotest.matchers.shouldBe
 import org.junit.jupiter.api.Test
 
 internal class KotpassExtensionsKtTest {
 
+    // TODO: check this test
+
     @Test
     fun `toTree should build a valid tree`() {
         // arrange
-        val testDb = TestData.DB_WITH_PASSWORD
-        val root = testDb.open().content.group
+        val testDb = createDatabase()
+        val root = testDb.underlying.content.group
 
         // act
         val tree = root.buildNodeTree()
 
         // assert
-        tree.isContentEquals(testDb) shouldBe true
+        tree.isContentEquals(testDb.buildNodeTree()) shouldBe true
     }
 }
