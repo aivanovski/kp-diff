@@ -1,7 +1,7 @@
 package com.github.ai.kpdiff.utils
 
-import com.github.ai.kpdiff.TestDataFactory.newEntry
-import com.github.ai.kpdiff.TestDataFactory.newGroup
+import com.github.ai.kpdiff.TestEntityFactory.newEntry
+import com.github.ai.kpdiff.TestEntityFactory.newGroup
 import com.github.ai.kpdiff.testUtils.NodeTreeDsl.dbTree
 import com.github.ai.kpdiff.testUtils.createUuidFrom
 import com.github.ai.kpdiff.utils.KeepassDatabaseExtensionsKtTest.Ids.ENTRY1

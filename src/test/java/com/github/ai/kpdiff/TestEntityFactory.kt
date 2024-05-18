@@ -9,15 +9,49 @@ import com.github.ai.kpdiff.utils.Fields.FIELD_PASSWORD
 import com.github.ai.kpdiff.utils.Fields.FIELD_TITLE
 import com.github.ai.kpdiff.utils.Fields.FIELD_URL
 import com.github.ai.kpdiff.utils.Fields.FIELD_USERNAME
+import com.github.ai.kpdiff.utils.StringUtils
 import java.util.UUID
 
-object TestDataFactory {
+object TestEntityFactory {
+
+    private const val ENTRY_UUID_SHIFT = 0x1L
+    private const val GROUP_UUID_SHIFT = 0xFFL
 
     fun newGroup(id: Int): GroupEntity =
         GroupEntity(
             uuid = createUuidFrom(id),
             name = "Group $id"
         )
+
+    fun newGroup(name: String): GroupEntity {
+        return GroupEntity(
+            uuid = UUID(GROUP_UUID_SHIFT, name.hashCode().toLong()),
+            name = name
+        )
+    }
+
+    fun newEntry(
+        uuid: UUID? = null,
+        title: String = StringUtils.EMPTY,
+        username: String = StringUtils.EMPTY,
+        password: String = StringUtils.EMPTY,
+        url: String = StringUtils.EMPTY,
+        notes: String = StringUtils.EMPTY,
+        custom: Map<String, String> = emptyMap()
+    ): EntryEntity {
+        return EntryEntity(
+            uuid = uuid ?: UUID(ENTRY_UUID_SHIFT, title.hashCode().toLong()),
+            fields = mapOf(
+                FIELD_TITLE to title,
+                FIELD_USERNAME to username,
+                FIELD_PASSWORD to password,
+                FIELD_URL to url,
+                FIELD_NOTES to notes
+            )
+                .plus(custom)
+
+        )
+    }
 
     fun newEntry(
         id: Int,
@@ -38,7 +72,6 @@ object TestDataFactory {
                 FIELD_NOTES to notes
             )
                 .plus(custom)
-
         )
     }
 
