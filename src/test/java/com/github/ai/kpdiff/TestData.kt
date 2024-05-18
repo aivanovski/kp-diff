@@ -49,20 +49,20 @@ object TestData {
     val ENTRY_NAS_LOGIN = newEntry(
         title = "NAS Login",
         username = "john.doe",
-        password = "abc123",
+        password = "abc123"
     )
 
     val ENTRY_LAPTOP_LOGIN = newEntry(
         title = "Laptop login",
         username = "john.doe",
-        password = "abc123",
+        password = "abc123"
     )
 
     val ENTRY_GOOGLE = newEntry(
         title = "Google",
         username = "john.doe@example.com",
         password = "abc123",
-        url = "google.com",
+        url = "google.com"
     )
 
     val ENTRY_GOOGLE_MODIFIED = ENTRY_GOOGLE.copy(
@@ -76,21 +76,21 @@ object TestData {
         username = "john.doe@example.com",
         password = "abc123",
         url = "https://apple.com",
-        notes = "My personal Apple account",
+        notes = "My personal Apple account"
     )
 
     val ENTRY_MICROSOFT = newEntry(
         title = "Microsoft",
         username = "john.doe@example.com",
         password = "abc123",
-        url = "https://microsoft.com",
+        url = "https://microsoft.com"
     )
 
     val ENTRY_LEETCODE = newEntry(
         title = "Leetcode.com",
         username = "john.doe@example.com",
         password = "abc123",
-        url = "https://leetcode.com",
+        url = "https://leetcode.com"
     )
 
     val ENTRY_NEETCODE = newEntry(

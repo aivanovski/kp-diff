@@ -2,11 +2,6 @@ package com.github.ai.kpdiff
 
 import app.keemobile.kotpass.database.KeePassDatabase
 import app.keemobile.kotpass.models.DatabaseElement
-import com.github.aivanovski.keepasstreebuilder.DatabaseBuilderDsl
-import com.github.aivanovski.keepasstreebuilder.converter.kotpass.KotpassDatabaseConverter
-import com.github.aivanovski.keepasstreebuilder.model.Database
-import com.github.aivanovski.keepasstreebuilder.model.DatabaseKey
-import com.github.aivanovski.keepasstreebuilder.model.DatabaseKey.PasswordKey
 import com.github.ai.kpdiff.TestData.ENTRY_APPLE
 import com.github.ai.kpdiff.TestData.ENTRY_FACEBOOK
 import com.github.ai.kpdiff.TestData.ENTRY_GITHUB
@@ -25,6 +20,11 @@ import com.github.ai.kpdiff.TestData.GROUP_ROOT
 import com.github.ai.kpdiff.TestData.GROUP_SHOPPING
 import com.github.ai.kpdiff.TestData.GROUP_SOCIAL
 import com.github.ai.kpdiff.testUtils.toBuilderEntity
+import com.github.aivanovski.keepasstreebuilder.DatabaseBuilderDsl
+import com.github.aivanovski.keepasstreebuilder.converter.kotpass.KotpassDatabaseConverter
+import com.github.aivanovski.keepasstreebuilder.model.Database
+import com.github.aivanovski.keepasstreebuilder.model.DatabaseKey
+import com.github.aivanovski.keepasstreebuilder.model.DatabaseKey.PasswordKey
 
 object DatabaseFactory {
 

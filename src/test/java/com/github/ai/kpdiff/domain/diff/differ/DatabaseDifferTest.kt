@@ -95,7 +95,7 @@ internal class DatabaseDifferTest {
                         name = FIELD_NOTES,
                         value = ENTRY_GOOGLE_MODIFIED.fields[FIELD_NOTES] ?: StringUtils.EMPTY
                     )
-                ),
+                )
             )
         }
     }
