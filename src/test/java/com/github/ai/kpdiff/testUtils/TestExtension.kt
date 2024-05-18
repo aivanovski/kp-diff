@@ -1,5 +1,7 @@
 package com.github.ai.kpdiff.testUtils
 
+import app.keemobile.kotpass.database.KeePassDatabase
+import app.keemobile.kotpass.database.decode
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
@@ -10,8 +12,6 @@ import com.github.ai.kpdiff.testEntities.TestKeepassEntry
 import com.github.ai.kpdiff.testEntities.TestKeepassGroup
 import com.github.ai.kpdiff.testEntities.TestKeepassKey
 import com.github.ai.kpdiff.utils.toCredentials
-import app.keemobile.kotpass.database.KeePassDatabase
-import app.keemobile.kotpass.database.decode
 import java.io.InputStream
 import java.util.LinkedList
 import java.util.UUID

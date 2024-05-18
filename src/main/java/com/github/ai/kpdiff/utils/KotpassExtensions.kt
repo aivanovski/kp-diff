@@ -1,5 +1,9 @@
 package com.github.ai.kpdiff.utils
 
+import app.keemobile.kotpass.cryptography.EncryptedValue
+import app.keemobile.kotpass.database.Credentials
+import app.keemobile.kotpass.models.Entry
+import app.keemobile.kotpass.models.Group
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.Either
@@ -7,10 +11,6 @@ import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassKey
 import com.github.ai.kpdiff.entity.Node
-import app.keemobile.kotpass.cryptography.EncryptedValue
-import app.keemobile.kotpass.database.Credentials
-import app.keemobile.kotpass.models.Entry
-import app.keemobile.kotpass.models.Group
 import java.util.LinkedList
 
 fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Credentials> {

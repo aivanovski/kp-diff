@@ -1,5 +1,6 @@
 package com.github.ai.kpdiff.data.keepass
 
+import app.keemobile.kotpass.errors.CryptoError
 import com.github.ai.kpdiff.TestData
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.Either
@@ -8,7 +9,6 @@ import com.github.ai.kpdiff.testUtils.asFileKey
 import com.github.ai.kpdiff.testUtils.contentStream
 import com.github.ai.kpdiff.testUtils.convert
 import com.github.ai.kpdiff.testUtils.isContentEquals
-import app.keemobile.kotpass.errors.CryptoError
 import io.kotest.matchers.should
 import io.kotest.matchers.shouldBe
 import io.kotest.matchers.types.beInstanceOf
