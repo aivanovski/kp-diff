@@ -11,4 +11,5 @@ object Strings {
     const val ENTER_A_PASSWORD_FOR_FILE = "Enter a password for %s:"
     const val ENTER_A_PASSWORD = "Enter a password:"
     const val TOO_MANY_ATTEMPTS = "Too many attempts"
+    const val UNABLE_TO_CREATE_DIRECTORY = "Unable to create directory: %s"
 }

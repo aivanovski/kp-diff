@@ -151,6 +151,7 @@ class GetKeysUseCaseTest {
             leftKeyPath = leftKeyPath,
             rightKeyPath = rightKeyPath,
             differType = null,
+            outputFilePath = null,
             isPrintHelp = false,
             isPrintVersion = false,
             isVerboseOutput = false

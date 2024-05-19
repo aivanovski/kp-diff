@@ -4,6 +4,7 @@ import com.github.ai.kpdiff.TestData.FILE_CONTENT
 import com.github.ai.kpdiff.TestData.INVALID
 import com.github.ai.kpdiff.TestData.LEFT_FILE_PATH
 import com.github.ai.kpdiff.TestData.LEFT_KEY_PATH
+import com.github.ai.kpdiff.TestData.PATCH_FILE_PATH
 import com.github.ai.kpdiff.TestData.RIGHT_FILE_PATH
 import com.github.ai.kpdiff.TestData.RIGHT_KEY_PATH
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
@@ -96,7 +97,7 @@ internal class ArgumentParserTest {
         // arrange
         val message = String.format(FILE_DOES_NOT_EXIST, LEFT_FILE_PATH)
         val fsProvider = MockedFileSystemProvider(
-            fileContent = mapOf(
+            initialContent = mapOf(
                 RIGHT_FILE_PATH to EMPTY
             )
         )
@@ -116,7 +117,7 @@ internal class ArgumentParserTest {
         // arrange
         val message = String.format(FILE_DOES_NOT_EXIST, RIGHT_FILE_PATH)
         val fsProvider = MockedFileSystemProvider(
-            fileContent = mapOf(
+            initialContent = mapOf(
                 LEFT_FILE_PATH to EMPTY
             )
         )
@@ -304,7 +305,7 @@ internal class ArgumentParserTest {
     @Test
     fun `parse should return error if key file is not found`() {
         val fsProvider = MockedFileSystemProvider(
-            fileContent = mapOf(
+            initialContent = mapOf(
                 LEFT_FILE_PATH to FILE_CONTENT,
                 RIGHT_FILE_PATH to FILE_CONTENT
             )
@@ -475,6 +476,62 @@ internal class ArgumentParserTest {
         }
     }
 
+    @Test
+    fun `parse should return patch file path if --output-file specified`() {
+        listOf(
+            OptionalArgument.OUTPUT_FILE.cliFullName,
+            OptionalArgument.OUTPUT_FILE.cliShortName
+        ).forEach { argumentName ->
+            // arrange
+            val expected = newArguments(
+                leftPath = LEFT_FILE_PATH,
+                rightPath = RIGHT_FILE_PATH,
+                outputPatchPath = PATCH_FILE_PATH
+            )
+            val args = arrayOf(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                argumentName,
+                PATCH_FILE_PATH
+            )
+
+            // act
+            val result = ArgumentParser(newMockedProviderWithAllFiles()).parse(args)
+
+            // assert
+            result shouldBe Either.Right(expected)
+        }
+    }
+
+    @Test
+    fun `parse should return error if --output-file file is not specified`() {
+        listOf(
+            null,
+            EMPTY
+        ).forEach { argumentValue ->
+            // arrange
+            val message = MISSING_ARGUMENT_VALUE.format(OptionalArgument.OUTPUT_FILE.cliFullName)
+            val args = mutableListOf(
+                LEFT_FILE_PATH,
+                OptionalArgument.OUTPUT_FILE.cliShortName
+            )
+                .apply {
+                    if (argumentValue != null) {
+                        add(argumentValue)
+                    }
+                }
+                .toTypedArray()
+
+            // act
+            val result = ArgumentParser(newMockedProviderWithAllFiles()).parse(args)
+
+            // assert
+            result.isLeft() shouldBe true
+            result.unwrapError() should beInstanceOf<ParsingException>()
+            result.unwrapError().message shouldBe message
+        }
+    }
+
     private fun newEmptyProvider(): FileSystemProvider {
         return MockedFileSystemProvider()
     }
@@ -486,6 +543,7 @@ internal class ArgumentParserTest {
         leftKeyPath: String? = null,
         rightKeyPath: String? = null,
         differType: DifferType? = null,
+        outputPatchPath: String? = null,
         isUseOnePassword: Boolean = false,
         isNoColoredOutput: Boolean = false,
         isPrintHelp: Boolean = false,
@@ -499,6 +557,7 @@ internal class ArgumentParserTest {
             leftKeyPath = leftKeyPath,
             rightKeyPath = rightKeyPath,
             differType = differType,
+            outputFilePath = outputPatchPath,
             isUseOnePassword = isUseOnePassword,
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,
@@ -509,11 +568,12 @@ internal class ArgumentParserTest {
 
     private fun newMockedProviderWithAllFiles(): FileSystemProvider {
         return MockedFileSystemProvider(
-            fileContent = mapOf(
+            initialContent = mapOf(
                 LEFT_FILE_PATH to FILE_CONTENT,
                 RIGHT_FILE_PATH to FILE_CONTENT,
                 LEFT_KEY_PATH to FILE_CONTENT,
-                RIGHT_KEY_PATH to FILE_CONTENT
+                RIGHT_KEY_PATH to FILE_CONTENT,
+                PATCH_FILE_PATH to FILE_CONTENT
             )
         )
     }

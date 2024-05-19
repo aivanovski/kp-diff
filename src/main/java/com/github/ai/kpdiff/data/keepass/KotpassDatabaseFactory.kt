@@ -19,7 +19,7 @@ class KotpassDatabaseFactory(
             return creds.mapToLeft()
         }
 
-        val content = fsProvider.open(path)
+        val content = fsProvider.openForRead(path)
         if (content.isLeft()) {
             return content.mapToLeft()
         }

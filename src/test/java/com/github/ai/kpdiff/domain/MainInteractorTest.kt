@@ -2,6 +2,7 @@ package com.github.ai.kpdiff.domain
 
 import com.github.ai.kpdiff.TestData
 import com.github.ai.kpdiff.TestData.LEFT_PASSWORD
+import com.github.ai.kpdiff.TestData.OUTPUT_FILE_PATH
 import com.github.ai.kpdiff.TestData.RIGHT_PASSWORD
 import com.github.ai.kpdiff.domain.argument.ArgumentParser
 import com.github.ai.kpdiff.domain.diff.DatabaseDiffer
@@ -12,6 +13,7 @@ import com.github.ai.kpdiff.domain.usecases.OpenDatabasesUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintDiffUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
+import com.github.ai.kpdiff.domain.usecases.WriteDiffToFileUseCase
 import com.github.ai.kpdiff.entity.Arguments
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
@@ -33,6 +35,7 @@ class MainInteractorTest {
     private val getKeysUseCase = mockk<GetKeysUseCase>()
     private val openDatabasesUseCase = mockk<OpenDatabasesUseCase>()
     private val printDiffUseCase = mockk<PrintDiffUseCase>()
+    private val writeDiffToFileUseCase = mockk<WriteDiffToFileUseCase>()
     private val differProvider = mockk<DatabaseDifferProvider>()
     private val differ = mockk<DatabaseDiffer>()
     private val printer = mockk<OutputPrinter>()
@@ -181,11 +184,72 @@ class MainInteractorTest {
         }
     }
 
+    @Test
+    fun `process should write diff to a file if --output-file is specified`() {
+        // arrange
+        val args = newArgs(outputFilePath = OUTPUT_FILE_PATH)
+        every { argumentParser.parse(RAW_ARGS) }.returns(Either.Right(args))
+        every { getKeysUseCase.getKeys(args) }.returns(Either.Right(leftKey to rightKey))
+        every {
+            openDatabasesUseCase.openDatabases(
+                leftPath = args.leftPath,
+                leftKey = leftKey,
+                rightPath = args.rightPath,
+                rightKey = rightKey
+            )
+        }.returns(Either.Right(leftDb to rightDb))
+        every { differProvider.getDiffer(DifferType.PATH) }.returns(differ)
+        every { differ.getDiff(leftDb, rightDb) }.returns(diff)
+        every {
+            writeDiffToFileUseCase.writeDiff(
+                diff,
+                OUTPUT_FILE_PATH
+            )
+        }.returns(Either.Right(Unit))
+
+        // act
+        val result = newInteractor().process(RAW_ARGS)
+
+        // assert
+        result shouldBe Either.Right(Unit)
+    }
+
+    @Test
+    fun `process should return error if --output-file is specified`() {
+        // arrange
+        val args = newArgs(outputFilePath = OUTPUT_FILE_PATH)
+        every { argumentParser.parse(RAW_ARGS) }.returns(Either.Right(args))
+        every { getKeysUseCase.getKeys(args) }.returns(Either.Right(leftKey to rightKey))
+        every {
+            openDatabasesUseCase.openDatabases(
+                leftPath = args.leftPath,
+                leftKey = leftKey,
+                rightPath = args.rightPath,
+                rightKey = rightKey
+            )
+        }.returns(Either.Right(leftDb to rightDb))
+        every { differProvider.getDiffer(DifferType.PATH) }.returns(differ)
+        every { differ.getDiff(leftDb, rightDb) }.returns(diff)
+        every {
+            writeDiffToFileUseCase.writeDiff(
+                diff,
+                OUTPUT_FILE_PATH
+            )
+        }.returns(Either.Left(EXCEPTION))
+
+        // act
+        val result = newInteractor().process(RAW_ARGS)
+
+        // assert
+        result shouldBe Either.Left(EXCEPTION)
+    }
+
     private fun newArgs(
         isNoColoredOutput: Boolean = false,
         isPrintHelp: Boolean = false,
         isPrintVersion: Boolean = false,
-        differType: DifferType? = null
+        differType: DifferType? = null,
+        outputFilePath: String? = null
     ): Arguments =
         Arguments(
             leftPath = TestData.LEFT_FILE_PATH,
@@ -194,6 +258,7 @@ class MainInteractorTest {
             leftKeyPath = null,
             rightKeyPath = null,
             differType = differType,
+            outputFilePath = outputFilePath,
             isUseOnePassword = false,
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,
@@ -210,6 +275,7 @@ class MainInteractorTest {
             openDatabasesUseCase = openDatabasesUseCase,
             printDiffUseCase = printDiffUseCase,
             differProvider = differProvider,
+            writeDiffUseCase = writeDiffToFileUseCase,
             printer = printer
         )
 

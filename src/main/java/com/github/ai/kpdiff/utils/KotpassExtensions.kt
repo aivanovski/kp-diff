@@ -21,7 +21,7 @@ fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Cre
             )
         }
         is KeepassKey.FileKey -> {
-            val file = fileSystemProvider.open(path)
+            val file = fileSystemProvider.openForRead(path)
             if (file.isLeft()) {
                 return file.mapToLeft()
             }

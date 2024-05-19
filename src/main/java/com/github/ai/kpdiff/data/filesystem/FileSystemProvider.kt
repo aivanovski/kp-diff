@@ -5,5 +5,9 @@ import java.io.InputStream
 
 interface FileSystemProvider {
     fun exists(path: String): Boolean
-    fun open(path: String): Either<InputStream>
+    fun openForRead(path: String): Either<InputStream>
+    fun write(
+        path: String,
+        content: InputStream
+    ): Either<Unit>
 }

@@ -8,6 +8,7 @@ import com.github.ai.kpdiff.domain.usecases.OpenDatabasesUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintDiffUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
+import com.github.ai.kpdiff.domain.usecases.WriteDiffToFileUseCase
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.DifferType
 import com.github.ai.kpdiff.entity.Either
@@ -19,6 +20,7 @@ class MainInteractor(
     private val getKeysUseCase: GetKeysUseCase,
     private val openDatabasesUseCase: OpenDatabasesUseCase,
     private val printDiffUseCase: PrintDiffUseCase,
+    private val writeDiffUseCase: WriteDiffToFileUseCase,
     private val differProvider: DatabaseDifferProvider,
     private val printer: OutputPrinter
 ) {
@@ -62,13 +64,25 @@ class MainInteractor(
             .getDiffer(parsedArgs.differType ?: DifferType.PATH)
             .getDiff(lhs, rhs)
 
-        printDiffUseCase.printDiff(
-            diff = diff,
-            options = DiffFormatterOptions(
+        if (parsedArgs.outputFilePath != null) {
+            val writeResult = writeDiffUseCase.writeDiff(
+                diff = diff,
+                outputPath = parsedArgs.outputFilePath
+            )
+            if (writeResult.isLeft()) {
+                return writeResult.mapToLeft()
+            }
+        } else {
+            val options = DiffFormatterOptions(
                 isColorEnabled = !parsedArgs.isNoColoredOutput,
                 isVerboseOutput = parsedArgs.isVerboseOutput
             )
-        )
+
+            printDiffUseCase.printDiff(
+                diff = diff,
+                options = options
+            )
+        }
 
         return Either.Right(Unit)
     }
