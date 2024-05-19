@@ -28,7 +28,7 @@ internal class KotpassDatabaseFactoryTest {
         // arrange
         val testDb = createDatabase(PASSWORD_KEY)
         val key = PASSWORD_KEY.convert()
-        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.toInputStream()))
+        every { fsProvider.openForRead(PATH) }.returns(Either.Right(testDb.toInputStream()))
 
         // act
         val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, key)
@@ -43,7 +43,7 @@ internal class KotpassDatabaseFactoryTest {
         // arrange
         val testDb = createDatabase(PASSWORD_KEY)
         val key = KeepassKey.PasswordKey(INVALID_PASSWORD)
-        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.toInputStream()))
+        every { fsProvider.openForRead(PATH) }.returns(Either.Right(testDb.toInputStream()))
 
         // act
         val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, key)
@@ -58,7 +58,7 @@ internal class KotpassDatabaseFactoryTest {
         // arrange
         val key = PASSWORD_KEY.convert()
         val exception = FileNotFoundException()
-        every { fsProvider.open(PATH) }.returns(Either.Left(exception))
+        every { fsProvider.openForRead(PATH) }.returns(Either.Left(exception))
 
         // act
         val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, key)
@@ -73,8 +73,8 @@ internal class KotpassDatabaseFactoryTest {
         // arrange
         val key = KeepassKey.FileKey(KEY_PATH)
         val testDb = createDatabase(FILE_KEY)
-        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.toInputStream()))
-        every { fsProvider.open(KEY_PATH) }.returns(Either.Right(FILE_KEY.toInputStream()))
+        every { fsProvider.openForRead(PATH) }.returns(Either.Right(testDb.toInputStream()))
+        every { fsProvider.openForRead(KEY_PATH) }.returns(Either.Right(FILE_KEY.toInputStream()))
 
         // act
         val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, key)
@@ -90,8 +90,8 @@ internal class KotpassDatabaseFactoryTest {
         val testDb = createDatabase(FILE_KEY)
         val invalidKey = KeepassKey.FileKey(KEY_PATH)
         val keyContent = INVALID_KEY_CONTENT.byteInputStream()
-        every { fsProvider.open(PATH) }.returns(Either.Right(testDb.toInputStream()))
-        every { fsProvider.open(KEY_PATH) }.returns(Either.Right(keyContent))
+        every { fsProvider.openForRead(PATH) }.returns(Either.Right(testDb.toInputStream()))
+        every { fsProvider.openForRead(KEY_PATH) }.returns(Either.Right(keyContent))
 
         // act
         val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, invalidKey)
@@ -106,7 +106,7 @@ internal class KotpassDatabaseFactoryTest {
         // arrange
         val key = KeepassKey.FileKey(KEY_PATH)
         val exception = FileNotFoundException()
-        every { fsProvider.open(KEY_PATH) }.returns(Either.Left(exception))
+        every { fsProvider.openForRead(KEY_PATH) }.returns(Either.Left(exception))
 
         // act
         val db = KotpassDatabaseFactory(fsProvider).createDatabase(PATH, key)

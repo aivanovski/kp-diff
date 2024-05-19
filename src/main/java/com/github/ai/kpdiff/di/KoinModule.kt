@@ -1,5 +1,7 @@
 package com.github.ai.kpdiff.di
 
+import com.github.ai.kpdiff.data.filesystem.FileFactory
+import com.github.ai.kpdiff.data.filesystem.FileFactoryImpl
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.data.filesystem.FileSystemProviderImpl
 import com.github.ai.kpdiff.data.keepass.KeepassDatabaseFactory
@@ -24,6 +26,7 @@ import com.github.ai.kpdiff.domain.usecases.PrintDiffUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
+import com.github.ai.kpdiff.domain.usecases.WriteDiffToFileUseCase
 import org.koin.dsl.module
 
 object KoinModule {
@@ -32,7 +35,8 @@ object KoinModule {
         single { InputReaderFactory() }
         single<OutputPrinter> { StdoutOutputPrinter() }
         single { ErrorHandler(get()) }
-        single<FileSystemProvider> { FileSystemProviderImpl() }
+        single<FileFactory> { FileFactoryImpl() }
+        single<FileSystemProvider> { FileSystemProviderImpl(get()) }
         single<KeepassDatabaseFactory> { KotpassDatabaseFactory(get()) }
         single { DatabaseDifferProvider() }
         single { EntityFormatterProvider() }
@@ -50,7 +54,8 @@ object KoinModule {
         single { GetKeysUseCase(get()) }
         single { OpenDatabasesUseCase(get()) }
         single { PrintDiffUseCase(get(), get()) }
+        single { WriteDiffToFileUseCase(get(), get()) }
 
-        single { MainInteractor(get(), get(), get(), get(), get(), get(), get(), get()) }
+        single { MainInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     }
 }

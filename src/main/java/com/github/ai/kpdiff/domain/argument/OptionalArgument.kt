@@ -16,7 +16,8 @@ enum class OptionalArgument(
     KEY_FILE_A(shortName = "a", fullName = "key-file-a"),
     KEY_FILE_B(shortName = "b", fullName = "key-file-b"),
     VERBOSE(shortName = "v", fullName = "verbose"),
-    DIFF_BY(shortName = "d", fullName = "diff-by");
+    DIFF_BY(shortName = "d", fullName = "diff-by"),
+    OUTPUT_FILE(shortName = "f", fullName = "output-file");
 
     val cliShortName: String = "-$shortName"
     val cliFullName: String = "--$fullName"

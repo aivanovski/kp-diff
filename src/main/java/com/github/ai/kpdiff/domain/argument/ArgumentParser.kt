@@ -43,7 +43,10 @@ class ArgumentParser(
             return missingArgumentError(ARGUMENT_FILE_A)
         }
 
-        if (values.rightPath == null && !values.isPrintHelp && !values.isPrintVersion) {
+        if (values.rightPath == null &&
+            !values.isPrintHelp &&
+            !values.isPrintVersion
+        ) {
             return missingArgumentError(ARGUMENT_FILE_B)
         }
 
@@ -87,6 +90,7 @@ class ArgumentParser(
             OptionalArgument.KEY_FILE_B -> parseRightKeyPath(queue.poll(), values)
             OptionalArgument.KEY_FILE -> parseKeyPath(queue.poll(), values)
             OptionalArgument.DIFF_BY -> parseDifferType(queue.poll(), values)
+            OptionalArgument.OUTPUT_FILE -> parseFormatPatch(queue.poll(), values)
             else -> {
                 Either.Left(
                     ParsingException(String.format(UNKNOWN_OPTION, name))
@@ -207,6 +211,19 @@ class ArgumentParser(
                 argumentValue = value
             )
         }
+    }
+
+    private fun parseFormatPatch(
+        value: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
+        if (value.isNullOrEmpty()) {
+            return missingArgumentValue(OptionalArgument.OUTPUT_FILE.cliFullName)
+        }
+
+        arguments.outputFilePath = value
+
+        return Either.Right(Unit)
     }
 
     private fun <T> illegalArgumentValue(

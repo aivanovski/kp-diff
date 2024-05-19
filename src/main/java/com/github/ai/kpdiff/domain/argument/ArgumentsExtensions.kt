@@ -12,6 +12,7 @@ fun MutableArguments.toArguments(): Arguments {
         leftKeyPath = leftKeyPath,
         rightKeyPath = rightKeyPath,
         differType = differType,
+        outputFilePath = outputFilePath,
         isUseOnePassword = isUseOnePassword,
         isNoColoredOutput = isNoColoredOutput,
         isPrintHelp = isPrintHelp,

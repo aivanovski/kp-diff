@@ -1,20 +1,42 @@
 package com.github.ai.kpdiff.data.filesystem
 
+import com.github.ai.kpdiff.domain.Strings.UNABLE_TO_CREATE_DIRECTORY
 import com.github.ai.kpdiff.entity.Either
-import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
 import java.io.InputStream
 
-class FileSystemProviderImpl : FileSystemProvider {
+class FileSystemProviderImpl(
+    private val fileFactory: FileFactory
+) : FileSystemProvider {
 
     override fun exists(path: String): Boolean {
-        return File(path).exists()
+        return fileFactory.newFile(path).exists()
     }
 
-    override fun open(path: String): Either<InputStream> {
+    override fun openForRead(path: String): Either<InputStream> {
         return try {
-            Either.Right(FileInputStream(File(path)))
+            Either.Right(FileInputStream(fileFactory.newFile(path)))
+        } catch (exception: IOException) {
+            Either.Left(exception)
+        }
+    }
+
+    override fun write(path: String, content: InputStream): Either<Unit> {
+        val file = fileFactory.newFile(path)
+        val parent = file.parentFile
+
+        if (!parent.exists() && !parent.mkdirs()) {
+            return Either.Left(IOException(UNABLE_TO_CREATE_DIRECTORY.format(parent.path)))
+        }
+
+        return try {
+            FileOutputStream(file).use { out ->
+                content.copyTo(out)
+            }
+
+            Either.Right(Unit)
         } catch (exception: IOException) {
             Either.Left(exception)
         }
