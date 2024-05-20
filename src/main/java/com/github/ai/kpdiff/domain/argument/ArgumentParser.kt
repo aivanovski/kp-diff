@@ -39,15 +39,22 @@ class ArgumentParser(
             }
         }
 
-        if (values.leftPath == null && !values.isPrintHelp && !values.isPrintVersion) {
-            return missingArgumentError(ARGUMENT_FILE_A)
-        }
+        if (!values.isPrintHelp && !values.isPrintVersion) {
+            if (values.leftPath == null) {
+                return missingArgumentError(ARGUMENT_FILE_A)
+            }
 
-        if (values.rightPath == null &&
-            !values.isPrintHelp &&
-            !values.isPrintVersion
-        ) {
-            return missingArgumentError(ARGUMENT_FILE_B)
+            if (values.rightPath == null) {
+                return missingArgumentError(ARGUMENT_FILE_B)
+            }
+
+            if (values.leftPassword != null && values.rightPassword == null) {
+                return missingArgumentValue(OptionalArgument.PASSWORD_B.cliFullName)
+            }
+
+            if (values.leftPassword == null && values.rightPassword != null) {
+                return missingArgumentValue(OptionalArgument.PASSWORD_A.cliFullName)
+            }
         }
 
         return Either.Right(values.toArguments())
@@ -73,6 +80,8 @@ class ArgumentParser(
         }
     }
 
+    // TODO: fix CyclomaticComplexMethod suppression
+    @SuppressWarnings("CyclomaticComplexMethod")
     private fun parseOption(
         name: String,
         queue: Queue<String>,
@@ -89,6 +98,8 @@ class ArgumentParser(
             OptionalArgument.KEY_FILE_A -> parseLeftKeyPath(queue.poll(), values)
             OptionalArgument.KEY_FILE_B -> parseRightKeyPath(queue.poll(), values)
             OptionalArgument.PASSWORD -> parsePassword(queue.poll(), values)
+            OptionalArgument.PASSWORD_A -> parseLeftPassword(queue.poll(), values)
+            OptionalArgument.PASSWORD_B -> parseRightPassword(queue.poll(), values)
             OptionalArgument.KEY_FILE -> parseKeyPath(queue.poll(), values)
             OptionalArgument.DIFF_BY -> parseDifferType(queue.poll(), values)
             OptionalArgument.OUTPUT_FILE -> parseFormatPatch(queue.poll(), values)
@@ -162,6 +173,32 @@ class ArgumentParser(
         }
 
         return checkPathResult.mapWith(Unit)
+    }
+
+    private fun parseLeftPassword(
+        password: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
+        if (password.isNullOrBlank()) {
+            return missingArgumentValue(OptionalArgument.PASSWORD_A.cliFullName)
+        }
+
+        arguments.leftPassword = password
+
+        return Either.Right(Unit)
+    }
+
+    private fun parseRightPassword(
+        password: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
+        if (password.isNullOrBlank()) {
+            return missingArgumentValue(OptionalArgument.PASSWORD_B.cliFullName)
+        }
+
+        arguments.rightPassword = password
+
+        return Either.Right(Unit)
     }
 
     private fun parsePassword(

@@ -161,7 +161,7 @@ internal class ArgumentParserTest {
     fun `parse should return arguments if --help is specified`() {
         listOf(
             OptionalArgument.HELP.cliFullName,
-            OptionalArgument.HELP.cliShortName
+            OptionalArgument.HELP.cliShortName.orEmpty()
         ).forEach { argumentName ->
             assertParsedSuccessfully(
                 arguments = arrayOf(argumentName),
@@ -174,7 +174,7 @@ internal class ArgumentParserTest {
     fun `parse should return arguments if --version is specified`() {
         listOf(
             OptionalArgument.VERSION.cliFullName,
-            OptionalArgument.VERSION.cliShortName
+            OptionalArgument.VERSION.cliShortName.orEmpty()
         ).forEach { argumentName ->
             assertParsedSuccessfully(
                 arguments = arrayOf(argumentName),
@@ -187,7 +187,7 @@ internal class ArgumentParserTest {
     fun `parse should return arguments if --verbose is specified`() {
         listOf(
             OptionalArgument.VERBOSE.cliFullName,
-            OptionalArgument.VERBOSE.cliShortName
+            OptionalArgument.VERBOSE.cliShortName.orEmpty()
         ).forEach { argumentName ->
             assertParsedSuccessfully(
                 arguments = arrayOf(
@@ -208,7 +208,7 @@ internal class ArgumentParserTest {
     fun `parse should return arguments if --one-password is specified`() {
         listOf(
             OptionalArgument.ONE_PASSWORD.cliFullName,
-            OptionalArgument.ONE_PASSWORD.cliShortName
+            OptionalArgument.ONE_PASSWORD.cliShortName.orEmpty()
         ).forEach { argumentName ->
             assertParsedSuccessfully(
                 arguments = arrayOf(
@@ -229,11 +229,11 @@ internal class ArgumentParserTest {
     fun `parse should return key path if it is specified`() {
         listOf(
             Triple(BOTH, OptionalArgument.KEY_FILE.cliFullName, LEFT_KEY_PATH),
-            Triple(BOTH, OptionalArgument.KEY_FILE.cliShortName, LEFT_KEY_PATH),
+            Triple(BOTH, OptionalArgument.KEY_FILE.cliShortName.orEmpty(), LEFT_KEY_PATH),
             Triple(LEFT, OptionalArgument.KEY_FILE_A.cliFullName, LEFT_KEY_PATH),
-            Triple(LEFT, OptionalArgument.KEY_FILE_A.cliShortName, LEFT_KEY_PATH),
+            Triple(LEFT, OptionalArgument.KEY_FILE_A.cliShortName.orEmpty(), LEFT_KEY_PATH),
             Triple(RIGHT, OptionalArgument.KEY_FILE_B.cliFullName, RIGHT_KEY_PATH),
-            Triple(RIGHT, OptionalArgument.KEY_FILE_B.cliShortName, RIGHT_KEY_PATH)
+            Triple(RIGHT, OptionalArgument.KEY_FILE_B.cliShortName.orEmpty(), RIGHT_KEY_PATH)
         ).forEach { (side, argumentName, keyPath) ->
             assertParsedSuccessfully(
                 arguments = arrayOf(
@@ -254,10 +254,10 @@ internal class ArgumentParserTest {
     }
 
     @Test
-    fun `parse should return password if it is specified`() {
+    fun `parse should return password if --password is specified`() {
         listOf(
             OptionalArgument.PASSWORD.cliFullName,
-            OptionalArgument.PASSWORD.cliShortName
+            OptionalArgument.PASSWORD.cliShortName.orEmpty()
         ).forEach { argumentName ->
             assertParsedSuccessfully(
                 arguments = arrayOf(
@@ -276,15 +276,94 @@ internal class ArgumentParserTest {
     }
 
     @Test
-    fun `parse should return error if password is not specified`() {
-        assertParsingError(
+    fun `parse should return password if --password-a --password-b are specified`() {
+        assertParsedSuccessfully(
             arguments = arrayOf(
                 LEFT_FILE_PATH,
                 RIGHT_FILE_PATH,
-                OptionalArgument.PASSWORD.cliFullName
+                OptionalArgument.PASSWORD_A.cliFullName,
+                PASSWORD,
+                OptionalArgument.PASSWORD_B.cliFullName,
+                PASSWORD
             ),
-            errorMessage = MISSING_ARGUMENT_VALUE.format(OptionalArgument.PASSWORD.cliFullName)
+            expectedArguments = newArguments(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                leftPassword = PASSWORD,
+                rightPassword = PASSWORD
+            )
         )
+    }
+
+    @Test
+    fun `parse should return error if value for --password is not specified`() {
+        listOf(
+            null to OptionalArgument.PASSWORD.cliFullName,
+            EMPTY to OptionalArgument.PASSWORD.cliFullName,
+
+            null to OptionalArgument.PASSWORD_A.cliFullName,
+            EMPTY to OptionalArgument.PASSWORD_A.cliFullName,
+
+            null to OptionalArgument.PASSWORD_B.cliFullName,
+            EMPTY to OptionalArgument.PASSWORD_B.cliFullName
+        ).forEach { (argumentValue, argumentName) ->
+            val arguments = mutableListOf(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                argumentName
+            )
+                .apply {
+                    if (argumentValue != null) {
+                        add(argumentValue)
+                    }
+                }
+                .toTypedArray()
+
+            assertParsingError(
+                arguments = arguments,
+                errorMessage = MISSING_ARGUMENT_VALUE.format(argumentName)
+            )
+        }
+    }
+
+    @Test
+    fun `parse should return error if --password-a or --password-b is not specified`() {
+        listOf(
+            PASSWORD to null,
+            null to PASSWORD
+        ).forEach { (leftArgumentValue, rightArgumentValue) ->
+            val argumentName = if (leftArgumentValue != null) {
+                OptionalArgument.PASSWORD_A.cliFullName
+            } else {
+                OptionalArgument.PASSWORD_B.cliFullName
+            }
+            val errorArgumentName = if (leftArgumentValue != null) {
+                OptionalArgument.PASSWORD_B.cliFullName
+            } else {
+                OptionalArgument.PASSWORD_A.cliFullName
+            }
+
+            val arguments = mutableListOf(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                argumentName
+            )
+                .apply {
+                    if (leftArgumentValue != null) {
+                        add(leftArgumentValue)
+                    }
+
+                    if (rightArgumentValue != null) {
+                        add(rightArgumentValue)
+                    }
+                }
+                .toTypedArray()
+
+            assertParsingError(
+                arguments = arguments,
+                errorMessage = MISSING_ARGUMENT_VALUE.format(errorArgumentName)
+            )
+        }
     }
 
     @Test
@@ -325,8 +404,8 @@ internal class ArgumentParserTest {
     @Test
     fun `parse should return arguments if no-color option is specified`() {
         listOf(
-            OptionalArgument.NO_COLOR.cliShortName,
-            OptionalArgument.NO_COLOR.cliFullName
+            OptionalArgument.NO_COLOR.cliFullName,
+            OptionalArgument.NO_COLOR.cliShortName.orEmpty()
         ).forEach { argumentName ->
             assertParsedSuccessfully(
                 arguments = arrayOf(
@@ -347,7 +426,7 @@ internal class ArgumentParserTest {
     fun `parse should return arguments if --diff-by is specified`() {
         listOf(
             Pair(
-                OptionalArgument.DIFF_BY.cliShortName,
+                OptionalArgument.DIFF_BY.cliShortName.orEmpty(),
                 DifferType.UUID.cliName
             ) to DifferType.UUID,
 
@@ -357,7 +436,7 @@ internal class ArgumentParserTest {
             ) to DifferType.UUID,
 
             Pair(
-                OptionalArgument.DIFF_BY.cliShortName,
+                OptionalArgument.DIFF_BY.cliShortName.orEmpty(),
                 DifferType.PATH.cliName
             ) to DifferType.PATH,
 
@@ -455,7 +534,7 @@ internal class ArgumentParserTest {
     fun `parse should return patch file path if --output-file specified`() {
         listOf(
             OptionalArgument.OUTPUT_FILE.cliFullName,
-            OptionalArgument.OUTPUT_FILE.cliShortName
+            OptionalArgument.OUTPUT_FILE.cliShortName.orEmpty()
         ).forEach { argumentName ->
             assertParsedSuccessfully(
                 arguments = arrayOf(
@@ -483,7 +562,7 @@ internal class ArgumentParserTest {
             val message = MISSING_ARGUMENT_VALUE.format(OptionalArgument.OUTPUT_FILE.cliFullName)
             val args = mutableListOf(
                 LEFT_FILE_PATH,
-                OptionalArgument.OUTPUT_FILE.cliShortName
+                OptionalArgument.OUTPUT_FILE.cliFullName
             )
                 .apply {
                     if (argumentValue != null) {
@@ -536,6 +615,8 @@ internal class ArgumentParserTest {
         leftKeyPath: String? = null,
         rightKeyPath: String? = null,
         password: String? = null,
+        leftPassword: String? = null,
+        rightPassword: String? = null,
         differType: DifferType? = null,
         outputPatchPath: String? = null,
         isUseOnePassword: Boolean = false,
@@ -551,6 +632,8 @@ internal class ArgumentParserTest {
             leftKeyPath = leftKeyPath,
             rightKeyPath = rightKeyPath,
             password = password,
+            leftPassword = leftPassword,
+            rightPassword = rightPassword,
             differType = differType,
             outputFilePath = outputPatchPath,
             isUseOnePassword = isUseOnePassword,

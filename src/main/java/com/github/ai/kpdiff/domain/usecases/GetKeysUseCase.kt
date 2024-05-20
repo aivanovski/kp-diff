@@ -11,25 +11,43 @@ class GetKeysUseCase(
 ) {
 
     fun getKeys(args: Arguments): Either<Pair<KeepassKey, KeepassKey>> {
-        if (args.password != null) {
-            return Either.Right(
-                PasswordKey(args.password) to PasswordKey(args.password)
-            )
-        }
-
-        if (args.isUseOnePassword) {
-            val password = readPasswordUseCase.readPassword(
-                listOf(args.leftPath, args.rightPath)
-            )
-            if (password.isLeft()) {
-                return password.mapToLeft()
+        return when {
+            args.password != null -> {
+                Either.Right(PasswordKey(args.password) to PasswordKey(args.password))
             }
 
-            return Either.Right(
-                PasswordKey(password.unwrap()) to PasswordKey(password.unwrap())
-            )
+            args.leftPassword != null && args.rightPassword != null -> {
+                Either.Right(
+                    PasswordKey(args.leftPassword) to PasswordKey(args.rightPassword)
+                )
+            }
+
+            args.isUseOnePassword -> {
+                readPasswordForBothFiles(args)
+            }
+
+            else -> {
+                readPasswordsForEachFileSeparately(args)
+            }
+        }
+    }
+
+    private fun readPasswordForBothFiles(
+        args: Arguments
+    ): Either<Pair<KeepassKey, KeepassKey>> {
+        val password = readPasswordUseCase.readPassword(
+            listOf(args.leftPath, args.rightPath)
+        )
+        if (password.isLeft()) {
+            return password.mapToLeft()
         }
 
+        return Either.Right(PasswordKey(password.unwrap()) to PasswordKey(password.unwrap()))
+    }
+
+    private fun readPasswordsForEachFileSeparately(
+        args: Arguments
+    ): Either<Pair<KeepassKey, KeepassKey>> {
         val leftKeyPath = args.keyPath ?: args.leftKeyPath
         val rightKeyPath = args.keyPath ?: args.rightKeyPath
 

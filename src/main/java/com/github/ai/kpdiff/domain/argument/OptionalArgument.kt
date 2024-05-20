@@ -1,7 +1,7 @@
 package com.github.ai.kpdiff.domain.argument
 
 enum class OptionalArgument(
-    private val shortName: String,
+    private val shortName: String?,
     private val fullName: String
 ) {
 
@@ -16,10 +16,17 @@ enum class OptionalArgument(
     KEY_FILE_A(shortName = "a", fullName = "key-file-a"),
     KEY_FILE_B(shortName = "b", fullName = "key-file-b"),
     PASSWORD(shortName = "p", fullName = "password"),
+    PASSWORD_A(shortName = null, fullName = "password-a"),
+    PASSWORD_B(shortName = null, fullName = "password-b"),
     VERBOSE(shortName = "v", fullName = "verbose"),
     DIFF_BY(shortName = "d", fullName = "diff-by"),
     OUTPUT_FILE(shortName = "f", fullName = "output-file");
 
-    val cliShortName: String = "-$shortName"
+    val cliShortName: String? = if (shortName != null) {
+        "-$shortName"
+    } else {
+        null
+    }
+
     val cliFullName: String = "--$fullName"
 }

@@ -37,6 +37,22 @@ class GetKeysUseCaseTest {
     }
 
     @Test
+    fun `getKeys should return passwords if different passwords specified`() {
+        // arrange
+        val args = newArgs(
+            leftPassword = LEFT_PASSWORD,
+            rightPassword = RIGHT_PASSWORD
+        )
+        val expected = PasswordKey(LEFT_PASSWORD) to PasswordKey(RIGHT_PASSWORD)
+
+        // act
+        val result = newUseCase().getKeys(args)
+
+        // assert
+        result shouldBe Either.Right(expected)
+    }
+
+    @Test
     fun `getKeys should return passwords if isUseOnePassword is specified`() {
         // arrange
         val args = newArgs(isUseOnePassword = true)
@@ -154,6 +170,8 @@ class GetKeysUseCaseTest {
         leftKeyPath: String? = null,
         rightKeyPath: String? = null,
         password: String? = null,
+        leftPassword: String? = null,
+        rightPassword: String? = null,
         isUseOnePassword: Boolean = false
     ): Arguments {
         return Arguments(
@@ -165,6 +183,8 @@ class GetKeysUseCaseTest {
             leftKeyPath = leftKeyPath,
             rightKeyPath = rightKeyPath,
             password = password,
+            leftPassword = leftPassword,
+            rightPassword = rightPassword,
             differType = null,
             outputFilePath = null,
             isPrintHelp = false,
