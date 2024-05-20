@@ -11,6 +11,7 @@ fun MutableArguments.toArguments(): Arguments {
         keyPath = keyPath,
         leftKeyPath = leftKeyPath,
         rightKeyPath = rightKeyPath,
+        password = password,
         differType = differType,
         outputFilePath = outputFilePath,
         isUseOnePassword = isUseOnePassword,

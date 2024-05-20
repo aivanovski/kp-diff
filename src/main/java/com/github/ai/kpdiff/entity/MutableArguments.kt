@@ -6,6 +6,7 @@ data class MutableArguments(
     var keyPath: String? = null,
     var leftKeyPath: String? = null,
     var rightKeyPath: String? = null,
+    var password: String? = null,
     var differType: DifferType? = null,
     var outputFilePath: String? = null,
     var isUseOnePassword: Boolean = false,
