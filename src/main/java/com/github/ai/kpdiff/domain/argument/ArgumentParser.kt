@@ -80,6 +80,8 @@ class ArgumentParser(
         }
     }
 
+    // TODO: fix CyclomaticComplexMethod suppression
+    @SuppressWarnings("CyclomaticComplexMethod")
     private fun parseOption(
         name: String,
         queue: Queue<String>,
