@@ -4,6 +4,7 @@ import com.github.ai.kpdiff.TestData.FILE_CONTENT
 import com.github.ai.kpdiff.TestData.INVALID
 import com.github.ai.kpdiff.TestData.LEFT_FILE_PATH
 import com.github.ai.kpdiff.TestData.LEFT_KEY_PATH
+import com.github.ai.kpdiff.TestData.PASSWORD
 import com.github.ai.kpdiff.TestData.PATCH_FILE_PATH
 import com.github.ai.kpdiff.TestData.RIGHT_FILE_PATH
 import com.github.ai.kpdiff.TestData.RIGHT_KEY_PATH
@@ -34,29 +35,18 @@ internal class ArgumentParserTest {
 
     @Test
     fun `parse should return arguments`() {
-        // arrange
-        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
-
-        // act
-        val result = ArgumentParser(newMockedProviderWithAllFiles())
-            .parse(arrayOf(LEFT_FILE_PATH, RIGHT_FILE_PATH))
-
-        // assert
-        result.isRight() shouldBe true
-        result.unwrap() shouldBe expected
+        assertParsedSuccessfully(
+            arguments = arrayOf(LEFT_FILE_PATH, RIGHT_FILE_PATH),
+            expectedArguments = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH)
+        )
     }
 
     @Test
     fun `parse should set isPrintHelp if no arguments provided`() {
-        // arrange
-        val expected = newArguments(isPrintHelp = true)
-
-        // act
-        val result = ArgumentParser(newEmptyProvider())
-            .parse(emptyArray())
-
-        // assert
-        result shouldBe Either.Right(expected)
+        assertParsedSuccessfully(
+            arguments = emptyArray(),
+            expectedArguments = newArguments(isPrintHelp = true)
+        )
     }
 
     @Test
@@ -173,16 +163,10 @@ internal class ArgumentParserTest {
             OptionalArgument.HELP.cliFullName,
             OptionalArgument.HELP.cliShortName
         ).forEach { argumentName ->
-            // arrange
-            val expected = newArguments(isPrintHelp = true)
-            val args = arrayOf(argumentName)
-
-            // act
-            val result = ArgumentParser(newMockedProviderWithAllFiles())
-                .parse(args)
-
-            // assert
-            result shouldBe Either.Right(expected)
+            assertParsedSuccessfully(
+                arguments = arrayOf(argumentName),
+                expectedArguments = newArguments(isPrintHelp = true)
+            )
         }
     }
 
@@ -192,16 +176,10 @@ internal class ArgumentParserTest {
             OptionalArgument.VERSION.cliFullName,
             OptionalArgument.VERSION.cliShortName
         ).forEach { argumentName ->
-            // arrange
-            val expected = newArguments(isPrintVersion = true)
-            val args = arrayOf(argumentName)
-
-            // act
-            val result = ArgumentParser(newMockedProviderWithAllFiles())
-                .parse(args)
-
-            // assert
-            result shouldBe Either.Right(expected)
+            assertParsedSuccessfully(
+                arguments = arrayOf(argumentName),
+                expectedArguments = newArguments(isPrintVersion = true)
+            )
         }
     }
 
@@ -211,59 +189,40 @@ internal class ArgumentParserTest {
             OptionalArgument.VERBOSE.cliFullName,
             OptionalArgument.VERBOSE.cliShortName
         ).forEach { argumentName ->
-            // arrange
-            val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH, isVerboseOutput = true)
-            val args = arrayOf(
-                LEFT_FILE_PATH,
-                RIGHT_FILE_PATH,
-                argumentName
+            assertParsedSuccessfully(
+                arguments = arrayOf(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    argumentName
+                ),
+                expectedArguments = newArguments(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    isVerboseOutput = true
+                )
             )
-
-            // act
-            val result = ArgumentParser(newMockedProviderWithAllFiles())
-                .parse(args)
-
-            // assert
-            result shouldBe Either.Right(expected)
         }
     }
 
     @Test
     fun `parse should return arguments if --one-password is specified`() {
-        // arrange
-        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH, isUseOnePassword = true)
-        val args = arrayOf(
-            LEFT_FILE_PATH,
-            RIGHT_FILE_PATH,
-            OptionalArgument.ONE_PASSWORD.cliFullName
-        )
-
-        // act
-        val result = ArgumentParser(newMockedProviderWithAllFiles())
-            .parse(args)
-
-        // assert
-        result.isRight() shouldBe true
-        result.unwrap() shouldBe expected
-    }
-
-    @Test
-    fun `parse should return arguments if -o is specified`() {
-        // arrange
-        val expected = newArguments(LEFT_FILE_PATH, RIGHT_FILE_PATH, isUseOnePassword = true)
-        val args = arrayOf(
-            LEFT_FILE_PATH,
-            RIGHT_FILE_PATH,
+        listOf(
+            OptionalArgument.ONE_PASSWORD.cliFullName,
             OptionalArgument.ONE_PASSWORD.cliShortName
-        )
-
-        // act
-        val result = ArgumentParser(newMockedProviderWithAllFiles())
-            .parse(args)
-
-        // assert
-        result.isRight() shouldBe true
-        result.unwrap() shouldBe expected
+        ).forEach { argumentName ->
+            assertParsedSuccessfully(
+                arguments = arrayOf(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    argumentName
+                ),
+                expectedArguments = newArguments(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    isUseOnePassword = true
+                )
+            )
+        }
     }
 
     @Test
@@ -276,30 +235,56 @@ internal class ArgumentParserTest {
             Triple(RIGHT, OptionalArgument.KEY_FILE_B.cliFullName, RIGHT_KEY_PATH),
             Triple(RIGHT, OptionalArgument.KEY_FILE_B.cliShortName, RIGHT_KEY_PATH)
         ).forEach { (side, argumentName, keyPath) ->
-            // arrange
-            val expected = newArguments(
+            assertParsedSuccessfully(
+                arguments = arrayOf(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    argumentName,
+                    keyPath
+                ),
+                expectedArguments = newArguments(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    keyPath = if (side == BOTH) keyPath else null,
+                    leftKeyPath = if (side == LEFT) keyPath else null,
+                    rightKeyPath = if (side == RIGHT) keyPath else null
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `parse should return password if it is specified`() {
+        listOf(
+            OptionalArgument.PASSWORD.cliFullName,
+            OptionalArgument.PASSWORD.cliShortName
+        ).forEach { argumentName ->
+            assertParsedSuccessfully(
+                arguments = arrayOf(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    argumentName,
+                    PASSWORD
+                ),
+                expectedArguments = newArguments(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    password = PASSWORD
+                )
+            )
+        }
+    }
+
+    @Test
+    fun `parse should return error if password is not specified`() {
+        assertParsingError(
+            arguments = arrayOf(
                 LEFT_FILE_PATH,
                 RIGHT_FILE_PATH,
-                keyPath = if (side == BOTH) keyPath else null,
-                leftKeyPath = if (side == LEFT) keyPath else null,
-                rightKeyPath = if (side == RIGHT) keyPath else null
-            )
-
-            // act
-            val result = ArgumentParser(newMockedProviderWithAllFiles())
-                .parse(
-                    args = arrayOf(
-                        LEFT_FILE_PATH,
-                        RIGHT_FILE_PATH,
-                        argumentName,
-                        keyPath
-                    )
-                )
-
-            // assert
-            result.isRight() shouldBe true
-            result.unwrap() shouldBe expected
-        }
+                OptionalArgument.PASSWORD.cliFullName
+            ),
+            errorMessage = MISSING_ARGUMENT_VALUE.format(OptionalArgument.PASSWORD.cliFullName)
+        )
     }
 
     @Test
@@ -342,26 +327,20 @@ internal class ArgumentParserTest {
         listOf(
             OptionalArgument.NO_COLOR.cliShortName,
             OptionalArgument.NO_COLOR.cliFullName
-        )
-            .forEach { argumentName ->
-                val expected = newArguments(
+        ).forEach { argumentName ->
+            assertParsedSuccessfully(
+                arguments = arrayOf(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    argumentName
+                ),
+                expectedArguments = newArguments(
                     LEFT_FILE_PATH,
                     RIGHT_FILE_PATH,
                     isNoColoredOutput = true
                 )
-                val args = arrayOf(
-                    LEFT_FILE_PATH,
-                    RIGHT_FILE_PATH,
-                    argumentName
-                )
-
-                // act
-                val result = ArgumentParser(newMockedProviderWithAllFiles()).parse(args)
-
-                // assert
-                result.isRight() shouldBe true
-                result.unwrap() shouldBe expected
-            }
+            )
+        }
     }
 
     @Test
@@ -397,28 +376,24 @@ internal class ArgumentParserTest {
                 OptionalArgument.DIFF_BY.cliFullName,
                 DifferType.PATH.cliName.uppercase()
             ) to DifferType.PATH
-        )
-            .forEach { (input, expectedDifferType) ->
-                // arrange
-                val (argumentName, argumentValue) = input
-                val expected = newArguments(
-                    LEFT_FILE_PATH,
-                    RIGHT_FILE_PATH,
-                    differType = expectedDifferType
-                )
-                val args = arrayOf(
+        ).forEach { (input, expectedDifferType) ->
+            // arrange
+            val (argumentName, argumentValue) = input
+
+            assertParsedSuccessfully(
+                arguments = arrayOf(
                     LEFT_FILE_PATH,
                     RIGHT_FILE_PATH,
                     argumentName,
                     argumentValue
+                ),
+                expectedArguments = newArguments(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    differType = expectedDifferType
                 )
-
-                // act
-                val result = ArgumentParser(newMockedProviderWithAllFiles()).parse(args)
-
-                // assert
-                result shouldBe Either.Right(expected)
-            }
+            )
+        }
     }
 
     @Test
@@ -482,24 +457,19 @@ internal class ArgumentParserTest {
             OptionalArgument.OUTPUT_FILE.cliFullName,
             OptionalArgument.OUTPUT_FILE.cliShortName
         ).forEach { argumentName ->
-            // arrange
-            val expected = newArguments(
-                leftPath = LEFT_FILE_PATH,
-                rightPath = RIGHT_FILE_PATH,
-                outputPatchPath = PATCH_FILE_PATH
+            assertParsedSuccessfully(
+                arguments = arrayOf(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    argumentName,
+                    PATCH_FILE_PATH
+                ),
+                expectedArguments = newArguments(
+                    leftPath = LEFT_FILE_PATH,
+                    rightPath = RIGHT_FILE_PATH,
+                    outputPatchPath = PATCH_FILE_PATH
+                )
             )
-            val args = arrayOf(
-                LEFT_FILE_PATH,
-                RIGHT_FILE_PATH,
-                argumentName,
-                PATCH_FILE_PATH
-            )
-
-            // act
-            val result = ArgumentParser(newMockedProviderWithAllFiles()).parse(args)
-
-            // assert
-            result shouldBe Either.Right(expected)
         }
     }
 
@@ -532,6 +502,29 @@ internal class ArgumentParserTest {
         }
     }
 
+    private fun assertParsedSuccessfully(
+        arguments: Array<String>,
+        expectedArguments: Arguments
+    ) {
+        // act
+        val result = ArgumentParser(newMockedProviderWithAllFiles()).parse(arguments)
+
+        // assert
+        result shouldBe Either.Right(expectedArguments)
+    }
+
+    private fun assertParsingError(
+        arguments: Array<String>,
+        errorMessage: String
+    ) {
+        val result = ArgumentParser(newMockedProviderWithAllFiles()).parse(arguments)
+
+        // assert
+        result.isLeft() shouldBe true
+        result.unwrapError() should beInstanceOf<ParsingException>()
+        result.unwrapError().message shouldBe errorMessage
+    }
+
     private fun newEmptyProvider(): FileSystemProvider {
         return MockedFileSystemProvider()
     }
@@ -542,6 +535,7 @@ internal class ArgumentParserTest {
         keyPath: String? = null,
         leftKeyPath: String? = null,
         rightKeyPath: String? = null,
+        password: String? = null,
         differType: DifferType? = null,
         outputPatchPath: String? = null,
         isUseOnePassword: Boolean = false,
@@ -556,6 +550,7 @@ internal class ArgumentParserTest {
             keyPath = keyPath,
             leftKeyPath = leftKeyPath,
             rightKeyPath = rightKeyPath,
+            password = password,
             differType = differType,
             outputFilePath = outputPatchPath,
             isUseOnePassword = isUseOnePassword,

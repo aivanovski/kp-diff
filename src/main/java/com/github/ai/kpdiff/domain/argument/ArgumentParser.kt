@@ -88,6 +88,7 @@ class ArgumentParser(
             OptionalArgument.VERBOSE -> parseVerbose(values)
             OptionalArgument.KEY_FILE_A -> parseLeftKeyPath(queue.poll(), values)
             OptionalArgument.KEY_FILE_B -> parseRightKeyPath(queue.poll(), values)
+            OptionalArgument.PASSWORD -> parsePassword(queue.poll(), values)
             OptionalArgument.KEY_FILE -> parseKeyPath(queue.poll(), values)
             OptionalArgument.DIFF_BY -> parseDifferType(queue.poll(), values)
             OptionalArgument.OUTPUT_FILE -> parseFormatPatch(queue.poll(), values)
@@ -161,6 +162,19 @@ class ArgumentParser(
         }
 
         return checkPathResult.mapWith(Unit)
+    }
+
+    private fun parsePassword(
+        password: String?,
+        arguments: MutableArguments
+    ): Either<Unit> {
+        if (password.isNullOrBlank()) {
+            return missingArgumentValue(OptionalArgument.PASSWORD.cliFullName)
+        }
+
+        arguments.password = password
+
+        return Either.Right(Unit)
     }
 
     private fun parseLeftPath(

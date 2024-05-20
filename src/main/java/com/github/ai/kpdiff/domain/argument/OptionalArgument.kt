@@ -15,6 +15,7 @@ enum class OptionalArgument(
     KEY_FILE(shortName = "k", fullName = "key-file"),
     KEY_FILE_A(shortName = "a", fullName = "key-file-a"),
     KEY_FILE_B(shortName = "b", fullName = "key-file-b"),
+    PASSWORD(shortName = "p", fullName = "password"),
     VERBOSE(shortName = "v", fullName = "verbose"),
     DIFF_BY(shortName = "d", fullName = "diff-by"),
     OUTPUT_FILE(shortName = "f", fullName = "output-file");

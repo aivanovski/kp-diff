@@ -11,6 +11,12 @@ class GetKeysUseCase(
 ) {
 
     fun getKeys(args: Arguments): Either<Pair<KeepassKey, KeepassKey>> {
+        if (args.password != null) {
+            return Either.Right(
+                PasswordKey(args.password) to PasswordKey(args.password)
+            )
+        }
+
         if (args.isUseOnePassword) {
             val password = readPasswordUseCase.readPassword(
                 listOf(args.leftPath, args.rightPath)
@@ -20,10 +26,7 @@ class GetKeysUseCase(
             }
 
             return Either.Right(
-                Pair(
-                    PasswordKey(password.unwrap()),
-                    PasswordKey(password.unwrap())
-                )
+                PasswordKey(password.unwrap()) to PasswordKey(password.unwrap())
             )
         }
 
@@ -49,8 +52,6 @@ class GetKeysUseCase(
             }
         }
 
-        return Either.Right(
-            Pair(keys[0], keys[1])
-        )
+        return Either.Right(keys[0] to keys[1])
     }
 }

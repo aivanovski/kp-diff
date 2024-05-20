@@ -24,6 +24,19 @@ class GetKeysUseCaseTest {
     private val readPasswordUseCase = mockk<ReadPasswordUseCase>()
 
     @Test
+    fun `getKeys should return passwords if it specified as argument`() {
+        // arrange
+        val args = newArgs(password = PASSWORD)
+        val expected = PasswordKey(PASSWORD) to PasswordKey(PASSWORD)
+
+        // act
+        val result = newUseCase().getKeys(args)
+
+        // assert
+        result shouldBe Either.Right(expected)
+    }
+
+    @Test
     fun `getKeys should return passwords if isUseOnePassword is specified`() {
         // arrange
         val args = newArgs(isUseOnePassword = true)
@@ -140,6 +153,7 @@ class GetKeysUseCaseTest {
         keyPath: String? = null,
         leftKeyPath: String? = null,
         rightKeyPath: String? = null,
+        password: String? = null,
         isUseOnePassword: Boolean = false
     ): Arguments {
         return Arguments(
@@ -150,6 +164,7 @@ class GetKeysUseCaseTest {
             keyPath = keyPath,
             leftKeyPath = leftKeyPath,
             rightKeyPath = rightKeyPath,
+            password = password,
             differType = null,
             outputFilePath = null,
             isPrintHelp = false,
