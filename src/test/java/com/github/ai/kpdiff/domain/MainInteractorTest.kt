@@ -258,6 +258,8 @@ class MainInteractorTest {
             leftKeyPath = null,
             rightKeyPath = null,
             password = null,
+            leftPassword = null,
+            rightPassword = null,
             differType = differType,
             outputFilePath = outputFilePath,
             isUseOnePassword = false,
