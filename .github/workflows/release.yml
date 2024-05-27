@@ -35,11 +35,11 @@ jobs:
           # Copy jar file to project root
           cp ./build/libs/kp-diff-${{env.VERSION}}.jar kp-diff.jar
 
-      - name: Store jar file
+      - name: Publish jar file
         uses: actions/upload-artifact@v3
         with:
           name: kp-diff.jar
-          path: ./build/libs/kp-diff.jar
+          path: kp-diff.jar
 
       - name: Setup GraalVM Environment
         uses: DeLaGuardo/setup-graalvm@5.0
@@ -87,3 +87,4 @@ jobs:
             kp-diff.jar
             kp-diff-linux-amd64
             kp-diff_${{env.VERSION}}.deb
+            kp-diff-linux-amd64.tar.gz
