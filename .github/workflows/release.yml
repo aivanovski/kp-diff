@@ -2,7 +2,7 @@ name: Create Github release
 
 on:
   push:
-    branches: master
+    branches: main
     tags:
       - '*.*.*'
 
