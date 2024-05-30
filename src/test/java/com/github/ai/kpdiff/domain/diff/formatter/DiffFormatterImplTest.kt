@@ -44,8 +44,7 @@ class DiffFormatterImplTest {
         }
     }
 
-    private fun newPathDiffer(): PathDatabaseDiffer =
-        PathDatabaseDiffer(PathDiffer())
+    private fun newPathDiffer(): PathDatabaseDiffer = PathDatabaseDiffer(PathDiffer())
 
     private fun defaultOptions(): DiffFormatterOptions =
         DiffFormatterOptions(isColorEnabled = false, isVerboseOutput = false)

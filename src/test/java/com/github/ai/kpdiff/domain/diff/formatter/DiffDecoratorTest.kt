@@ -184,8 +184,7 @@ class DiffDecoratorTest {
         return PathDatabaseDiffer(PathDiffer()).getDiff(this, another)
     }
 
-    private fun newDecorator(): DiffDecorator =
-        DiffDecorator()
+    private fun newDecorator(): DiffDecorator = DiffDecorator()
 
     private object Ids {
         const val ROOT = 0

@@ -66,9 +66,7 @@ internal class GroupEntityFormatterTest {
         ) shouldBe "-$INDENT_DOUBLE $GROUP '$TITLE1'"
     }
 
-    private fun newGroup(title: String = TITLE1): GroupEntity =
-        GroupEntity(UUID1, title)
+    private fun newGroup(title: String = TITLE1): GroupEntity = GroupEntity(UUID1, title)
 
-    private fun newFormatter(): GroupEntityFormatter =
-        GroupEntityFormatter()
+    private fun newFormatter(): GroupEntityFormatter = GroupEntityFormatter()
 }

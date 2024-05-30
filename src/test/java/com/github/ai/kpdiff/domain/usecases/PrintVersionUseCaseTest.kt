@@ -24,9 +24,7 @@ internal class PrintVersionUseCaseTest {
         printer.getPrintedText() shouldBe String.format(TEXT, VERSION)
     }
 
-    private fun newUseCase(
-        getVersionUseCase: GetVersionUseCase = mockk()
-    ): PrintVersionUseCase {
+    private fun newUseCase(getVersionUseCase: GetVersionUseCase = mockk()): PrintVersionUseCase {
         return PrintVersionUseCase(getVersionUseCase)
     }
 }

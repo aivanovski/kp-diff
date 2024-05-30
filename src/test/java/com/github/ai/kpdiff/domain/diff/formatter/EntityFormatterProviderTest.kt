@@ -25,6 +25,5 @@ internal class EntityFormatterProviderTest {
         }
     }
 
-    private fun newProvider(): EntityFormatterProvider =
-        EntityFormatterProvider()
+    private fun newProvider(): EntityFormatterProvider = EntityFormatterProvider()
 }

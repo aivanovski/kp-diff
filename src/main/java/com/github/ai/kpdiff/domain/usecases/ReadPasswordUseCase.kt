@@ -20,9 +20,7 @@ class ReadPasswordUseCase(
     private val printer: OutputPrinter
 ) {
 
-    fun readPassword(
-        paths: List<String>
-    ): Either<String> {
+    fun readPassword(paths: List<String>): Either<String> {
         val filenames = paths.map { path -> File(path).name }
 
         val inputType = determineInputTypeUseCase.getInputReaderType()
@@ -50,7 +48,10 @@ class ReadPasswordUseCase(
         return Either.Left(KpDiffException(TOO_MANY_ATTEMPTS))
     }
 
-    private fun checkPassword(paths: List<String>, password: String): Either<String> {
+    private fun checkPassword(
+        paths: List<String>,
+        password: String
+    ): Either<String> {
         for (path in paths) {
             val db = dbFactory.createDatabase(path, KeepassKey.PasswordKey(password))
             if (db.isLeft()) {

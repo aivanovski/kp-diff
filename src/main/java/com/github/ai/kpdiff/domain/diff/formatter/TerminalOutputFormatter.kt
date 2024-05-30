@@ -2,7 +2,10 @@ package com.github.ai.kpdiff.domain.diff.formatter
 
 class TerminalOutputFormatter {
 
-    fun format(line: String, color: Color): String {
+    fun format(
+        line: String,
+        color: Color
+    ): String {
         return if (color != Color.NONE) {
             "${color.value}$line${Color.DEFAULT.value}"
         } else {

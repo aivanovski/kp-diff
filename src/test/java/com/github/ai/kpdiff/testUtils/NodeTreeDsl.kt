@@ -42,7 +42,10 @@ object NodeTreeDsl {
 
         private val nodes = mutableListOf<Node<T>>()
 
-        fun node(value: T, content: (SimpleNodeTreeBuilder<T>.() -> Unit)? = null) {
+        fun node(
+            value: T,
+            content: (SimpleNodeTreeBuilder<T>.() -> Unit)? = null
+        ) {
             node(createUuidFrom(value), value, content)
         }
 

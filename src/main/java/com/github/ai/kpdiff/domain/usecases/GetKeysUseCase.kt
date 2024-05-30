@@ -32,9 +32,7 @@ class GetKeysUseCase(
         }
     }
 
-    private fun readPasswordForBothFiles(
-        args: Arguments
-    ): Either<Pair<KeepassKey, KeepassKey>> {
+    private fun readPasswordForBothFiles(args: Arguments): Either<Pair<KeepassKey, KeepassKey>> {
         val password = readPasswordUseCase.readPassword(
             listOf(args.leftPath, args.rightPath)
         )

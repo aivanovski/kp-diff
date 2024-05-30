@@ -4,7 +4,6 @@ enum class OptionalArgument(
     private val shortName: String?,
     private val fullName: String
 ) {
-
     // Options to add:
     // --flatten
 

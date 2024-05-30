@@ -32,9 +32,7 @@ class WriteDiffToFileUseCaseTest {
         fsProvider.read(FILE_PATH) shouldBe DIFF_CONTENT
     }
 
-    private fun newUseCase(
-        fileSystemProvider: FileSystemProvider
-    ): WriteDiffToFileUseCase {
+    private fun newUseCase(fileSystemProvider: FileSystemProvider): WriteDiffToFileUseCase {
         return WriteDiffToFileUseCase(
             fileSystemProvider = fileSystemProvider,
             diffFormatter = diffFormatter

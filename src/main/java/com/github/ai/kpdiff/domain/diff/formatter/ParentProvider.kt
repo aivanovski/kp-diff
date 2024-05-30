@@ -23,9 +23,7 @@ class ParentProvider(
     private val rhsGroupMap = rhs.buildAllGroupMap()
     private val rhsEntryMap = rhs.buildAllEntryMap()
 
-    fun getParentName(
-        event: DiffEvent<DatabaseEntity>
-    ): String {
+    fun getParentName(event: DiffEvent<DatabaseEntity>): String {
         val parentUuid = event.getParentUuid()
         val entity = event.getEntity()
 
