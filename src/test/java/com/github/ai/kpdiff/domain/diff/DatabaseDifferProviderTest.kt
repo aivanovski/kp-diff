@@ -15,6 +15,5 @@ class DatabaseDifferProviderTest {
         newProvider().getDiffer(DifferType.UUID) should beInstanceOf<UuidDatabaseDiffer>()
     }
 
-    private fun newProvider(): DatabaseDifferProvider =
-        DatabaseDifferProvider()
+    private fun newProvider(): DatabaseDifferProvider = DatabaseDifferProvider()
 }

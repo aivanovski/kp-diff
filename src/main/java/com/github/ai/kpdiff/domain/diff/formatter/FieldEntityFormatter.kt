@@ -7,7 +7,10 @@ import com.github.ai.kpdiff.utils.getTypeCharacter
 
 class FieldEntityFormatter : EntityFormatter<FieldEntity> {
 
-    override fun format(event: DiffEvent<FieldEntity>, indentation: String): String {
+    override fun format(
+        event: DiffEvent<FieldEntity>,
+        indentation: String
+    ): String {
         val type = event.getTypeCharacter()
         val entity = event.getEntity()
 

@@ -1,6 +1,5 @@
 package com.github.ai.kpdiff.testUtils
 
-import java.io.ByteArrayInputStream
 import java.io.InputStream
 
 fun Any.resourceAsBytes(name: String): ByteArray {
@@ -10,11 +9,7 @@ fun Any.resourceAsBytes(name: String): ByteArray {
     return stream.readAllBytes()
 }
 
-fun Any.resourceAsString(name: String): String =
-    String(resourceAsBytes(name))
-
-fun Any.resourceAsStream(name: String): InputStream =
-    ByteArrayInputStream(resourceAsBytes(name))
+fun Any.resourceAsString(name: String): String = String(resourceAsBytes(name))
 
 fun InputStream.readText(): String {
     return String(readAllBytes())

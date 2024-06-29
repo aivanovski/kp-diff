@@ -185,9 +185,7 @@ internal class FileSystemProviderImplTestOld {
         return tempDir.resolve(FILE_NAME).toFile()
     }
 
-    private fun newFsProvider(
-        fileFactory: FileFactory = MockedFileFactory()
-    ): FileSystemProvider {
+    private fun newFsProvider(fileFactory: FileFactory = MockedFileFactory()): FileSystemProvider {
         return FileSystemProviderImpl(
             fileFactory = fileFactory
         )

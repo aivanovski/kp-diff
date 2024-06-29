@@ -128,7 +128,10 @@ class DiffFormatterImpl(
         return parents.reversed()
     }
 
-    private fun findParentUuids(uuid: UUID, uuidToParentMap: Map<UUID, UUID>): List<UUID> {
+    private fun findParentUuids(
+        uuid: UUID,
+        uuidToParentMap: Map<UUID, UUID>
+    ): List<UUID> {
         val result = mutableListOf(uuid)
 
         var current: UUID? = uuid

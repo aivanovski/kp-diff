@@ -7,7 +7,10 @@ import com.github.ai.kpdiff.utils.getTitle
 
 class ParentFormatter {
 
-    fun format(parent: Parent, indentation: String): String {
+    fun format(
+        parent: Parent,
+        indentation: String
+    ): String {
         return when (parent.entity) {
             is GroupEntity -> "~$indentation $GROUP '${parent.entity.name}'"
             is EntryEntity -> {

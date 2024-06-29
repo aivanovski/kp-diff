@@ -24,7 +24,10 @@ class MockedFileSystemProvider(
         }
     }
 
-    override fun write(path: String, content: InputStream): Either<Unit> {
+    override fun write(
+        path: String,
+        content: InputStream
+    ): Either<Unit> {
         fileContent[path] = String(content.readAllBytes())
         return Either.Right(Unit)
     }

@@ -68,8 +68,7 @@ internal class EntryEntityFormatterTest {
         ) shouldBe "-$INDENT_DOUBLE $ENTRY '$TITLE'"
     }
 
-    private fun newFormatter(): EntryEntityFormatter =
-        EntryEntityFormatter()
+    private fun newFormatter(): EntryEntityFormatter = EntryEntityFormatter()
 
     private fun newEntity(title: String = TITLE): EntryEntity {
         return EntryEntity(

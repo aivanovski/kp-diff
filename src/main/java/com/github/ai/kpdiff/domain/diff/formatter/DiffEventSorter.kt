@@ -16,9 +16,7 @@ import kotlin.reflect.KClass
 
 class DiffEventSorter {
 
-    fun sort(
-        events: List<DiffEvent<DatabaseEntity>>
-    ): List<DiffEvent<DatabaseEntity>> {
+    fun sort(events: List<DiffEvent<DatabaseEntity>>): List<DiffEvent<DatabaseEntity>> {
         return events.splitByEventType().values
             .map { eventsByType ->
                 eventsByType.splitByEntityType()
@@ -89,13 +87,11 @@ class DiffEventSorter {
         }
     }
 
-    private fun List<DiffEvent<out DatabaseEntity>>.sortByName():
-        List<DiffEvent<out DatabaseEntity>> {
+    private fun <T : DatabaseEntity> List<DiffEvent<T>>.sortByName(): List<DiffEvent<T>> {
         return this.sortedBy { event -> event.getEntity().name }
     }
 
-    private fun List<DiffEvent<FieldEntity>>.sortDefaultFields():
-        List<DiffEvent<FieldEntity>> {
+    private fun List<DiffEvent<FieldEntity>>.sortDefaultFields(): List<DiffEvent<FieldEntity>> {
         return this.sortedBy { event ->
             val fieldName = event.getEntity().name
             DEFAULT_FIELDS_ORDER[fieldName] ?: Int.MAX_VALUE
@@ -108,7 +104,7 @@ class DiffEventSorter {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun List<DiffEvent<out DatabaseEntity>>.asEntityEvents():
+    private fun <T : DatabaseEntity> List<DiffEvent<out T>>.asEntityEvents():
         List<DiffEvent<DatabaseEntity>> {
         return this as List<DiffEvent<DatabaseEntity>>
     }

@@ -23,7 +23,10 @@ class FileSystemProviderImpl(
         }
     }
 
-    override fun write(path: String, content: InputStream): Either<Unit> {
+    override fun write(
+        path: String,
+        content: InputStream
+    ): Either<Unit> {
         val file = fileFactory.newFile(path)
         val parent = file.parentFile
 

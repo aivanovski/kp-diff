@@ -5,5 +5,8 @@ import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.KeepassKey
 
 interface KeepassDatabaseFactory {
-    fun createDatabase(path: String, key: KeepassKey): Either<KeepassDatabase>
+    fun createDatabase(
+        path: String,
+        key: KeepassKey
+    ): Either<KeepassDatabase>
 }

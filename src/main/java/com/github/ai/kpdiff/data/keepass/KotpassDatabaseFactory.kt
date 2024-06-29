@@ -13,7 +13,10 @@ class KotpassDatabaseFactory(
     private val fsProvider: FileSystemProvider
 ) : KeepassDatabaseFactory {
 
-    override fun createDatabase(path: String, key: KeepassKey): Either<KeepassDatabase> {
+    override fun createDatabase(
+        path: String,
+        key: KeepassKey
+    ): Either<KeepassDatabase> {
         val creds = key.toCredentials(fsProvider)
         if (creds.isLeft()) {
             return creds.mapToLeft()

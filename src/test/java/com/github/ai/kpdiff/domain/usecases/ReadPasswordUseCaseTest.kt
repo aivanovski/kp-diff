@@ -156,8 +156,7 @@ internal class ReadPasswordUseCaseTest {
         result shouldBe Either.Right(PASSWORD)
     }
 
-    private fun newKey(password: String): KeepassKey.PasswordKey =
-        KeepassKey.PasswordKey(password)
+    private fun newKey(password: String): KeepassKey.PasswordKey = KeepassKey.PasswordKey(password)
 
     private fun newUseCase(
         determineInputTypeUseCase: DetermineInputTypeUseCase = this.determineInputTypeUseCase,
