@@ -21,7 +21,6 @@ import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.testUtils.buildNodeTree
 import com.github.ai.kpdiff.testUtils.sortForAssertion
 import com.github.ai.kpdiff.utils.Fields.FIELD_NOTES
-import com.github.ai.kpdiff.utils.StringUtils
 import com.github.aivanovski.keepasstreediff.PathDiffer
 import com.github.aivanovski.keepasstreediff.UuidDiffer
 import io.kotest.matchers.shouldBe
@@ -37,7 +36,6 @@ internal class DatabaseDifferTest {
         ).forEach { differ ->
 
             // arrange
-            val expectedEvents = createExpectedEvents()
             val lhs = KeepassDatabase(
                 root = createDatabase(PASSWORD_KEY).buildNodeTree()
             )
@@ -53,7 +51,7 @@ internal class DatabaseDifferTest {
             diff.rhs shouldBe rhs
 
             val events = diff.events.sortForAssertion()
-            events shouldBe expectedEvents
+            events shouldBe createExpectedEvents()
         }
     }
 
@@ -89,11 +87,11 @@ internal class DatabaseDifferTest {
                     newParentUuid = ENTRY_GOOGLE.uuid,
                     oldEntity = newField(
                         name = FIELD_NOTES,
-                        value = ENTRY_GOOGLE.fields[FIELD_NOTES] ?: StringUtils.EMPTY
+                        value = ENTRY_GOOGLE.fields[FIELD_NOTES].orEmpty()
                     ),
                     newEntity = newField(
                         name = FIELD_NOTES,
-                        value = ENTRY_GOOGLE_MODIFIED.fields[FIELD_NOTES] ?: StringUtils.EMPTY
+                        value = ENTRY_GOOGLE_MODIFIED.fields[FIELD_NOTES].orEmpty()
                     )
                 )
             )

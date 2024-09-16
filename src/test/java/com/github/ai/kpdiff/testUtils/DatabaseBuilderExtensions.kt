@@ -47,7 +47,8 @@ fun EntryEntity.toBuilderEntity(
         modified = modified,
         expires = null,
         fields = fields,
-        history = emptyList()
+        history = emptyList(),
+        binaries = emptyList()
     )
 }
 

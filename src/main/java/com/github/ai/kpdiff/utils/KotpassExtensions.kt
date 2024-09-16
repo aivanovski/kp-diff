@@ -20,6 +20,7 @@ fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Cre
                 Credentials.from(EncryptedValue.fromString(password))
             )
         }
+
         is KeepassKey.FileKey -> {
             val file = fileSystemProvider.openForRead(path)
             if (file.isLeft()) {
@@ -67,10 +68,8 @@ private fun Group.toEntity(): GroupEntity {
 }
 
 private fun Entry.toEntity(): EntryEntity {
-    val fields = mutableMapOf<String, String>()
-
-    for ((key, value) in this.fields.entries) {
-        fields[key] = value.content
+    val fields = fields.entries.associate { (key, value) ->
+        key to value.content
     }
 
     return EntryEntity(
