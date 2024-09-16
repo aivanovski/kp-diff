@@ -25,6 +25,7 @@ import com.github.aivanovski.keepasstreebuilder.converter.kotpass.KotpassDatabas
 import com.github.aivanovski.keepasstreebuilder.model.Database
 import com.github.aivanovski.keepasstreebuilder.model.DatabaseKey
 import com.github.aivanovski.keepasstreebuilder.model.DatabaseKey.PasswordKey
+import io.kotest.matchers.types.shouldBeInstanceOf
 
 object DatabaseFactory {
 
@@ -80,6 +81,24 @@ object DatabaseFactory {
                 }
                 entry(ENTRY_NAS_LOGIN.toBuilderEntity())
                 entry(ENTRY_LAPTOP_LOGIN.toBuilderEntity())
+            }
+            .build()
+    }
+
+    fun createTimestampDatabases(key: DatabaseKey): Database<DatabaseElement, KeePassDatabase> {
+        return DatabaseBuilderDsl.newBuilder(KotpassDatabaseConverter())
+            .key(key)
+            .content(GROUP_ROOT.toBuilderEntity()) {
+
+            }
+            .build()
+    }
+
+    fun createTimestampModifiedDatabases(key: DatabaseKey): Database<DatabaseElement, KeePassDatabase> {
+        return DatabaseBuilderDsl.newBuilder(KotpassDatabaseConverter())
+            .key(key)
+            .content(GROUP_ROOT.toBuilderEntity()) {
+
             }
             .build()
     }

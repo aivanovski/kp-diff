@@ -37,7 +37,6 @@ internal class DatabaseDifferTest {
         ).forEach { differ ->
 
             // arrange
-            val expectedEvents = createExpectedEvents()
             val lhs = KeepassDatabase(
                 root = createDatabase(PASSWORD_KEY).buildNodeTree()
             )
@@ -53,7 +52,7 @@ internal class DatabaseDifferTest {
             diff.rhs shouldBe rhs
 
             val events = diff.events.sortForAssertion()
-            events shouldBe expectedEvents
+            events shouldBe createExpectedEvents()
         }
     }
 
@@ -89,11 +88,11 @@ internal class DatabaseDifferTest {
                     newParentUuid = ENTRY_GOOGLE.uuid,
                     oldEntity = newField(
                         name = FIELD_NOTES,
-                        value = ENTRY_GOOGLE.fields[FIELD_NOTES] ?: StringUtils.EMPTY
+                        value = ENTRY_GOOGLE.fields[FIELD_NOTES].orEmpty()
                     ),
                     newEntity = newField(
                         name = FIELD_NOTES,
-                        value = ENTRY_GOOGLE_MODIFIED.fields[FIELD_NOTES] ?: StringUtils.EMPTY
+                        value = ENTRY_GOOGLE_MODIFIED.fields[FIELD_NOTES].orEmpty()
                     )
                 )
             )

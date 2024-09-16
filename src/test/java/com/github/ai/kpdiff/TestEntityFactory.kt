@@ -3,6 +3,7 @@ package com.github.ai.kpdiff
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.FieldEntity
 import com.github.ai.kpdiff.entity.GroupEntity
+import com.github.ai.kpdiff.entity.Timestamps
 import com.github.ai.kpdiff.testUtils.createUuidFrom
 import com.github.ai.kpdiff.utils.Fields.FIELD_NOTES
 import com.github.ai.kpdiff.utils.Fields.FIELD_PASSWORD
@@ -10,12 +11,21 @@ import com.github.ai.kpdiff.utils.Fields.FIELD_TITLE
 import com.github.ai.kpdiff.utils.Fields.FIELD_URL
 import com.github.ai.kpdiff.utils.Fields.FIELD_USERNAME
 import com.github.ai.kpdiff.utils.StringUtils
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.time.Instant
 import java.util.UUID
 
 object TestEntityFactory {
 
     private const val ENTRY_UUID_SHIFT = 0x1L
     private const val GROUP_UUID_SHIFT = 0xFFL
+    private val ISO_DATE_FORMAT = SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+    private val DEFAULT_TIMESTAMPS = Timestamps(
+        created = parseDateAndTime("2020-01-01 12:00:00"),
+        modified = parseDateAndTime("2020-01-01 12:00:00"),
+        expires = null
+    )
 
     fun newGroup(id: Int): GroupEntity =
         GroupEntity(
@@ -37,6 +47,7 @@ object TestEntityFactory {
         password: String = StringUtils.EMPTY,
         url: String = StringUtils.EMPTY,
         notes: String = StringUtils.EMPTY,
+        timestamps: Timestamps = DEFAULT_TIMESTAMPS,
         custom: Map<String, String> = emptyMap()
     ): EntryEntity {
         return EntryEntity(
@@ -48,8 +59,8 @@ object TestEntityFactory {
                 FIELD_URL to url,
                 FIELD_NOTES to notes
             )
-                .plus(custom)
-
+                .plus(custom),
+            timestamps = timestamps
         )
     }
 
@@ -60,6 +71,7 @@ object TestEntityFactory {
         password: String = "Password $id",
         url: String = "Url $id",
         notes: String = "Notes $id",
+        timestamps: Timestamps = DEFAULT_TIMESTAMPS,
         custom: Map<String, String> = emptyMap()
     ): EntryEntity {
         return EntryEntity(
@@ -71,7 +83,8 @@ object TestEntityFactory {
                 FIELD_URL to url,
                 FIELD_NOTES to notes
             )
-                .plus(custom)
+                .plus(custom),
+            timestamps = timestamps
         )
     }
 
@@ -96,5 +109,14 @@ object TestEntityFactory {
             name = name,
             value = value
         )
+    }
+
+    private fun parseDateAndTime(date: String): Instant {
+        return try {
+            val time = ISO_DATE_FORMAT.parse(date).time
+            Instant.ofEpochMilli(time)
+        } catch (exception: ParseException) {
+            throw exception
+        }
     }
 }

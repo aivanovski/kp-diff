@@ -11,11 +11,17 @@ import com.github.ai.kpdiff.utils.traverse
 import com.github.aivanovski.keepasstreediff.entity.DiffEvent as ExternalDiffEvent
 import com.github.aivanovski.keepasstreediff.entity.Entity as ExternalEntity
 import com.github.aivanovski.keepasstreediff.entity.EntryEntity as ExternalEntryEntity
-import com.github.aivanovski.keepasstreediff.entity.FieldEntity as ExternalFieldEntity
 import com.github.aivanovski.keepasstreediff.entity.GroupEntity as ExternalGroupEntity
 import com.github.aivanovski.keepasstreediff.entity.TreeNode as ExternalNode
+import com.github.ai.kpdiff.entity.Timestamps
+import com.github.ai.kpdiff.utils.Fields.FIELD_CREATED
+import com.github.ai.kpdiff.utils.Fields.FIELD_EXPIRES
+import com.github.ai.kpdiff.utils.Fields.FIELD_MODIFIED
+import com.github.aivanovski.keepasstreediff.entity.StringField
+import com.github.aivanovski.keepasstreediff.entity.TimestampField
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
+import java.time.Instant
 import java.util.LinkedList
 import org.junit.jupiter.api.Test
 
@@ -100,6 +106,26 @@ class ExternalDataConvertersTest {
         result shouldBe expected
     }
 
+    @Test
+    fun `toFields should return map with timestamps`() {
+        val timestamps = Timestamps(
+            Instant.ofEpochMilli(CREATED),
+            Instant.ofEpochMilli(MODIFIED),
+            Instant.ofEpochMilli(EXPIRES)
+        )
+
+        timestamps.toFields() shouldBe mapOf(
+            FIELD_CREATED to TimestampField(FIELD_CREATED, CREATED),
+            FIELD_MODIFIED to TimestampField(FIELD_MODIFIED, MODIFIED),
+            FIELD_EXPIRES to TimestampField(FIELD_EXPIRES, EXPIRES)
+        )
+    }
+
+    @Test
+    fun `toFields should return empty map`() {
+        Timestamps.EMPTY.toFields() shouldBe emptyMap()
+    }
+
     private fun ExternalNode.traverse(): List<ExternalNode> {
         val nodes = LinkedList<ExternalNode>()
         nodes.add(this)
@@ -126,7 +152,7 @@ class ExternalDataConvertersTest {
         return ExternalGroupEntity(
             uuid = group.uuid,
             fields = mapOf(
-                FIELD_TITLE to ExternalFieldEntity(
+                FIELD_TITLE to StringField(
                     name = FIELD_TITLE,
                     value = group.name
                 )
@@ -136,20 +162,23 @@ class ExternalDataConvertersTest {
 
     private fun newExternalEntry(id: Int): ExternalEntryEntity {
         val entry = newEntry(id)
+        val textFields = entry.fields
+            .map { (name, value) ->
+                Pair(name, StringField(name, value))
+            }
+            .toMap()
+        val timestampFields = entry.timestamps.toFields()
 
         return ExternalEntryEntity(
             uuid = entry.uuid,
-            fields = entry.fields.map { (name, value) ->
-                Pair(name, ExternalFieldEntity(name, value))
-            }
-                .toMap()
+            fields = textFields.plus(timestampFields)
         )
     }
 
-    private fun newExternalField(id: Int): ExternalFieldEntity {
+    private fun newExternalField(id: Int): StringField {
         val field = newField(id)
 
-        return ExternalFieldEntity(
+        return StringField(
             name = field.name,
             value = field.value
         )
@@ -164,5 +193,9 @@ class ExternalDataConvertersTest {
         private const val ENTRY3_ID = 103
         private const val ENTRY4_ID = 104
         private const val FIELD1_ID = 1001
+
+        private const val CREATED = 1L
+        private const val MODIFIED = 2L
+        private const val EXPIRES = 3L
     }
 }
