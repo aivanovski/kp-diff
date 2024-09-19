@@ -7,10 +7,11 @@ import java.util.Locale
 
 class FormatFileSizeUseCase {
 
+    @Suppress("MagicNumber")
     fun formatHumanReadableFileSize(byteCount: Long): String {
         require(byteCount >= 0) { "Invalid file size: $byteCount" }
 
-        if (byteCount < 1024) {
+        if (byteCount < ONE_KILO_BYTE) {
             return "$byteCount Bytes"
         }
 
@@ -23,6 +24,7 @@ class FormatFileSizeUseCase {
 
     companion object {
 
+        private const val ONE_KILO_BYTE = 1024
         private val DECIMAL_FORMAT = createDecimalFormat()
 
         private fun createDecimalFormat(): DecimalFormat {

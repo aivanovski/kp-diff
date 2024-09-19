@@ -71,6 +71,9 @@ private fun Group.toEntity(): GroupEntity {
     )
 }
 
+// TODO: This warning suppresses false-positive result in detekt
+//  probably could be uncommented later
+@Suppress("UnusedPrivateMember")
 private fun Entry.toEntity(
     allBinaries: Map<Hash, ByteArray>
 ): EntryEntity {
