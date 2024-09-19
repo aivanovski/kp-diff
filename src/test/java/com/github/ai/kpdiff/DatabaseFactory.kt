@@ -3,6 +3,14 @@ package com.github.ai.kpdiff
 import app.keemobile.kotpass.database.KeePassDatabase
 import app.keemobile.kotpass.models.DatabaseElement
 import com.github.ai.kpdiff.TestData.ENTRY_APPLE
+import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_CHANGE
+import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_CHANGE_MODIFIED
+import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_DELETE
+import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_DELETE_MODIFIED
+import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_INSERT
+import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_INSERT_MODIFIED
+import com.github.ai.kpdiff.TestData.ENTRY_CLOUD_KEYS
+import com.github.ai.kpdiff.TestData.ENTRY_CLOUD_KEYS_MODIFIED
 import com.github.ai.kpdiff.TestData.ENTRY_FACEBOOK
 import com.github.ai.kpdiff.TestData.ENTRY_GITHUB
 import com.github.ai.kpdiff.TestData.ENTRY_GITLAB
@@ -52,6 +60,7 @@ object DatabaseFactory {
                     entry(ENTRY_GOOGLE.toBuilderEntity())
                     entry(ENTRY_APPLE.toBuilderEntity())
                     entry(ENTRY_MICROSOFT.toBuilderEntity())
+                    entry(ENTRY_CLOUD_KEYS.toBuilderEntity())
                 }
                 entry(ENTRY_NAS_LOGIN.toBuilderEntity())
                 entry(ENTRY_LAPTOP_LOGIN.toBuilderEntity())
@@ -77,9 +86,36 @@ object DatabaseFactory {
                     entry(ENTRY_GOOGLE_MODIFIED.toBuilderEntity())
                     entry(ENTRY_APPLE.toBuilderEntity())
                     entry(ENTRY_MICROSOFT.toBuilderEntity())
+                    entry(ENTRY_CLOUD_KEYS_MODIFIED.toBuilderEntity())
                 }
                 entry(ENTRY_NAS_LOGIN.toBuilderEntity())
                 entry(ENTRY_LAPTOP_LOGIN.toBuilderEntity())
+            }
+            .build()
+    }
+
+    fun createAttachmentsDatabase(
+        key: DatabaseKey
+    ): Database<DatabaseElement, KeePassDatabase> {
+        return DatabaseBuilderDsl.newBuilder(KotpassDatabaseConverter())
+            .key(key)
+            .content(GROUP_ROOT.toBuilderEntity()) {
+                entry(ENTRY_BINARIES_INSERT.toBuilderEntity())
+                entry(ENTRY_BINARIES_DELETE.toBuilderEntity())
+                entry(ENTRY_BINARIES_CHANGE.toBuilderEntity())
+            }
+            .build()
+    }
+
+    fun createModifiedAttachmentsDatabases(
+        key: DatabaseKey
+    ): Database<DatabaseElement, KeePassDatabase> {
+        return DatabaseBuilderDsl.newBuilder(KotpassDatabaseConverter())
+            .key(key)
+            .content(GROUP_ROOT.toBuilderEntity()) {
+                entry(ENTRY_BINARIES_INSERT_MODIFIED.toBuilderEntity())
+                entry(ENTRY_BINARIES_DELETE_MODIFIED.toBuilderEntity())
+                entry(ENTRY_BINARIES_CHANGE_MODIFIED.toBuilderEntity())
             }
             .build()
     }

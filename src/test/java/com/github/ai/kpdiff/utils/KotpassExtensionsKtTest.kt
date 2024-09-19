@@ -17,7 +17,7 @@ internal class KotpassExtensionsKtTest {
         val root = testDb.underlying.content.group
 
         // act
-        val tree = root.buildNodeTree()
+        val tree = root.buildNodeTree(allBinaries = emptyMap())
 
         // assert
         tree.isContentEquals(testDb.buildNodeTree()) shouldBe true

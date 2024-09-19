@@ -17,11 +17,12 @@ data class GroupEntity(
 data class EntryEntity(
     override val uuid: UUID,
     val fields: Map<String, String>,
-    override val name: String = fields[FIELD_TITLE] ?: EMPTY
+    override val name: String = fields[FIELD_TITLE] ?: EMPTY,
+    val binaries: List<Binary> = emptyList()
 ) : DatabaseEntity
 
-data class FieldEntity(
+data class Field<T>(
     override val uuid: UUID,
     override val name: String,
-    val value: String
+    val value: T
 ) : DatabaseEntity

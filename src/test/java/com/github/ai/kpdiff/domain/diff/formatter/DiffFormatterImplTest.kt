@@ -4,6 +4,7 @@ import com.github.ai.kpdiff.DatabaseFactory.PASSWORD_KEY
 import com.github.ai.kpdiff.DatabaseFactory.createDatabase
 import com.github.ai.kpdiff.DatabaseFactory.createModifiedDatabase
 import com.github.ai.kpdiff.domain.diff.differ.PathDatabaseDiffer
+import com.github.ai.kpdiff.domain.usecases.FormatFileSizeUseCase
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.testUtils.buildNodeTree
@@ -31,7 +32,7 @@ class DiffFormatterImplTest {
             // act
             val diff = differ.getDiff(lhs, rhs)
             val result = DiffFormatterImpl(
-                formatterProvider = EntityFormatterProvider(),
+                formatterProvider = EntityFormatterProvider(FormatFileSizeUseCase()),
                 parentFormatter = ParentFormatter(),
                 terminalOutputFormatter = TerminalOutputFormatter()
             ).format(
@@ -61,6 +62,11 @@ class DiffFormatterImplTest {
             +         Group 'Shopping'
             ~ Group 'Database'
             ~     Group 'Internet'
+            ~         Entry 'Cloud keys'
+            -             Attachment 'old-key.ssh' 15 Bytes
+            +             Attachment 'new-key.ssh' 15 Bytes
+            ~ Group 'Database'
+            ~     Group 'Internet'
             ~         Group 'Coding'
             -             Entry 'Github.com'
             +             Entry 'Gitlab'
@@ -80,6 +86,11 @@ class DiffFormatterImplTest {
             ~ Group 'Database'
             ~     Group 'Internet'
             +         Group 'Shopping'
+            ~ Group 'Database'
+            ~     Group 'Internet'
+            ~         Entry 'Cloud keys'
+            -             Attachment 'old-key.ssh' 15 Bytes
+            +             Attachment 'new-key.ssh' 15 Bytes
             ~ Group 'Database'
             ~     Group 'Internet'
             ~         Group 'Coding'
