@@ -4,7 +4,7 @@ import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.DiffEventType
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.FieldEntity
+import com.github.ai.kpdiff.entity.Field
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.utils.Fields.FIELD_NOTES
 import com.github.ai.kpdiff.utils.Fields.FIELD_PASSWORD
@@ -21,7 +21,7 @@ class DiffEventSorter {
             .map { eventsByType ->
                 eventsByType.splitByEntityType()
                     .map { (type, eventsByEntityType) ->
-                        if (type == FieldEntity::class) {
+                        if (type == Field::class) {
                             val (defaultFields, otherFields) = eventsByEntityType
                                 .asFieldEvents()
                                 .splitDefaultAndOtherFields()
@@ -69,18 +69,18 @@ class DiffEventSorter {
         }
 
         val fieldEvents = this.mapNotNull { event ->
-            if (event.getEntity() is FieldEntity) event else null
+            if (event.getEntity() is Field<*>) event else null
         }
 
         return mapOf(
             GroupEntity::class to groupEvents,
             EntryEntity::class to entryEvents,
-            FieldEntity::class to fieldEvents
+            Field::class to fieldEvents
         )
     }
 
-    private fun List<DiffEvent<FieldEntity>>.splitDefaultAndOtherFields():
-        Pair<List<DiffEvent<FieldEntity>>, List<DiffEvent<FieldEntity>>> {
+    private fun List<DiffEvent<Field<*>>>.splitDefaultAndOtherFields():
+        Pair<List<DiffEvent<Field<*>>>, List<DiffEvent<Field<*>>>> {
         return this.partition { event ->
             val fieldName = event.getEntity().name
             fieldName in DEFAULT_FIELDS_ORDER.keys
@@ -91,7 +91,7 @@ class DiffEventSorter {
         return this.sortedBy { event -> event.getEntity().name }
     }
 
-    private fun List<DiffEvent<FieldEntity>>.sortDefaultFields(): List<DiffEvent<FieldEntity>> {
+    private fun List<DiffEvent<Field<*>>>.sortDefaultFields(): List<DiffEvent<Field<*>>> {
         return this.sortedBy { event ->
             val fieldName = event.getEntity().name
             DEFAULT_FIELDS_ORDER[fieldName] ?: Int.MAX_VALUE
@@ -99,8 +99,8 @@ class DiffEventSorter {
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun List<DiffEvent<DatabaseEntity>>.asFieldEvents(): List<DiffEvent<FieldEntity>> {
-        return this as List<DiffEvent<FieldEntity>>
+    private fun List<DiffEvent<DatabaseEntity>>.asFieldEvents(): List<DiffEvent<Field<*>>> {
+        return this as List<DiffEvent<Field<*>>>
     }
 
     @Suppress("UNCHECKED_CAST")

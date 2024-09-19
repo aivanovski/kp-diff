@@ -1,10 +1,12 @@
 package com.github.ai.kpdiff.domain.diff.differ
 
+import com.github.ai.kpdiff.entity.Binary
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.FieldEntity
+import com.github.ai.kpdiff.entity.Field
 import com.github.ai.kpdiff.entity.GroupEntity
+import com.github.ai.kpdiff.entity.Hash
 import com.github.ai.kpdiff.entity.Node
 import com.github.ai.kpdiff.utils.Fields.FIELD_TITLE
 import com.github.aivanovski.keepasstreediff.entity.BinaryField
@@ -68,9 +70,20 @@ fun DatabaseEntity.toExternalEntity(): ExternalTreeEntity {
                 name to StringField(name, value)
             }
 
+            val binaryFields = binaries.associate { binary ->
+                Pair(
+                    binary.name + "_" + binary.hash.value,
+                    BinaryField(
+                        hash = binary.hash.value,
+                        name = binary.name,
+                        value = binary.data
+                    )
+                )
+            }
+
             ExternalEntryEntity(
                 uuid = uuid,
-                fields = textFields
+                fields = textFields + binaryFields
             )
         }
 
@@ -91,25 +104,61 @@ fun ExternalEntity.toInternalEntity(): DatabaseEntity {
         }
 
         is ExternalEntryEntity -> {
-            val textFields = fields.mapNotNull { (_, field) -> field as? StringField }
+            val textFields = fields.entries
+                .mapNotNull { (_, field) ->
+                    if (field is StringField) {
+                        field.name to field.value
+                    } else {
+                        null
+                    }
+                }
+                .toMap()
+
+            val binaries = fields.entries
+                .mapNotNull { (_, field) ->
+                    if (field is BinaryField) {
+                        Binary(
+                            name = field.name,
+                            hash = Hash(field.hash),
+                            data = field.value
+                        )
+                    } else {
+                        null
+                    }
+                }
 
             EntryEntity(
                 uuid = uuid,
-                fields = textFields.associate { field ->
-                    field.name to field.value
-                }
+                fields = textFields,
+                binaries = binaries
             )
         }
 
-        is ExternalField<*> -> {
-            FieldEntity(
+        is ExternalField<*> -> toInternalField()
+
+        else -> error("Illegal type: $this")
+    }
+}
+
+private fun ExternalField<*>.toInternalField(): Field<*> {
+    return when (this) {
+        is StringField -> {
+            Field(
                 uuid = UUID(0, name.hashCode().toLong()),
                 name = name,
                 value = getStringValue()
             )
         }
 
-        else -> error("Illegal type: $this")
+        is BinaryField -> {
+            Field(
+                uuid = UUID(0, name.hashCode().toLong()),
+                name = name,
+                value = value
+            )
+        }
+
+        else -> error("Unsupported field type: $this")
     }
 }
 
@@ -119,6 +168,7 @@ private fun ExternalField<*>.getStringValue(): String {
         is TimestampField -> value.toString()
         is UUIDField -> value.toString()
         is BinaryField -> value.toString()
+        else -> error("Unsupported field type: $this")
     }
 }
 

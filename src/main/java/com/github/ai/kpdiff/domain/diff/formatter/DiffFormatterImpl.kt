@@ -7,7 +7,7 @@ import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.DiffFormatterOptions
 import com.github.ai.kpdiff.entity.DiffResult
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.FieldEntity
+import com.github.ai.kpdiff.entity.Field
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.Parent
@@ -264,7 +264,7 @@ class DiffFormatterImpl(
         return result
     }
 
-    private fun FieldEntity.isDefault(): Boolean {
+    private fun Field<*>.isDefault(): Boolean {
         return DEFAULT_PROPERTIES.contains(this.name)
     }
 

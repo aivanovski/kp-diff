@@ -4,14 +4,14 @@ import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.DiffEventType
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.FieldEntity
+import com.github.ai.kpdiff.entity.Field
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.utils.getEntity
 
 /**
  * Sort diff events by entity type, then by event type and then by name.
  * Firstly goes Update events, then Delete events and then Insert events for [GroupEntity].
- * Then events goes is the same order for [EntryEntity] and then for [FieldEntity].
+ * Then events goes is the same order for [EntryEntity] and then for [Field].
  *
  * Example:
  * 1. [DiffEvent.Update] with [GroupEntity]
@@ -22,9 +22,9 @@ import com.github.ai.kpdiff.utils.getEntity
  * 5. [DiffEvent.Delete] with [EntryEntity]
  * 6. [DiffEvent.Insert] with [EntryEntity]
  *
- * 7. [DiffEvent.Update] with [FieldEntity]
- * 8. [DiffEvent.Delete] with [FieldEntity]
- * 9. [DiffEvent.Insert] with [FieldEntity]
+ * 7. [DiffEvent.Update] with [Field]
+ * 8. [DiffEvent.Delete] with [Field]
+ * 9. [DiffEvent.Insert] with [Field]
  */
 fun List<DiffEvent<DatabaseEntity>>.sortForAssertion(): List<DiffEvent<DatabaseEntity>> {
     val groupEvents = this.mapNotNull { event ->
@@ -36,7 +36,7 @@ fun List<DiffEvent<DatabaseEntity>>.sortForAssertion(): List<DiffEvent<DatabaseE
     }
 
     val fieldEvents = this.mapNotNull { event ->
-        if (event.getEntity() is FieldEntity) event else null
+        if (event.getEntity() is Field<*>) event else null
     }
 
     val groupEventsSorted = groupEvents.splitByEventType()

@@ -4,7 +4,7 @@ import com.github.ai.kpdiff.domain.diff.formatter.TerminalOutputFormatter.Color
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.FieldEntity
+import com.github.ai.kpdiff.entity.Field
 import com.github.ai.kpdiff.entity.GroupEntity
 import java.util.UUID
 
@@ -70,7 +70,7 @@ private fun DatabaseEntity.sortOrder(): Int {
     return when (this) {
         is GroupEntity -> GROUP_SORT_ORDER
         is EntryEntity -> ENTRY_SORT_ORDER
-        is FieldEntity -> FIELD_SORT_ORDER
+        is Field<*> -> FIELD_SORT_ORDER
     }
 }
 

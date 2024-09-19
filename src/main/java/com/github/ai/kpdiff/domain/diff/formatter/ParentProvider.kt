@@ -3,7 +3,7 @@ package com.github.ai.kpdiff.domain.diff.formatter
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.DiffEvent
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.FieldEntity
+import com.github.ai.kpdiff.entity.Field
 import com.github.ai.kpdiff.entity.GroupEntity
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.utils.buildAllEntryMap
@@ -40,7 +40,7 @@ class ParentProvider(
         return when (entity) {
             is GroupEntity -> groupMap[parentUuid]?.name ?: UNKNOWN_ENTITY
             is EntryEntity -> groupMap[parentUuid]?.name ?: UNKNOWN_ENTITY
-            is FieldEntity -> {
+            is Field<*> -> {
                 val parent = groupMap[parentUuid]
                     ?: entryMap[parentUuid]
 

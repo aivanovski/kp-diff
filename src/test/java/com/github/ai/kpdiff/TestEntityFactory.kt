@@ -1,8 +1,10 @@
 package com.github.ai.kpdiff
 
+import com.github.ai.kpdiff.entity.Binary
 import com.github.ai.kpdiff.entity.EntryEntity
-import com.github.ai.kpdiff.entity.FieldEntity
+import com.github.ai.kpdiff.entity.Field
 import com.github.ai.kpdiff.entity.GroupEntity
+import com.github.ai.kpdiff.entity.Hash
 import com.github.ai.kpdiff.testUtils.createUuidFrom
 import com.github.ai.kpdiff.utils.Fields.FIELD_NOTES
 import com.github.ai.kpdiff.utils.Fields.FIELD_PASSWORD
@@ -37,10 +39,12 @@ object TestEntityFactory {
         password: String = StringUtils.EMPTY,
         url: String = StringUtils.EMPTY,
         notes: String = StringUtils.EMPTY,
-        custom: Map<String, String> = emptyMap()
+        custom: Map<String, String> = emptyMap(),
+        binaries: List<Binary> = emptyList()
     ): EntryEntity {
         return EntryEntity(
             uuid = uuid ?: UUID(ENTRY_UUID_SHIFT, title.hashCode().toLong()),
+            binaries = binaries,
             fields = mapOf(
                 FIELD_TITLE to title,
                 FIELD_USERNAME to username,
@@ -49,7 +53,6 @@ object TestEntityFactory {
                 FIELD_NOTES to notes
             )
                 .plus(custom)
-
         )
     }
 
@@ -60,10 +63,12 @@ object TestEntityFactory {
         password: String = "Password $id",
         url: String = "Url $id",
         notes: String = "Notes $id",
-        custom: Map<String, String> = emptyMap()
+        custom: Map<String, String> = emptyMap(),
+        binaries: List<Binary> = emptyList()
     ): EntryEntity {
         return EntryEntity(
             uuid = createUuidFrom(id),
+            binaries = binaries,
             fields = mapOf(
                 FIELD_TITLE to title,
                 FIELD_USERNAME to username,
@@ -79,22 +84,45 @@ object TestEntityFactory {
         id: Int,
         name: String = "Field name $id",
         value: String = "Field value $id"
-    ): FieldEntity {
-        return FieldEntity(
+    ): Field<String> {
+        return Field(
             uuid = createUuidFrom(name),
             name = name,
             value = value
         )
     }
 
-    fun newField(
+    fun <T> newField(
         name: String,
-        value: String
-    ): FieldEntity {
-        return FieldEntity(
+        value: T
+    ): Field<T> {
+        return Field(
             uuid = UUID(0, name.hashCode().toLong()),
             name = name,
             value = value
+        )
+    }
+
+    fun newBinary(
+        name: String,
+        content: String
+    ): Binary {
+        val bytes = content.toByteArray()
+        return Binary(
+            name = name,
+            data = bytes,
+            hash = Hash.fromContentBytes(bytes)
+        )
+    }
+
+    fun newBinary(
+        index: Int
+    ): Binary {
+        val bytes = "Byte content $index".toByteArray()
+        return Binary(
+            name = "file-$index.txt",
+            data = bytes,
+            hash = Hash.fromContentBytes(bytes)
         )
     }
 }
