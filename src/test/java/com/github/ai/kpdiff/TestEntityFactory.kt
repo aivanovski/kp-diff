@@ -115,9 +115,7 @@ object TestEntityFactory {
         )
     }
 
-    fun newBinary(
-        index: Int
-    ): Binary {
+    fun newBinary(index: Int): Binary {
         val bytes = "Byte content $index".toByteArray()
         return Binary(
             name = "file-$index.txt",

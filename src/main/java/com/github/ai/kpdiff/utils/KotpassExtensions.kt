@@ -35,9 +35,7 @@ fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Cre
     }
 }
 
-fun Group.buildNodeTree(
-    allBinaries: Map<Hash, ByteArray>
-): Node<DatabaseEntity> {
+fun Group.buildNodeTree(allBinaries: Map<Hash, ByteArray>): Node<DatabaseEntity> {
     val root: Node<DatabaseEntity> = Node(uuid, this.toEntity())
 
     val groups = LinkedList<Pair<Node<DatabaseEntity>, Group>>()
@@ -74,9 +72,7 @@ private fun Group.toEntity(): GroupEntity {
 // TODO: This warning suppresses false-positive result in detekt
 //  probably could be uncommented later
 @Suppress("UnusedPrivateMember")
-private fun Entry.toEntity(
-    allBinaries: Map<Hash, ByteArray>
-): EntryEntity {
+private fun Entry.toEntity(allBinaries: Map<Hash, ByteArray>): EntryEntity {
     val fields = fields.entries.associate { (key, value) ->
         key to value.content
     }

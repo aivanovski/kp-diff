@@ -94,9 +94,7 @@ object DatabaseFactory {
             .build()
     }
 
-    fun createAttachmentsDatabase(
-        key: DatabaseKey
-    ): Database<DatabaseElement, KeePassDatabase> {
+    fun createAttachmentsDatabase(key: DatabaseKey): Database<DatabaseElement, KeePassDatabase> {
         return DatabaseBuilderDsl.newBuilder(KotpassDatabaseConverter())
             .key(key)
             .content(GROUP_ROOT.toBuilderEntity()) {
