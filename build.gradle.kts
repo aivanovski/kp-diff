@@ -6,9 +6,9 @@ import java.util.Properties
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.8.21"
+    id("org.jetbrains.kotlin.jvm") version "1.9.23"
     id("com.github.johnrengelman.shadow") version "4.0.4"
-    id("io.gitlab.arturbosch.detekt") version "1.22.0"
+    id("io.gitlab.arturbosch.detekt") version "1.23.7"
     jacoco
 }
 
@@ -103,8 +103,10 @@ dependencies {
     testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.2")
     testImplementation("io.mockk:mockk:1.12.3")
 
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23")
     implementation("io.insert-koin:koin-core:3.1.5")
-    implementation("com.github.aivanovski:keepass-tree-diff:0.3.0")
-    implementation("com.github.aivanovski:keepass-tree-builder:0.2.0")
-    implementation("com.github.anvell:kotpass:0.7.0")
+    implementation("com.github.aivanovski:keepass-tree-diff:0.4.0")
+    implementation("com.github.aivanovski:keepass-tree-builder:0.4.0")
+    implementation("app.keemobile:kotpass:0.10.0")
+    implementation("com.squareup.okio:okio:3.9.0")
 }

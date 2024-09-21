@@ -11,8 +11,8 @@ import com.github.ai.kpdiff.utils.traverse
 import com.github.aivanovski.keepasstreediff.entity.DiffEvent as ExternalDiffEvent
 import com.github.aivanovski.keepasstreediff.entity.Entity as ExternalEntity
 import com.github.aivanovski.keepasstreediff.entity.EntryEntity as ExternalEntryEntity
-import com.github.aivanovski.keepasstreediff.entity.FieldEntity as ExternalFieldEntity
 import com.github.aivanovski.keepasstreediff.entity.GroupEntity as ExternalGroupEntity
+import com.github.aivanovski.keepasstreediff.entity.StringField
 import com.github.aivanovski.keepasstreediff.entity.TreeNode as ExternalNode
 import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
@@ -126,7 +126,7 @@ class ExternalDataConvertersTest {
         return ExternalGroupEntity(
             uuid = group.uuid,
             fields = mapOf(
-                FIELD_TITLE to ExternalFieldEntity(
+                FIELD_TITLE to StringField(
                     name = FIELD_TITLE,
                     value = group.name
                 )
@@ -136,20 +136,22 @@ class ExternalDataConvertersTest {
 
     private fun newExternalEntry(id: Int): ExternalEntryEntity {
         val entry = newEntry(id)
+        val textFields = entry.fields
+            .map { (name, value) ->
+                Pair(name, StringField(name, value))
+            }
+            .toMap()
 
         return ExternalEntryEntity(
             uuid = entry.uuid,
-            fields = entry.fields.map { (name, value) ->
-                Pair(name, ExternalFieldEntity(name, value))
-            }
-                .toMap()
+            fields = textFields
         )
     }
 
-    private fun newExternalField(id: Int): ExternalFieldEntity {
+    private fun newExternalField(id: Int): StringField {
         val field = newField(id)
 
-        return ExternalFieldEntity(
+        return StringField(
             name = field.name,
             value = field.value
         )

@@ -14,55 +14,8 @@ class DiffDecorator {
     fun decorate(
         diff: DiffResult<KeepassDatabase, DatabaseEntity>
     ): List<Pair<UUID?, List<DiffEvent<DatabaseEntity>>>> {
-        val lhsDepthMap = diff.lhs.root.buildDepthMap()
-        val rhsDepthMap = diff.rhs.root.buildDepthMap()
-        val parentProvider = ParentProvider(
-            lhs = diff.lhs,
-            rhs = diff.rhs
-        )
-
-        val eventsByParentUuidMap = LinkedHashMap<UUID?, DataByParent>()
-        for (event in diff.events) {
-            val depth = getDepth(
-                lhsDepthMap = lhsDepthMap,
-                rhsDepthMap = rhsDepthMap,
-                event = event
-            )
-            val parentName = parentProvider.getParentName(event)
-            val parentUuid = event.getParentUuid()
-
-            val dataByParent = eventsByParentUuidMap.getOrDefault(
-                parentUuid,
-                DataByParent(
-                    parentUuid = parentUuid,
-                    parentName = parentName,
-                    treeDepth = depth,
-                    events = mutableListOf()
-                )
-            )
-
-            dataByParent.events.add(event)
-
-            eventsByParentUuidMap[parentUuid] = dataByParent
-        }
-
-        val eventsByDepthMap = HashMap<Int, DataByDepth>()
-        for ((_, dataByParent) in eventsByParentUuidMap) {
-            val depth = dataByParent.treeDepth
-            val parentUuid = dataByParent.parentUuid
-
-            val dataByDepth = eventsByDepthMap.getOrDefault(
-                depth,
-                DataByDepth(
-                    treeDepth = dataByParent.treeDepth,
-                    events = HashMap()
-                )
-            )
-
-            dataByDepth.events[parentUuid] = dataByParent
-
-            eventsByDepthMap[depth] = dataByDepth
-        }
+        val parentUidToEventsMap = buildParentUidToEventsMap(diff)
+        val eventsByDepthMap = buildDepthToEventsMap(parentUidToEventsMap)
 
         // sort data
         val sorter = DiffEventSorter()
@@ -83,6 +36,68 @@ class DiffDecorator {
         }
 
         return result
+    }
+
+    private fun buildDepthToEventsMap(
+        parentUidToEventsMap: Map<UUID?, DataByParent>
+    ): Map<Int, DataByDepth> {
+        val depthToEventsMap = HashMap<Int, DataByDepth>()
+
+        for ((_, dataByParent) in parentUidToEventsMap) {
+            val depth = dataByParent.treeDepth
+            val parentUuid = dataByParent.parentUuid
+
+            val dataByDepth = depthToEventsMap.getOrDefault(
+                depth,
+                DataByDepth(
+                    treeDepth = dataByParent.treeDepth,
+                    events = HashMap()
+                )
+            )
+
+            dataByDepth.events[parentUuid] = dataByParent
+
+            depthToEventsMap[depth] = dataByDepth
+        }
+
+        return depthToEventsMap
+    }
+
+    private fun buildParentUidToEventsMap(
+        diff: DiffResult<KeepassDatabase, DatabaseEntity>
+    ): Map<UUID?, DataByParent> {
+        val lhsDepthMap = diff.lhs.root.buildDepthMap()
+        val rhsDepthMap = diff.rhs.root.buildDepthMap()
+        val parentProvider = ParentProvider(
+            lhs = diff.lhs,
+            rhs = diff.rhs
+        )
+
+        val parentUidToEventsMap = LinkedHashMap<UUID?, DataByParent>()
+        for (event in diff.events) {
+            val depth = getDepth(
+                lhsDepthMap = lhsDepthMap,
+                rhsDepthMap = rhsDepthMap,
+                event = event
+            )
+            val parentName = parentProvider.getParentName(event)
+            val parentUuid = event.getParentUuid()
+
+            val dataByParent = parentUidToEventsMap.getOrDefault(
+                parentUuid,
+                DataByParent(
+                    parentUuid = parentUuid,
+                    parentName = parentName,
+                    treeDepth = depth,
+                    events = mutableListOf()
+                )
+            )
+
+            dataByParent.events.add(event)
+            parentUidToEventsMap[parentUuid] = dataByParent
+        }
+
+        return parentUidToEventsMap
     }
 
     private fun getDepth(
