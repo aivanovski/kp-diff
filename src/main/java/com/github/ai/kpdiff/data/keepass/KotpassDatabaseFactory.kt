@@ -2,8 +2,10 @@ package com.github.ai.kpdiff.data.keepass
 
 import app.keemobile.kotpass.database.KeePassDatabase
 import app.keemobile.kotpass.database.decode
+import app.keemobile.kotpass.database.modifiers.binaries
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.entity.Either
+import com.github.ai.kpdiff.entity.Hash
 import com.github.ai.kpdiff.entity.KeepassDatabase
 import com.github.ai.kpdiff.entity.KeepassKey
 import com.github.ai.kpdiff.utils.buildNodeTree
@@ -36,8 +38,15 @@ class KotpassDatabaseFactory(
     }
 
     private fun KeePassDatabase.convert(): KeepassDatabase {
+        val allBinaries = binaries.entries
+            .associate { (key, value) ->
+                Hash(key.base64()) to value.rawContent
+            }
+
         return KeepassDatabase(
-            root = content.group.buildNodeTree()
+            root = content.group.buildNodeTree(
+                allBinaries = allBinaries
+            )
         )
     }
 }

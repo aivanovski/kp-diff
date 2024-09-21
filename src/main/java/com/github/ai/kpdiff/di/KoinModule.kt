@@ -19,6 +19,7 @@ import com.github.ai.kpdiff.domain.input.InputReaderFactory
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.domain.output.StdoutOutputPrinter
 import com.github.ai.kpdiff.domain.usecases.DetermineInputTypeUseCase
+import com.github.ai.kpdiff.domain.usecases.FormatFileSizeUseCase
 import com.github.ai.kpdiff.domain.usecases.GetKeysUseCase
 import com.github.ai.kpdiff.domain.usecases.GetVersionUseCase
 import com.github.ai.kpdiff.domain.usecases.OpenDatabasesUseCase
@@ -39,7 +40,7 @@ object KoinModule {
         single<FileSystemProvider> { FileSystemProviderImpl(get()) }
         single<KeepassDatabaseFactory> { KotpassDatabaseFactory(get()) }
         single { DatabaseDifferProvider() }
-        single { EntityFormatterProvider() }
+        single { EntityFormatterProvider(get()) }
         single { TerminalOutputFormatter() }
         single { ParentFormatter() }
         single<DiffFormatter> { DiffFormatterImpl(get(), get(), get()) }
@@ -55,6 +56,7 @@ object KoinModule {
         single { OpenDatabasesUseCase(get()) }
         single { PrintDiffUseCase(get(), get()) }
         single { WriteDiffToFileUseCase(get(), get()) }
+        single { FormatFileSizeUseCase() }
 
         single { MainInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
     }

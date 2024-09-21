@@ -5,10 +5,12 @@ import app.keemobile.kotpass.database.Credentials
 import app.keemobile.kotpass.models.Entry
 import app.keemobile.kotpass.models.Group
 import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
+import com.github.ai.kpdiff.entity.Binary
 import com.github.ai.kpdiff.entity.DatabaseEntity
 import com.github.ai.kpdiff.entity.Either
 import com.github.ai.kpdiff.entity.EntryEntity
 import com.github.ai.kpdiff.entity.GroupEntity
+import com.github.ai.kpdiff.entity.Hash
 import com.github.ai.kpdiff.entity.KeepassKey
 import com.github.ai.kpdiff.entity.Node
 import java.util.LinkedList
@@ -33,7 +35,7 @@ fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Cre
     }
 }
 
-fun Group.buildNodeTree(): Node<DatabaseEntity> {
+fun Group.buildNodeTree(allBinaries: Map<Hash, ByteArray>): Node<DatabaseEntity> {
     val root: Node<DatabaseEntity> = Node(uuid, this.toEntity())
 
     val groups = LinkedList<Pair<Node<DatabaseEntity>, Group>>()
@@ -51,7 +53,7 @@ fun Group.buildNodeTree(): Node<DatabaseEntity> {
 
         for (entry in group.entries) {
             val entryUid = entry.uuid
-            val entryNode = Node<DatabaseEntity>(entryUid, entry.toEntity())
+            val entryNode = Node<DatabaseEntity>(entryUid, entry.toEntity(allBinaries))
 
             node.nodes.add(entryNode)
         }
@@ -70,13 +72,29 @@ private fun Group.toEntity(): GroupEntity {
 // TODO: This warning suppresses false-positive result in detekt
 //  probably could be uncommented later
 @Suppress("UnusedPrivateMember")
-private fun Entry.toEntity(): EntryEntity {
+private fun Entry.toEntity(allBinaries: Map<Hash, ByteArray>): EntryEntity {
     val fields = fields.entries.associate { (key, value) ->
         key to value.content
     }
 
+    val binaries = binaries.mapNotNull { binaryRef ->
+        val hash = Hash(binaryRef.hash.base64())
+        val data = allBinaries[hash]
+
+        if (data != null) {
+            Binary(
+                name = binaryRef.name,
+                hash = hash,
+                data = data
+            )
+        } else {
+            null
+        }
+    }
+
     return EntryEntity(
         uuid = uuid,
-        fields = fields
+        fields = fields,
+        binaries = binaries
     )
 }

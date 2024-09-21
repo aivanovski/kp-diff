@@ -1,5 +1,6 @@
 package com.github.ai.kpdiff
 
+import com.github.ai.kpdiff.TestEntityFactory.newBinary
 import com.github.ai.kpdiff.TestEntityFactory.newEntry
 import com.github.ai.kpdiff.TestEntityFactory.newGroup
 import com.github.ai.kpdiff.utils.Fields
@@ -43,12 +44,23 @@ object TestData {
     val INDENT_SINGLE = ".".repeat(4)
     val INDENT_DOUBLE = ".".repeat(8)
 
+    val OLD_KEY = newBinary("old-key.ssh", "Old key content")
+    val NEW_KEY = newBinary("new-key.ssh", "New key content")
+
+    val BINARY_1 = newBinary(index = 1)
+    val BINARY_2 = newBinary(index = 2)
+    val BINARY_3 = newBinary(index = 3)
+    val BINARY_4 = newBinary(index = 4)
+    val BINARY_5 = newBinary(index = 5)
+    val BINARY_6 = newBinary(index = 6)
+
     val GROUP_ROOT = newGroup(name = "Database")
     val GROUP_EMAIL = newGroup(name = "Email")
     val GROUP_INTERNET = newGroup(name = "Internet")
     val GROUP_CODING = newGroup(name = "Coding")
     val GROUP_SHOPPING = newGroup(name = "Shopping")
     val GROUP_SOCIAL = newGroup(name = "Social")
+    val GROUP_KEYS = newGroup(name = "Keys")
 
     val ENTRY_NAS_LOGIN = newEntry(
         title = "NAS Login",
@@ -122,5 +134,59 @@ object TestData {
         username = "john.doe@example.com",
         password = "abc123",
         url = "https://facebook.com"
+    )
+
+    val ENTRY_CLOUD_KEYS = newEntry(
+        title = "Cloud keys",
+        binaries = listOf(
+            OLD_KEY
+        )
+    )
+
+    val ENTRY_CLOUD_KEYS_MODIFIED = newEntry(
+        title = "Cloud keys",
+        binaries = listOf(
+            NEW_KEY
+        )
+    )
+
+    val ENTRY_BINARIES_INSERT = newEntry(
+        title = "Binaries insert",
+        binaries = listOf()
+    )
+
+    val ENTRY_BINARIES_INSERT_MODIFIED = newEntry(
+        title = "Binaries insert",
+        binaries = listOf(
+            BINARY_1,
+            BINARY_2
+        )
+    )
+
+    val ENTRY_BINARIES_DELETE = newEntry(
+        title = "Binaries delete",
+        binaries = listOf(
+            BINARY_3,
+            BINARY_4
+        )
+    )
+
+    val ENTRY_BINARIES_DELETE_MODIFIED = newEntry(
+        title = "Binaries delete",
+        binaries = listOf()
+    )
+
+    val ENTRY_BINARIES_CHANGE = newEntry(
+        title = "Binaries change",
+        binaries = listOf(
+            BINARY_5
+        )
+    )
+
+    val ENTRY_BINARIES_CHANGE_MODIFIED = newEntry(
+        title = "Binaries change",
+        binaries = listOf(
+            BINARY_6
+        )
     )
 }
