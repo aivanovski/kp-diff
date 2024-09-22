@@ -6,4 +6,5 @@ object Fields {
     const val FIELD_PASSWORD = "Password"
     const val FIELD_URL = "URL"
     const val FIELD_NOTES = "Notes"
+    const val FIELD_UUID = "UUID"
 }
