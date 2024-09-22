@@ -158,6 +158,14 @@ private fun ExternalField<*>.toInternalField(): Field<*> {
             )
         }
 
+        is UUIDField -> {
+            Field(
+                uuid = UUID(0, name.hashCode().toLong()),
+                name = name,
+                value = value.toString()
+            )
+        }
+
         else -> error("Unsupported field type: $this")
     }
 }

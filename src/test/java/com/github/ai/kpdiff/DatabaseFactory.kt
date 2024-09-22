@@ -2,13 +2,9 @@ package com.github.ai.kpdiff
 
 import app.keemobile.kotpass.database.KeePassDatabase
 import app.keemobile.kotpass.models.DatabaseElement
+import app.keemobile.kotpass.models.Entry as BuilderEntry
+import app.keemobile.kotpass.models.Group as BuilderGroup
 import com.github.ai.kpdiff.TestData.ENTRY_APPLE
-import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_CHANGE
-import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_CHANGE_MODIFIED
-import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_DELETE
-import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_DELETE_MODIFIED
-import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_INSERT
-import com.github.ai.kpdiff.TestData.ENTRY_BINARIES_INSERT_MODIFIED
 import com.github.ai.kpdiff.TestData.ENTRY_CLOUD_KEYS
 import com.github.ai.kpdiff.TestData.ENTRY_CLOUD_KEYS_MODIFIED
 import com.github.ai.kpdiff.TestData.ENTRY_FACEBOOK
@@ -27,8 +23,11 @@ import com.github.ai.kpdiff.TestData.GROUP_INTERNET
 import com.github.ai.kpdiff.TestData.GROUP_ROOT
 import com.github.ai.kpdiff.TestData.GROUP_SHOPPING
 import com.github.ai.kpdiff.TestData.GROUP_SOCIAL
+import com.github.ai.kpdiff.entity.KeepassDatabase
+import com.github.ai.kpdiff.testUtils.buildNodeTree
 import com.github.ai.kpdiff.testUtils.toBuilderEntity
 import com.github.aivanovski.keepasstreebuilder.DatabaseBuilderDsl
+import com.github.aivanovski.keepasstreebuilder.DatabaseBuilderDsl.DatabaseTreeBuilder
 import com.github.aivanovski.keepasstreebuilder.converter.kotpass.KotpassDatabaseConverter
 import com.github.aivanovski.keepasstreebuilder.model.Database
 import com.github.aivanovski.keepasstreebuilder.model.DatabaseKey
@@ -94,27 +93,17 @@ object DatabaseFactory {
             .build()
     }
 
-    fun createAttachmentsDatabase(key: DatabaseKey): Database<DatabaseElement, KeePassDatabase> {
+    fun createDatabase(
+        content: DatabaseTreeBuilder<BuilderGroup, BuilderEntry, DatabaseElement>.() -> Unit
+    ): KeepassDatabase {
         return DatabaseBuilderDsl.newBuilder(KotpassDatabaseConverter())
-            .key(key)
-            .content(GROUP_ROOT.toBuilderEntity()) {
-                entry(ENTRY_BINARIES_INSERT.toBuilderEntity())
-                entry(ENTRY_BINARIES_DELETE.toBuilderEntity())
-                entry(ENTRY_BINARIES_CHANGE.toBuilderEntity())
-            }
+            .key(PASSWORD_KEY)
+            .content(GROUP_ROOT.toBuilderEntity(), content = content)
             .build()
+            .toDifferDatabase()
     }
 
-    fun createModifiedAttachmentsDatabases(
-        key: DatabaseKey
-    ): Database<DatabaseElement, KeePassDatabase> {
-        return DatabaseBuilderDsl.newBuilder(KotpassDatabaseConverter())
-            .key(key)
-            .content(GROUP_ROOT.toBuilderEntity()) {
-                entry(ENTRY_BINARIES_INSERT_MODIFIED.toBuilderEntity())
-                entry(ENTRY_BINARIES_DELETE_MODIFIED.toBuilderEntity())
-                entry(ENTRY_BINARIES_CHANGE_MODIFIED.toBuilderEntity())
-            }
-            .build()
+    private fun Database<DatabaseElement, KeePassDatabase>.toDifferDatabase(): KeepassDatabase {
+        return KeepassDatabase(root = this.buildNodeTree())
     }
 }

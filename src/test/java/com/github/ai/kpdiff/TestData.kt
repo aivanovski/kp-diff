@@ -189,4 +189,20 @@ object TestData {
             BINARY_6
         )
     )
+
+    val ENTRY_UUID_CHANGE = newEntry(
+        title = "UUID change"
+    )
+
+    val ENTRY_UUID_CHANGE_MODIFIED = ENTRY_UUID_CHANGE.copy(
+        uuid = UUID(100L, 1L)
+    )
+
+    val GROUP_UUID_CHANGE = newGroup(
+        name = "UUID change group"
+    )
+
+    val GROUP_UUID_CHANGE_MODIFIED = GROUP_UUID_CHANGE.copy(
+        uuid = UUID(200L, 1L)
+    )
 }
