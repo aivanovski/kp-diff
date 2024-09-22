@@ -12,7 +12,7 @@ plugins {
     jacoco
 }
 
-val appVersion = "0.7.1"
+val appVersion = "0.7.2"
 
 group = "com.github.ai.kpdiff"
 version = appVersion
