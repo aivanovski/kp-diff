@@ -59,6 +59,20 @@ OPTIONS:
     -h, --help                       Print help information
 ```
 
+## Integration with git
+`kp-diff` can be used as external diff tool in git repository. In order to do that `config` file of git repository should be modified:
+```
+[diff "kp-diff"]
+command = kp-diff-git
+```
+
+`kp-diff-git`:
+```
+#!/bin/sh
+password=$(gpg ...) # read database password in a secure way, for example with gpg
+kp-diff $2 $5 --password $password # arguments $2 and $5 are important and will be provided by git
+```
+
 ## Building from sources
 #### Building `.jar` file
 ```
