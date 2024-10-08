@@ -69,10 +69,10 @@ kp-diff $2 $5 --password $password --verbose # arguments $2 and $5 are important
 ```
 2. Specify `kp-diff-git.sh` in repository `config` file
 ```
-[diff "kp-diff-git.sh"]
+[diff "kp-diff"]
 command = kp-diff-git.sh
 ```
-3. Use `kp-diff-git.sh` as external diff tool in git log
+3. Use `kp-diff` as external diff tool in git log
 ```
 git log -p --ext-diff
 ```
