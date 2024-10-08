@@ -61,22 +61,21 @@ OPTIONS:
 
 ## Integration with git
 `kp-diff` can be used as external diff tool in git repository.
-1. Create wrapper 'kp-diff-git.sh' script to provide password or key to 'kp-diff'.
+1. Create wrapper script `kp-diff-git.sh` in order to provide password or key to `kp-diff`.
 ```
 #!/bin/sh
 password=$(gpg ...) # read database password in a secure way, for example with gpg
-kp-diff $2 $5 --password $password # arguments $2 and $5 are important and will be provided by git
+kp-diff $2 $5 --password $password --verbose # arguments $2 and $5 are important and will be provided by git
 ```
-2. Specify 'kp-diff-git.sh' in repository `config` file
+2. Specify `kp-diff-git.sh` in repository `config` file
 ```
 [diff "kp-diff-git.sh"]
 command = kp-diff-git.sh
 ```
-3. Use 'kp-diff-git.sh' as external diff tool
+3. Use `kp-diff-git.sh` as external diff tool in git log
 ```
 git log -p --ext-diff
 ```
-
 
 ## Building from sources
 #### Building `.jar` file
