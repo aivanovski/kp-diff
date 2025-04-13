@@ -3,11 +3,11 @@ import java.io.BufferedWriter
 import java.io.FileInputStream
 import java.io.FileWriter
 import java.util.Properties
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.9.23"
-    id("com.github.johnrengelman.shadow") version "4.0.4"
+    kotlin("jvm") version "2.1.20"
+    id("com.gradleup.shadow") version "8.3.6"
     id("io.gitlab.arturbosch.detekt") version "1.23.7"
     jacoco
 }
@@ -27,8 +27,11 @@ tasks.test {
     finalizedBy("jacocoTestReport")
 }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = "11"
+kotlin {
+    jvmToolchain(11)
+    compilerOptions {
+        compilerOptions.jvmTarget.set(JvmTarget.JVM_11)
+    }
 }
 
 tasks.jacocoTestReport {

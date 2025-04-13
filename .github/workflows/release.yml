@@ -36,7 +36,7 @@ jobs:
           cp ./build/libs/kp-diff-${{env.VERSION}}.jar kp-diff.jar
 
       - name: Publish jar file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kp-diff.jar
           path: kp-diff.jar
@@ -58,13 +58,13 @@ jobs:
           tar -zcvf kp-diff-linux-amd64.tar.gz kp-diff-linux-amd64
 
       - name: Publish binary file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kp-diff-linux-amd64
           path: kp-diff-linux-amd64
 
       - name: Publish .tar.gz file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kp-diff-linux-amd64.tar.gz
           path: kp-diff-linux-amd64.tar.gz
@@ -73,7 +73,7 @@ jobs:
         run: ./.github/workflows/create-deb-package.sh
 
       - name: Publish .deb file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kp-diff_${{env.VERSION}}-amd64.deb
           path: kp-diff_${{env.VERSION}}.deb

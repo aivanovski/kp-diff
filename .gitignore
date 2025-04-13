@@ -16,3 +16,4 @@ build/
 .gradle
 tmp/
 version.properties
+kls_database.db
