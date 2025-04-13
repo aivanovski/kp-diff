@@ -1,0 +1,30 @@
+[versions]
+appVersion = "0.7.2"
+
+kotlin = "2.1.20"
+shadowJar = "8.3.6"
+detekt = "1.23.7"
+kotest = "5.5.2"
+junit = "5.5.2"
+mockk = "1.12.3"
+koin = "3.5.0"
+keepassTreeDiff = "0.4.0"
+keepassTreeBuilder = "0.4.0"
+kotpass = "0.10.0"
+okio = "3.9.0"
+
+[plugins]
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+shadowJar = { id = "com.gradleup.shadow", version.ref = "shadowJar" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+
+[libraries]
+kotest-assertions = { module = "io.kotest:kotest-assertions-core-jvm", version.ref = "kotest" }
+kotest-runner = { module = "io.kotest:kotest-runner-junit5-jvm", version.ref = "kotest" }
+junit = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+koin = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+keepassTreeDiff = { module = "com.github.aivanovski:keepass-tree-diff", version.ref = "keepassTreeDiff" }
+keepassTreeBuilder = { module = "com.github.aivanovski:keepass-tree-builder", version.ref = "keepassTreeBuilder" }
+kotpass = { module = "app.keemobile:kotpass", version.ref = "kotpass" }
+okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
