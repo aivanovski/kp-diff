@@ -92,6 +92,10 @@ tasks {
     build {
         dependsOn(shadowJar)
     }
+
+    shadowJar {
+        archiveClassifier.set("") // Removes the '-all' suffix
+    }
 }
 
 detekt {

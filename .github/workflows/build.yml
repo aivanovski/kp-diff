@@ -81,11 +81,7 @@ jobs:
           java-version: 11
 
       - name: Build debug jar
-        run: |
-          ./gradlew shadowJar
-
-          # Remove suffix '-all' from jar file
-          mv ./build/libs/kp-diff-${{env.VERSION}}-all.jar ./build/libs/kp-diff-${{env.VERSION}}.jar
+        run: ./gradlew shadowJar
 
       - name: Store jar file
         uses: actions/upload-artifact@v4

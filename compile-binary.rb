@@ -114,7 +114,6 @@ def compile_binary(graalvm_path)
   if File.exist?(native_image_path)
     puts 'Compiling'
     `export JAVA_HOME=#{graalvm_path}`
-    `cp #{project_root_dir}/build/libs/kp-diff-#{app_version}-all.jar #{project_root_dir}/build/libs/kp-diff-#{app_version}.jar`
     `#{native_image_path} --no-server --no-fallback -H:IncludeResources=".*\.properties" --allow-incomplete-classpath -jar #{project_root_dir}/build/libs/kp-diff-#{app_version}.jar`
   else
     puts "Unable to locate file: #{native_image_path}"

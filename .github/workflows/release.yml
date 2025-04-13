@@ -33,7 +33,7 @@ jobs:
           ./gradlew shadowJar
 
           # Copy jar file to project root
-          cp ./build/libs/kp-diff-${{env.VERSION}}-all.jar kp-diff.jar
+          cp ./build/libs/kp-diff-${{env.VERSION}}.jar kp-diff.jar
 
       - name: Publish jar file
         uses: actions/upload-artifact@v4
