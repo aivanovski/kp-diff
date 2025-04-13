@@ -57,7 +57,7 @@ jobs:
         run: ./gradlew test
 
       - name: Upload coverage.csv file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: coverage.csv
           path: build/reports/coverage/coverage.csv
@@ -84,7 +84,7 @@ jobs:
         run: ./gradlew shadowJar
 
       - name: Store jar file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kp-diff-${{env.VERSION}}.jar
           path: ./build/libs/kp-diff-${{env.VERSION}}.jar
@@ -123,13 +123,13 @@ jobs:
           tar -zcvf kp-diff-${{env.VERSION}}-linux-amd64.tar.gz kp-diff-linux-amd64
 
       - name: Publish binary file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kp-diff-${{env.VERSION}}-linux-amd64
           path: kp-diff-${{env.VERSION}}
 
       - name: Publish .tar.gz file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kp-diff-${{env.VERSION}}-linux-amd64.tar.gz
           path: kp-diff-${{env.VERSION}}-linux-amd64.tar.gz
@@ -182,7 +182,7 @@ jobs:
           dpkg-deb --build kp-diff_${{env.VERSION}}
 
       - name: Publish .deb file
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kp-diff_${{env.VERSION}}-amd64.deb
           path: kp-diff_${{env.VERSION}}.deb
@@ -226,7 +226,7 @@ jobs:
           zip -r kp-diff-${{env.VERSION}}.zip kp-diff-${{env.VERSION}}
 
       - name: Publish archive with artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: kp-diff-${{env.VERSION}}.zip
           path: kp-diff-${{env.VERSION}}.zip
