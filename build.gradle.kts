@@ -6,16 +6,14 @@ import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("jvm") version "2.1.20"
-    id("com.gradleup.shadow") version "8.3.6"
-    id("io.gitlab.arturbosch.detekt") version "1.23.7"
+    alias(libs.plugins.kotlinJvm)
+    alias(libs.plugins.shadowJar)
+    alias(libs.plugins.detekt)
     jacoco
 }
 
-val appVersion = "0.7.2"
-
 group = "com.github.ai.kpdiff"
-version = appVersion
+version = libs.versions.appVersion.get()
 
 repositories {
     mavenCentral()
@@ -68,9 +66,9 @@ tasks.register("createPropertyFileWithVersion") {
             props.load(FileInputStream(propsFile))
         }
 
-        if (props[propertyName] != appVersion) {
+        if (props[propertyName] != libs.versions.appVersion.get()) {
             project.logger.lifecycle("Updating file: version.properties")
-            props[propertyName] = appVersion
+            props[propertyName] = libs.versions.appVersion.get()
             val parentFile = propsFile.parentFile
             if (!parentFile.exists()) {
                 parentFile.mkdirs()
@@ -94,6 +92,10 @@ tasks {
     build {
         dependsOn(shadowJar)
     }
+
+    shadowJar {
+        archiveClassifier.set("") // Removes the '-all' suffix
+    }
 }
 
 detekt {
@@ -101,15 +103,14 @@ detekt {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.5.2")
-    testImplementation("io.kotest:kotest-assertions-core-jvm:5.5.2")
-    testImplementation("io.kotest:kotest-runner-junit5-jvm:5.5.2")
-    testImplementation("io.mockk:mockk:1.12.3")
+    testImplementation(libs.junit)
+    testImplementation(libs.kotest.runner)
+    testImplementation(libs.kotest.assertions)
+    testImplementation(libs.mockk)
 
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.9.23")
-    implementation("io.insert-koin:koin-core:3.1.5")
-    implementation("com.github.aivanovski:keepass-tree-diff:0.4.0")
-    implementation("com.github.aivanovski:keepass-tree-builder:0.4.0")
-    implementation("app.keemobile:kotpass:0.10.0")
-    implementation("com.squareup.okio:okio:3.9.0")
+    implementation(libs.koin)
+    implementation(libs.keepassTreeDiff)
+    implementation(libs.keepassTreeBuilder)
+    implementation(libs.kotpass)
+    implementation(libs.okio)
 }

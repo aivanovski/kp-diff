@@ -28,36 +28,38 @@ import com.github.ai.kpdiff.domain.usecases.PrintHelpUseCase
 import com.github.ai.kpdiff.domain.usecases.PrintVersionUseCase
 import com.github.ai.kpdiff.domain.usecases.ReadPasswordUseCase
 import com.github.ai.kpdiff.domain.usecases.WriteDiffToFileUseCase
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 object KoinModule {
 
     val appModule = module {
-        single { InputReaderFactory() }
-        single<OutputPrinter> { StdoutOutputPrinter() }
-        single { ErrorHandler(get()) }
-        single<FileFactory> { FileFactoryImpl() }
-        single<FileSystemProvider> { FileSystemProviderImpl(get()) }
-        single<KeepassDatabaseFactory> { KotpassDatabaseFactory(get()) }
-        single { DatabaseDifferProvider() }
-        single { EntityFormatterProvider(get()) }
-        single { TerminalOutputFormatter() }
-        single { ParentFormatter() }
-        single<DiffFormatter> { DiffFormatterImpl(get(), get(), get()) }
-        single { ArgumentParser(get()) }
+        singleOf(::InputReaderFactory)
+        singleOf(::StdoutOutputPrinter) bind OutputPrinter::class
+        singleOf(::ErrorHandler)
+        singleOf(::FileFactoryImpl) bind FileFactory::class
+        singleOf(::FileSystemProviderImpl) bind FileSystemProvider::class
+        singleOf(::KotpassDatabaseFactory) bind KeepassDatabaseFactory::class
+        singleOf(::DatabaseDifferProvider)
+        singleOf(::EntityFormatterProvider)
+        singleOf(::TerminalOutputFormatter)
+        singleOf(::ParentFormatter)
+        singleOf(::DiffFormatterImpl) bind DiffFormatter::class
+        singleOf(::ArgumentParser)
 
         // use cases
-        single { DetermineInputTypeUseCase() }
-        single { ReadPasswordUseCase(get(), get(), get(), get(), get()) }
-        single { GetVersionUseCase() }
-        single { PrintHelpUseCase(get()) }
-        single { PrintVersionUseCase(get()) }
-        single { GetKeysUseCase(get()) }
-        single { OpenDatabasesUseCase(get()) }
-        single { PrintDiffUseCase(get(), get()) }
-        single { WriteDiffToFileUseCase(get(), get()) }
-        single { FormatFileSizeUseCase() }
+        singleOf(::DetermineInputTypeUseCase)
+        singleOf(::ReadPasswordUseCase)
+        singleOf(::GetVersionUseCase)
+        singleOf(::PrintHelpUseCase)
+        singleOf(::PrintVersionUseCase)
+        singleOf(::GetKeysUseCase)
+        singleOf(::OpenDatabasesUseCase)
+        singleOf(::PrintDiffUseCase)
+        singleOf(::WriteDiffToFileUseCase)
+        singleOf(::FormatFileSizeUseCase)
 
-        single { MainInteractor(get(), get(), get(), get(), get(), get(), get(), get(), get()) }
+        singleOf(::MainInteractor)
     }
 }
