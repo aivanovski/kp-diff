@@ -4,6 +4,7 @@ import com.github.ai.kpdiff.entity.Either
 import java.io.InputStream
 
 interface FileSystemProvider {
+    fun getName(path: String): Either<String>
     fun exists(path: String): Boolean
     fun openForRead(path: String): Either<InputStream>
     fun write(

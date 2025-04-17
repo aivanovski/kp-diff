@@ -11,6 +11,20 @@ class GetKeysUseCase(
 ) {
 
     fun getKeys(args: Arguments): Either<Pair<KeepassKey, KeepassKey>> {
+        val isLeftPasswordSpecified = (args.password != null || args.leftPassword != null)
+        val isLeftKeyFileSpecified = (args.keyPath != null || args.leftKeyPath != null)
+
+        val isRightPasswordSpecified = (args.password != null || args.rightPassword != null)
+        val isRightKeyFileSpecified = (args.keyPath != null || args.rightKeyPath != null)
+
+        val shouldReadLeftPassword =
+            (args.isUseOnePassword || args.isAskPassword || args.isAskLeftPassword)
+
+        val shouldReadRightPassword =
+            (args.isUseOnePassword || args.isAskPassword || args.isAskRightPassword)
+
+//        if ()
+
         return when {
             args.password != null -> {
                 Either.Right(PasswordKey(args.password) to PasswordKey(args.password))
@@ -33,14 +47,15 @@ class GetKeysUseCase(
     }
 
     private fun readPasswordForBothFiles(args: Arguments): Either<Pair<KeepassKey, KeepassKey>> {
-        val password = readPasswordUseCase.readPassword(
-            listOf(args.leftPath, args.rightPath)
-        )
-        if (password.isLeft()) {
-            return password.mapToLeft()
-        }
+//        val password = readPasswordUseCase.readPassword(
+//            listOf(args.leftPath, args.rightPath)
+//        )
+//        if (password.isLeft()) {
+//            return password.mapToLeft()
+//        }
 
-        return Either.Right(PasswordKey(password.unwrap()) to PasswordKey(password.unwrap()))
+//        return Either.Right(PasswordKey(password.unwrap()) to PasswordKey(password.unwrap()))
+        TODO()
     }
 
     private fun readPasswordsForEachFileSeparately(
@@ -59,7 +74,11 @@ class GetKeysUseCase(
             if (keyPath != null) {
                 keys.add(FileKey(keyPath))
             } else {
-                val password = readPasswordUseCase.readPassword(listOf(path))
+                val password = readPasswordUseCase.readPassword(
+                    path = path,
+                    keyPath = null,
+                    isPrintFileName = true
+                )
                 if (password.isLeft()) {
                     return password.mapToLeft()
                 }

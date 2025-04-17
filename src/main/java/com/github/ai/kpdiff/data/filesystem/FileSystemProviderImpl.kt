@@ -1,5 +1,6 @@
 package com.github.ai.kpdiff.data.filesystem
 
+import com.github.ai.kpdiff.domain.Strings.FILE_DOES_NOT_EXIST
 import com.github.ai.kpdiff.domain.Strings.UNABLE_TO_CREATE_DIRECTORY
 import com.github.ai.kpdiff.entity.Either
 import java.io.FileInputStream
@@ -10,6 +11,14 @@ import java.io.InputStream
 class FileSystemProviderImpl(
     private val fileFactory: FileFactory
 ) : FileSystemProvider {
+
+    override fun getName(path: String): Either<String> {
+        return if (exists(path)) {
+            Either.Right(fileFactory.newFile(path).name)
+        } else {
+            Either.Left(IOException(FILE_DOES_NOT_EXIST))
+        }
+    }
 
     override fun exists(path: String): Boolean {
         return fileFactory.newFile(path).exists()
