@@ -91,6 +91,9 @@ class ArgumentParser(
 
         return when (type) {
             OptionalArgument.ONE_PASSWORD -> parseOnePassword(values)
+            OptionalArgument.ASK_PASSWORD -> parseAskPassword(values)
+            OptionalArgument.ASK_PASSWORD_A -> parseAskLeftPassword(values)
+            OptionalArgument.ASK_PASSWORD_B -> parseAskRightPassword(values)
             OptionalArgument.NO_COLOR -> parseNoColor(values)
             OptionalArgument.HELP -> parseHelp(values)
             OptionalArgument.VERSION -> parseVersion(values)
@@ -113,6 +116,21 @@ class ArgumentParser(
 
     private fun parseOnePassword(arguments: MutableArguments): Either<Unit> {
         arguments.isUseOnePassword = true
+        return Either.Right(Unit)
+    }
+
+    private fun parseAskPassword(arguments: MutableArguments): Either<Unit> {
+        arguments.isAskPassword = true
+        return Either.Right(Unit)
+    }
+
+    private fun parseAskLeftPassword(arguments: MutableArguments): Either<Unit> {
+        arguments.isAskLeftPassword = true
+        return Either.Right(Unit)
+    }
+
+    private fun parseAskRightPassword(arguments: MutableArguments): Either<Unit> {
+        arguments.isAskRightPassword = true
         return Either.Right(Unit)
     }
 

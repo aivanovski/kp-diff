@@ -35,11 +35,15 @@ import com.github.aivanovski.keepasstreebuilder.model.DatabaseKey.PasswordKey
 
 object DatabaseFactory {
 
-    private const val DEFAULT_PASSWORD = "abc123"
+    const val DEFAULT_PASSWORD = TestData.PASSWORD
     private const val DEFAULT_KEY_FILE_CONTENT = "abcdefghij1234567890"
 
     val PASSWORD_KEY = PasswordKey(DEFAULT_PASSWORD)
     val FILE_KEY = DatabaseKey.BinaryKey(DEFAULT_KEY_FILE_CONTENT.toByteArray())
+    val COMPOSITE_KEY = DatabaseKey.CompositeKey(
+        password = DEFAULT_PASSWORD,
+        binaryData = DEFAULT_KEY_FILE_CONTENT.toByteArray()
+    )
 
     fun createDatabase(
         key: DatabaseKey = PASSWORD_KEY
@@ -100,10 +104,10 @@ object DatabaseFactory {
             .key(PASSWORD_KEY)
             .content(GROUP_ROOT.toBuilderEntity(), content = content)
             .build()
-            .toDifferDatabase()
+            .toDomainDatabase()
     }
 
-    private fun Database<DatabaseElement, KeePassDatabase>.toDifferDatabase(): KeepassDatabase {
+    fun Database<DatabaseElement, KeePassDatabase>.toDomainDatabase(): KeepassDatabase {
         return KeepassDatabase(root = this.buildNodeTree())
     }
 }

@@ -87,8 +87,8 @@ internal class ArgumentParserTest {
         // arrange
         val message = String.format(FILE_DOES_NOT_EXIST, LEFT_FILE_PATH)
         val fsProvider = MockedFileSystemProvider(
-            initialContent = mapOf(
-                RIGHT_FILE_PATH to EMPTY
+            content = mapOf(
+                RIGHT_FILE_PATH to byteArrayOf()
             )
         )
 
@@ -107,8 +107,8 @@ internal class ArgumentParserTest {
         // arrange
         val message = String.format(FILE_DOES_NOT_EXIST, RIGHT_FILE_PATH)
         val fsProvider = MockedFileSystemProvider(
-            initialContent = mapOf(
-                LEFT_FILE_PATH to EMPTY
+            content = mapOf(
+                LEFT_FILE_PATH to byteArrayOf()
             )
         )
 
@@ -369,9 +369,9 @@ internal class ArgumentParserTest {
     @Test
     fun `parse should return error if key file is not found`() {
         val fsProvider = MockedFileSystemProvider(
-            initialContent = mapOf(
-                LEFT_FILE_PATH to FILE_CONTENT,
-                RIGHT_FILE_PATH to FILE_CONTENT
+            content = mapOf(
+                LEFT_FILE_PATH to FILE_CONTENT.toByteArray(),
+                RIGHT_FILE_PATH to FILE_CONTENT.toByteArray()
             )
         )
 
@@ -637,6 +637,9 @@ internal class ArgumentParserTest {
             differType = differType,
             outputFilePath = outputPatchPath,
             isUseOnePassword = isUseOnePassword,
+            isAskPassword = false,
+            isAskLeftPassword = false,
+            isAskRightPassword = false,
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,
             isPrintVersion = isPrintVersion,
@@ -646,12 +649,12 @@ internal class ArgumentParserTest {
 
     private fun newMockedProviderWithAllFiles(): FileSystemProvider {
         return MockedFileSystemProvider(
-            initialContent = mapOf(
-                LEFT_FILE_PATH to FILE_CONTENT,
-                RIGHT_FILE_PATH to FILE_CONTENT,
-                LEFT_KEY_PATH to FILE_CONTENT,
-                RIGHT_KEY_PATH to FILE_CONTENT,
-                PATCH_FILE_PATH to FILE_CONTENT
+            content = mapOf(
+                LEFT_FILE_PATH to FILE_CONTENT.toByteArray(),
+                RIGHT_FILE_PATH to FILE_CONTENT.toByteArray(),
+                LEFT_KEY_PATH to FILE_CONTENT.toByteArray(),
+                RIGHT_KEY_PATH to FILE_CONTENT.toByteArray(),
+                PATCH_FILE_PATH to FILE_CONTENT.toByteArray()
             )
         )
     }

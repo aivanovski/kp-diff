@@ -29,12 +29,15 @@ class PrintHelpUseCase(
 
             OPTIONS:
                 -o, --one-password               Use one password for both files
-                -k, --key-file                   Path to key file for <FILE-A> and <FILE-B>
+                -k, --key-file                   Path to key file for both files
                 -a, --key-file-a                 Path to key file for <FILE-A>
                 -b, --key-file-b                 Path to key file for <FILE-B>
-                -p, --password                   Password for <FILE-A> and <FILE-B>
+                -p, --password                   Password for both files
                     --password-a                 Password for <FILE-A>
                     --password-b                 Password for <FILE-A>
+                -s, --ask-password               Asks to type password for both files
+                    --ask-password-a             Asks to type password for <FILE-A>
+                    --ask-password-b             Asks to type password for <FILE-B>
                 -f, --output-file                Path to output file
                 -n, --no-color                   Disable colored output
                 -d, --diff-by                    Type of differ, default is 'path'. Possible values:
