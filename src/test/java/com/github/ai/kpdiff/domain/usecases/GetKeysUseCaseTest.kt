@@ -324,7 +324,7 @@ class GetKeysUseCaseTest {
         isUseOnePassword: Boolean = false,
         isAskPassword: Boolean = false,
         isAskLeftPassword: Boolean = false,
-        isAskRightPassword: Boolean = false,
+        isAskRightPassword: Boolean = false
     ): Arguments {
         return Arguments(
             leftPath = leftPath,

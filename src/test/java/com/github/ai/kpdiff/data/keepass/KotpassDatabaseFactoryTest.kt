@@ -3,8 +3,8 @@ package com.github.ai.kpdiff.data.keepass
 import app.keemobile.kotpass.database.KeePassDatabase
 import app.keemobile.kotpass.errors.CryptoError
 import app.keemobile.kotpass.models.DatabaseElement
-import com.github.ai.kpdiff.DatabaseFactory.DEFAULT_PASSWORD
 import com.github.ai.kpdiff.DatabaseFactory.COMPOSITE_KEY
+import com.github.ai.kpdiff.DatabaseFactory.DEFAULT_PASSWORD
 import com.github.ai.kpdiff.DatabaseFactory.FILE_KEY
 import com.github.ai.kpdiff.DatabaseFactory.PASSWORD_KEY
 import com.github.ai.kpdiff.DatabaseFactory.createDatabase
@@ -201,8 +201,7 @@ internal class KotpassDatabaseFactoryTest {
         db.unwrapError() should beInstanceOf<CryptoError.InvalidKey>()
     }
 
-    private fun newEmptyFsProvider(): FileSystemProvider =
-        MockedFileSystemProvider()
+    private fun newEmptyFsProvider(): FileSystemProvider = MockedFileSystemProvider()
 
     private fun newFsProviderWithDatabase(
         db: Database<DatabaseElement, KeePassDatabase>

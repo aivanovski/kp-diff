@@ -240,8 +240,7 @@ internal class ReadPasswordUseCaseTest {
         }
     }
 
-    private fun newKey(password: String): KeepassKey.PasswordKey =
-        KeepassKey.PasswordKey(password)
+    private fun newKey(password: String): KeepassKey.PasswordKey = KeepassKey.PasswordKey(password)
 
     private fun newFsProviderWithDatabase(
         db: Database<DatabaseElement, KeePassDatabase>
