@@ -1,18 +1,19 @@
 package com.github.ai.kpdiff.domain.usecases
 
+import com.github.ai.kpdiff.data.filesystem.FileSystemProvider
 import com.github.ai.kpdiff.data.keepass.KeepassDatabaseFactory
 import com.github.ai.kpdiff.domain.ErrorHandler
 import com.github.ai.kpdiff.domain.Strings.ENTER_A_PASSWORD
 import com.github.ai.kpdiff.domain.Strings.ENTER_A_PASSWORD_FOR_FILE
-import com.github.ai.kpdiff.domain.Strings.TOO_MANY_ATTEMPTS
 import com.github.ai.kpdiff.domain.input.InputReaderFactory
 import com.github.ai.kpdiff.domain.output.OutputPrinter
 import com.github.ai.kpdiff.entity.Either
-import com.github.ai.kpdiff.entity.KeepassKey
-import com.github.ai.kpdiff.entity.exception.KpDiffException
-import java.io.File
+import com.github.ai.kpdiff.entity.KeepassKey.CompositeKey
+import com.github.ai.kpdiff.entity.KeepassKey.PasswordKey
+import com.github.ai.kpdiff.entity.exception.TooManyAttemptsException
 
 class ReadPasswordUseCase(
+    private val fileSystemProvider: FileSystemProvider,
     private val determineInputTypeUseCase: DetermineInputTypeUseCase,
     private val dbFactory: KeepassDatabaseFactory,
     private val inputReaderFactory: InputReaderFactory,
@@ -20,24 +21,37 @@ class ReadPasswordUseCase(
     private val printer: OutputPrinter
 ) {
 
-    fun readPassword(paths: List<String>): Either<String> {
-        val filenames = paths.map { path -> File(path).name }
+    fun readPassword(
+        path: String,
+        keyPath: String?,
+        isPrintFileName: Boolean
+    ): Either<String> {
+        val getFileNameResult = fileSystemProvider.getName(path)
+        if (getFileNameResult.isLeft()) {
+            return getFileNameResult.mapToLeft()
+        }
+
+        val fileName = getFileNameResult.unwrap()
 
         val inputType = determineInputTypeUseCase.getInputReaderType()
         val inputReader = inputReaderFactory.createReader(inputType)
         for (i in 1..MAX_ATTEMPTS) {
-            if (paths.size == 1) {
-                printer.printLine(
-                    String.format(
-                        ENTER_A_PASSWORD_FOR_FILE,
-                        filenames.first()
-                    )
+            val message = if (isPrintFileName) {
+                String.format(
+                    ENTER_A_PASSWORD_FOR_FILE,
+                    fileName
                 )
             } else {
-                printer.printLine(ENTER_A_PASSWORD)
+                ENTER_A_PASSWORD
             }
 
-            val password = checkPassword(paths, inputReader.read())
+            printer.printLine(message)
+
+            val password = checkPassword(
+                path = path,
+                keyPath = keyPath,
+                password = inputReader.read()
+            )
             if (password.isRight()) {
                 return password
             } else {
@@ -45,18 +59,28 @@ class ReadPasswordUseCase(
             }
         }
 
-        return Either.Left(KpDiffException(TOO_MANY_ATTEMPTS))
+        return Either.Left(TooManyAttemptsException())
     }
 
     private fun checkPassword(
-        paths: List<String>,
+        path: String,
+        keyPath: String?,
         password: String
     ): Either<String> {
-        for (path in paths) {
-            val db = dbFactory.createDatabase(path, KeepassKey.PasswordKey(password))
-            if (db.isLeft()) {
-                return db.mapToLeft()
-            }
+        val key = if (keyPath != null) {
+            CompositeKey(
+                path = keyPath,
+                password = password
+            )
+        } else {
+            PasswordKey(
+                password = password
+            )
+        }
+
+        val db = dbFactory.createDatabase(path, key)
+        if (db.isLeft()) {
+            return db.mapToLeft()
         }
 
         return Either.Right(password)

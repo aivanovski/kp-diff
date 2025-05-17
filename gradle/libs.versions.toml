@@ -14,9 +14,10 @@ mockk = "1.12.3"
 # Core dependencies
 koin = "3.5.0"
 keepassTreeDiff = "0.4.0"
-keepassTreeBuilder = "0.4.0"
+keepassTreeBuilder = "0.4.1"
 kotpass = "0.10.0"
 okio = "3.9.0"
+arrow = "1.2.4"
 
 [plugins]
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
@@ -33,3 +34,5 @@ keepassTreeDiff = { module = "com.github.aivanovski:keepass-tree-diff", version.
 keepassTreeBuilder = { module = "com.github.aivanovski:keepass-tree-builder", version.ref = "keepassTreeBuilder" }
 kotpass = { module = "app.keemobile:kotpass", version.ref = "kotpass" }
 okio = { module = "com.squareup.okio:okio", version.ref = "okio" }
+arrowCore = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
+arrowCoroutines = { module = "io.arrow-kt:arrow-fx-coroutines", version.ref = "arrow" }

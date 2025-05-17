@@ -24,13 +24,28 @@ fun KeepassKey.toCredentials(fileSystemProvider: FileSystemProvider): Either<Cre
         }
 
         is KeepassKey.FileKey -> {
-            val file = fileSystemProvider.openForRead(path)
-            if (file.isLeft()) {
-                return file.mapToLeft()
+            val readKeyResult = fileSystemProvider.openForRead(path)
+            if (readKeyResult.isLeft()) {
+                return readKeyResult.mapToLeft()
             }
 
-            val bytes = file.unwrap().readAllBytes()
-            Either.Right(Credentials.from(bytes))
+            val keyBytes = readKeyResult.unwrap().readAllBytes()
+            Either.Right(Credentials.from(keyBytes))
+        }
+
+        is KeepassKey.CompositeKey -> {
+            val readKeyResult = fileSystemProvider.openForRead(path)
+            if (readKeyResult.isLeft()) {
+                return readKeyResult.mapToLeft()
+            }
+
+            val keyBytes = readKeyResult.unwrap().readAllBytes()
+            Either.Right(
+                Credentials.from(
+                    passphrase = EncryptedValue.fromString(password),
+                    keyData = keyBytes
+                )
+            )
         }
     }
 }

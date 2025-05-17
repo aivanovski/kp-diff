@@ -22,7 +22,7 @@ import java.nio.file.Path
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.io.TempDir
 
-internal class FileSystemProviderImplTestOld {
+internal class FileSystemProviderImplTest {
 
     @TempDir
     lateinit var tempDir: Path
@@ -179,6 +179,36 @@ internal class FileSystemProviderImplTestOld {
 
         // assert
         result shouldBe Either.Left(exception)
+    }
+
+    @Test
+    fun `getName should return file name`() {
+        // arrange
+        val file = newFile()
+        file.writeText(FILE_CONTENT)
+        file.exists() shouldBe true
+
+        // act
+        val result = newFsProvider().getName(
+            path = file.path
+        )
+
+        // assert
+        result shouldBe Either.Right(file.name)
+    }
+
+    @Test
+    fun `getName should return FileNotFoundException`() {
+        // arrange
+        val file = newFile()
+        file.exists() shouldBe false
+
+        // act
+        val content = newFsProvider().getName(file.path)
+
+        // assert
+        content.isLeft() shouldBe true
+        content.unwrapError() should beInstanceOf<FileNotFoundException>()
     }
 
     private fun newFile(): File {
