@@ -121,10 +121,9 @@ internal class FieldFormatterTest {
     }
 
     companion object {
-        private val FIELD_NAME = "field-name"
-        private val FIELD_VALUE = "field-value"
-
-        private val BINARY_NAME = "binary-file.txt"
+        private const val FIELD_NAME = "field-name"
+        private const val FIELD_VALUE = "field-value"
+        private const val BINARY_NAME = "binary-file.txt"
         private val BINARY_VALUE = "Binary value".toByteArray()
     }
 }
