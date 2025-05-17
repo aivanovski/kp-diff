@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VERSION=$(grep 'val appVersion' build.gradle.kts | cut -d= -f2 | cut -d'"' -f2)
+VERSION=$(grep 'appVersion' gradle/libs.versions.toml | cut -d\" -f2)
 
 mkdir kp-diff_$VERSION
 mkdir kp-diff_$VERSION/DEBIAN
