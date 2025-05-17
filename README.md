@@ -22,7 +22,7 @@ All releases of `kp-diff` can be downloaded from [releases](https://github.com/a
 ##### Command line installation via `curl`
 A particular version of `kp-diff` can be downloaded with next command which also changes the file to an executable in directory `$HOME/.local/bin`
 ```
-curl -sSLO https://github.com/aivanovski/kp-diff/releases/download/0.6.0/kp-diff-linux-amd64 && chmod +x kp-diff-linux-amd64 && mkdir -p $HOME/.local/bin && mv kp-diff-linux-amd64 $HOME/.local/bin/kp-diff
+curl -sSLO https://github.com/aivanovski/kp-diff/releases/latest/download/kp-diff-linux-amd64 && chmod +x kp-diff-linux-amd64 && mkdir -p $HOME/.local/bin && mv kp-diff-linux-amd64 $HOME/.local/bin/kp-diff
 ```
 
 ### macOS
