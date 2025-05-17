@@ -581,6 +581,54 @@ internal class ArgumentParserTest {
         }
     }
 
+    @Test
+    fun `parse should set isAskPassword flag`() {
+        assertParsedSuccessfully(
+            arguments = arrayOf(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                OptionalArgument.ASK_PASSWORD.cliFullName
+            ),
+            expectedArguments = newArguments(
+                leftPath = LEFT_FILE_PATH,
+                rightPath = RIGHT_FILE_PATH,
+                isAskPassword = true
+            )
+        )
+    }
+
+    @Test
+    fun `parse should set isAskLeftPassword flag`() {
+        assertParsedSuccessfully(
+            arguments = arrayOf(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                OptionalArgument.ASK_PASSWORD_A.cliFullName
+            ),
+            expectedArguments = newArguments(
+                leftPath = LEFT_FILE_PATH,
+                rightPath = RIGHT_FILE_PATH,
+                isAskLeftPassword = true
+            )
+        )
+    }
+
+    @Test
+    fun `parse should set isAskRightPassword flag`() {
+        assertParsedSuccessfully(
+            arguments = arrayOf(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                OptionalArgument.ASK_PASSWORD_B.cliFullName
+            ),
+            expectedArguments = newArguments(
+                leftPath = LEFT_FILE_PATH,
+                rightPath = RIGHT_FILE_PATH,
+                isAskRightPassword = true
+            )
+        )
+    }
+
     private fun assertParsedSuccessfully(
         arguments: Array<String>,
         expectedArguments: Arguments
@@ -620,6 +668,9 @@ internal class ArgumentParserTest {
         differType: DifferType? = null,
         outputPatchPath: String? = null,
         isUseOnePassword: Boolean = false,
+        isAskPassword: Boolean = false,
+        isAskLeftPassword: Boolean = false,
+        isAskRightPassword: Boolean = false,
         isNoColoredOutput: Boolean = false,
         isPrintHelp: Boolean = false,
         isPrintVersion: Boolean = false,
@@ -637,9 +688,9 @@ internal class ArgumentParserTest {
             differType = differType,
             outputFilePath = outputPatchPath,
             isUseOnePassword = isUseOnePassword,
-            isAskPassword = false,
-            isAskLeftPassword = false,
-            isAskRightPassword = false,
+            isAskPassword = isAskPassword,
+            isAskLeftPassword = isAskLeftPassword,
+            isAskRightPassword = isAskRightPassword,
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,
             isPrintVersion = isPrintVersion,

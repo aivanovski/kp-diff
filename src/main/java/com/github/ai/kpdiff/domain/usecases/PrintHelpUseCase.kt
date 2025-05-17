@@ -38,7 +38,7 @@ class PrintHelpUseCase(
                 -s, --ask-password               Asks to type password for both files
                     --ask-password-a             Asks to type password for <FILE-A>
                     --ask-password-b             Asks to type password for <FILE-B>
-                -f, --output-file                Path to output file
+                -f, --output-file                Prints output to the specified file
                 -n, --no-color                   Disable colored output
                 -d, --diff-by                    Type of differ, default is 'path'. Possible values:
                                                       path - produces more accurate diff, considers entries identical if they have identical content but UUID differs
