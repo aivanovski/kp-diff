@@ -113,4 +113,6 @@ dependencies {
     implementation(libs.keepassTreeBuilder)
     implementation(libs.kotpass)
     implementation(libs.okio)
+    implementation(libs.arrowCore)
+    implementation(libs.arrowCoroutines)
 }
