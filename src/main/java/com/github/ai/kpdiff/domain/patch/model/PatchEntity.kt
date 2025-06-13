@@ -1,7 +1,5 @@
 package com.github.ai.kpdiff.domain.patch.model
 
-import com.github.ai.kpdiff.entity.Binary
-
 sealed interface PatchEntity
 
 data class GroupEntity(
@@ -10,8 +8,7 @@ data class GroupEntity(
 
 data class EntryEntity(
     val name: String,
-    val fields: Map<String, String>,
-    val binaries: List<Binary> = emptyList()
+    val fields: Map<String, String>
 ) : PatchEntity
 
 data class Field(
