@@ -56,7 +56,7 @@ OPTIONS:
     -n, --no-color                   Disable colored output
     -d, --diff-by                    Type of differ, default is 'path'. Possible values:
                                           path - produces more accurate diff, considers entries identical if they have identical content but UUID differs
-                                          uid - considers entries identical if they have identical content and UUID
+                                          uuid - considers entries identical if they have identical content and UUID
     -v, --verbose                    Print verbose output (entry fields will be printed)
     -V, --version                    Print version
     -h, --help                       Print help information
