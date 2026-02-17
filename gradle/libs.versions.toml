@@ -9,7 +9,7 @@ detekt = "1.23.7"
 # Testing
 kotest = "5.5.2"
 junit = "5.5.2"
-mockk = "1.12.3"
+mockk = "1.14.9"
 
 # Core dependencies
 koin = "3.5.0"
