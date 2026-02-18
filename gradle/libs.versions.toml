@@ -16,7 +16,7 @@ koin = "3.5.0"
 keepassTreeDiff = "0.4.0"
 keepassTreeBuilder = "0.4.1"
 kotpass = "0.10.0"
-okio = "3.9.0"
+okio = "3.16.4"
 arrow = "2.2.1.1"
 
 [plugins]
