@@ -3,7 +3,7 @@ appVersion = "0.8.2"
 
 # Build tooling
 kotlin = "2.1.20"
-shadowJar = "8.3.6"
+shadowJar = "9.3.2"
 detekt = "1.23.8"
 
 # Testing
