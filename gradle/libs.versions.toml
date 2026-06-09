@@ -8,7 +8,7 @@ detekt = "1.23.8"
 
 # Testing
 kotest = "6.1.5"
-junit = "5.5.2"
+junit = "6.1.0"
 mockk = "1.14.9"
 
 # Core dependencies
