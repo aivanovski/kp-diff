@@ -194,14 +194,56 @@ class DiffFormatterImpl(
         val formatter = formatterProvider.getFormatter(entity::class)
             as EntityFormatter<DatabaseEntity>
 
+        val formattedEvent = event.maskProtectedFieldsUnlessRevealed(options)
+
         return terminalOutputFormatter.format(
-            line = formatter.format(event as DiffEvent<DatabaseEntity>, indent),
+            line = formatter.format(formattedEvent as DiffEvent<DatabaseEntity>, indent),
             color = if (options.isColorEnabled) {
                 event.getColor()
             } else {
                 Color.NONE
             }
         )
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : DatabaseEntity> DiffEvent<T>.maskProtectedFieldsUnlessRevealed(
+        options: DiffFormatterOptions
+    ): DiffEvent<T> {
+        if (options.isReveal) {
+            return this
+        }
+
+        return when (this) {
+            is DiffEvent.Insert -> DiffEvent.Insert(
+                parentUuid = parentUuid,
+                entity = entity.maskProtectedField()
+            ) as DiffEvent<T>
+
+            is DiffEvent.Delete -> DiffEvent.Delete(
+                parentUuid = parentUuid,
+                entity = entity.maskProtectedField()
+            ) as DiffEvent<T>
+
+            is DiffEvent.Update -> DiffEvent.Update(
+                oldParentUuid = oldParentUuid,
+                newParentUuid = newParentUuid,
+                oldEntity = oldEntity.maskProtectedField(),
+                newEntity = newEntity.maskProtectedField()
+            ) as DiffEvent<T>
+        }
+    }
+
+    private fun <T : DatabaseEntity> T.maskProtectedField(): T {
+        if (this !is Field<*> || name != Fields.FIELD_PASSWORD) {
+            return this
+        }
+
+        return Field(
+            uuid = uuid,
+            name = name,
+            value = PROTECTED_FIELD_PLACEHOLDER
+        ) as T
     }
 
     private fun shouldPrintAdditionalInformation(
@@ -275,6 +317,8 @@ class DiffFormatterImpl(
 
     companion object {
         private const val INDENT = "    "
+
+        private const val PROTECTED_FIELD_PLACEHOLDER = "***"
 
         private val DEFAULT_PROPERTIES = setOf(
             Fields.FIELD_TITLE,

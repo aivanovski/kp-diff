@@ -269,7 +269,8 @@ class MainInteractorTest {
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,
             isPrintVersion = isPrintVersion,
-            isVerboseOutput = false
+            isVerboseOutput = false,
+            isReveal = false
         )
 
     private fun newInteractor(): MainInteractor =

@@ -204,6 +204,23 @@ internal class ArgumentParserTest {
         }
     }
 
+
+    @Test
+    fun `parse should return arguments if --reveal is specified`() {
+        assertParsedSuccessfully(
+            arguments = arrayOf(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                OptionalArgument.REVEAL.cliFullName
+            ),
+            expectedArguments = newArguments(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                isReveal = true
+            )
+        )
+    }
+
     @Test
     fun `parse should return arguments if --one-password is specified`() {
         listOf(
@@ -674,7 +691,8 @@ internal class ArgumentParserTest {
         isNoColoredOutput: Boolean = false,
         isPrintHelp: Boolean = false,
         isPrintVersion: Boolean = false,
-        isVerboseOutput: Boolean = false
+        isVerboseOutput: Boolean = false,
+        isReveal: Boolean = false
     ): Arguments {
         return Arguments(
             leftPath = leftPath,
@@ -694,7 +712,8 @@ internal class ArgumentParserTest {
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,
             isPrintVersion = isPrintVersion,
-            isVerboseOutput = isVerboseOutput
+            isVerboseOutput = isVerboseOutput,
+            isReveal = isReveal
         )
     }
 

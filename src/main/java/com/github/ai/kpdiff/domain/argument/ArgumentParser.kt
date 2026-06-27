@@ -96,6 +96,7 @@ class ArgumentParser(
             OptionalArgument.HELP -> parseHelp(values)
             OptionalArgument.VERSION -> parseVersion(values)
             OptionalArgument.VERBOSE -> parseVerbose(values)
+            OptionalArgument.REVEAL -> parseReveal(values)
             OptionalArgument.KEY_FILE_A -> parseLeftKeyPath(queue.poll(), values)
             OptionalArgument.KEY_FILE_B -> parseRightKeyPath(queue.poll(), values)
             OptionalArgument.PASSWORD -> parsePassword(queue.poll(), values)
@@ -149,6 +150,11 @@ class ArgumentParser(
 
     private fun parseVerbose(arguments: MutableArguments): Either<Unit> {
         arguments.isVerboseOutput = true
+        return Either.Right(Unit)
+    }
+
+    private fun parseReveal(arguments: MutableArguments): Either<Unit> {
+        arguments.isReveal = true
         return Either.Right(Unit)
     }
 

@@ -20,7 +20,8 @@ data class Arguments(
     val isNoColoredOutput: Boolean,
     val isPrintHelp: Boolean,
     val isPrintVersion: Boolean,
-    val isVerboseOutput: Boolean
+    val isVerboseOutput: Boolean,
+    val isReveal: Boolean
 ) {
 
     companion object {
@@ -42,7 +43,8 @@ data class Arguments(
             isNoColoredOutput = false,
             isPrintHelp = false,
             isPrintVersion = false,
-            isVerboseOutput = false
+            isVerboseOutput = false,
+            isReveal = false
         )
     }
 }
