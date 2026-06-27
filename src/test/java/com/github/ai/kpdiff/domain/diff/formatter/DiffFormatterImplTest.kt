@@ -18,7 +18,8 @@ class DiffFormatterImplTest {
     fun `format should return diff between databases`() {
         listOf(
             Pair(defaultOptions(), newPathDiffer()) to OUTPUT,
-            Pair(verboseOptions(), newPathDiffer()) to VERBOSE_OUTPUT
+            Pair(verboseOptions(), newPathDiffer()) to VERBOSE_OUTPUT,
+            Pair(printProtectedOptions(), newPathDiffer()) to VERBOSE_OUTPUT_WITH_PROTECTED_FIELDS
         ).forEach { (data, expected) ->
             // arrange
             val (options, differ) = data
@@ -52,6 +53,13 @@ class DiffFormatterImplTest {
 
     private fun verboseOptions(): DiffFormatterOptions =
         DiffFormatterOptions(isColorEnabled = false, isVerboseOutput = true)
+
+    private fun printProtectedOptions(): DiffFormatterOptions =
+        DiffFormatterOptions(
+            isColorEnabled = false,
+            isVerboseOutput = true,
+            isPrintProtectedFields = true
+        )
 
     companion object {
         private val OUTPUT = """
@@ -97,13 +105,13 @@ class DiffFormatterImplTest {
             -             Entry 'Github.com'
             -                 Field 'Title': 'Github.com'
             -                 Field 'UserName': 'john.doe@example.com'
-            -                 Field 'Password': 'abc123'
+            -                 Field 'Password': '***'
             -                 Field 'URL': 'https://github.com'
             -                 Field 'Notes': ''
             +             Entry 'Gitlab'
             +                 Field 'Title': 'Gitlab'
             +                 Field 'UserName': 'john.doe@example.com'
-            +                 Field 'Password': 'abc123'
+            +                 Field 'Password': '***'
             +                 Field 'URL': 'https://gitlab.com'
             +                 Field 'Notes': ''
             ~ Group 'Database'
@@ -116,10 +124,14 @@ class DiffFormatterImplTest {
             +             Entry 'Facebook'
             +                 Field 'Title': 'Facebook'
             +                 Field 'UserName': 'john.doe@example.com'
-            +                 Field 'Password': 'abc123'
+            +                 Field 'Password': '***'
             +                 Field 'URL': 'https://facebook.com'
             +                 Field 'Notes': ''
         """.transformOutput()
+
+        private val VERBOSE_OUTPUT_WITH_PROTECTED_FIELDS = VERBOSE_OUTPUT.map { line ->
+            line.replace("Field 'Password': '***'", "Field 'Password': 'abc123'")
+        }
 
         private fun String.transformOutput(): List<String> {
             return this

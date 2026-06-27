@@ -96,6 +96,8 @@ class ArgumentParser(
             OptionalArgument.HELP -> parseHelp(values)
             OptionalArgument.VERSION -> parseVersion(values)
             OptionalArgument.VERBOSE -> parseVerbose(values)
+            OptionalArgument.PRINT_PROTECTED_FIELDS -> parsePrintProtectedFields(values)
+            OptionalArgument.PRINT_PASSWORDS -> parsePrintProtectedFields(values)
             OptionalArgument.KEY_FILE_A -> parseLeftKeyPath(queue.poll(), values)
             OptionalArgument.KEY_FILE_B -> parseRightKeyPath(queue.poll(), values)
             OptionalArgument.PASSWORD -> parsePassword(queue.poll(), values)
@@ -149,6 +151,11 @@ class ArgumentParser(
 
     private fun parseVerbose(arguments: MutableArguments): Either<Unit> {
         arguments.isVerboseOutput = true
+        return Either.Right(Unit)
+    }
+
+    private fun parsePrintProtectedFields(arguments: MutableArguments): Either<Unit> {
+        arguments.isPrintProtectedFields = true
         return Either.Right(Unit)
     }
 

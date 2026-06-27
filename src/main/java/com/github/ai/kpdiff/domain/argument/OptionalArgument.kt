@@ -22,7 +22,9 @@ enum class OptionalArgument(
     PASSWORD_B(shortName = null, fullName = "password-b"),
     VERBOSE(shortName = "v", fullName = "verbose"),
     DIFF_BY(shortName = "d", fullName = "diff-by"),
-    OUTPUT_FILE(shortName = "f", fullName = "output-file");
+    OUTPUT_FILE(shortName = "f", fullName = "output-file"),
+    PRINT_PROTECTED_FIELDS(shortName = null, fullName = "print-protected-fields"),
+    PRINT_PASSWORDS(shortName = null, fullName = "print-passwords");
 
     val cliShortName: String? = if (shortName != null) {
         "-$shortName"

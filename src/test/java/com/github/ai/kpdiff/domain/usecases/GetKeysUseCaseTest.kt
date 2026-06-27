@@ -344,7 +344,8 @@ class GetKeysUseCaseTest {
             isAskRightPassword = isAskRightPassword,
             isPrintHelp = false,
             isPrintVersion = false,
-            isVerboseOutput = false
+            isVerboseOutput = false,
+            isPrintProtectedFields = false
         )
     }
 }

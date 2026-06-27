@@ -204,6 +204,28 @@ internal class ArgumentParserTest {
         }
     }
 
+
+    @Test
+    fun `parse should return arguments if protected-field printing is specified`() {
+        listOf(
+            OptionalArgument.PRINT_PROTECTED_FIELDS.cliFullName,
+            OptionalArgument.PRINT_PASSWORDS.cliFullName
+        ).forEach { argumentName ->
+            assertParsedSuccessfully(
+                arguments = arrayOf(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    argumentName
+                ),
+                expectedArguments = newArguments(
+                    LEFT_FILE_PATH,
+                    RIGHT_FILE_PATH,
+                    isPrintProtectedFields = true
+                )
+            )
+        }
+    }
+
     @Test
     fun `parse should return arguments if --one-password is specified`() {
         listOf(
@@ -674,7 +696,8 @@ internal class ArgumentParserTest {
         isNoColoredOutput: Boolean = false,
         isPrintHelp: Boolean = false,
         isPrintVersion: Boolean = false,
-        isVerboseOutput: Boolean = false
+        isVerboseOutput: Boolean = false,
+        isPrintProtectedFields: Boolean = false
     ): Arguments {
         return Arguments(
             leftPath = leftPath,
@@ -694,7 +717,8 @@ internal class ArgumentParserTest {
             isNoColoredOutput = isNoColoredOutput,
             isPrintHelp = isPrintHelp,
             isPrintVersion = isPrintVersion,
-            isVerboseOutput = isVerboseOutput
+            isVerboseOutput = isVerboseOutput,
+            isPrintProtectedFields = isPrintProtectedFields
         )
     }
 
