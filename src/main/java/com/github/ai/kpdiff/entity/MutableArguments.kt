@@ -19,5 +19,5 @@ data class MutableArguments(
     var isPrintHelp: Boolean = false,
     var isPrintVersion: Boolean = false,
     var isVerboseOutput: Boolean = false,
-    var isPrintProtectedFields: Boolean = false
+    var isReveal: Boolean = false
 )

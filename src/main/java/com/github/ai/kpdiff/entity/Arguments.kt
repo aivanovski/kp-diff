@@ -21,7 +21,7 @@ data class Arguments(
     val isPrintHelp: Boolean,
     val isPrintVersion: Boolean,
     val isVerboseOutput: Boolean,
-    val isPrintProtectedFields: Boolean
+    val isReveal: Boolean
 ) {
 
     companion object {
@@ -44,7 +44,7 @@ data class Arguments(
             isPrintHelp = false,
             isPrintVersion = false,
             isVerboseOutput = false,
-            isPrintProtectedFields = false
+            isReveal = false
         )
     }
 }

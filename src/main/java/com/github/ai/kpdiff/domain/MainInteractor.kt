@@ -76,7 +76,7 @@ class MainInteractor(
             val options = DiffFormatterOptions(
                 isColorEnabled = !parsedArgs.isNoColoredOutput,
                 isVerboseOutput = parsedArgs.isVerboseOutput,
-                isPrintProtectedFields = parsedArgs.isPrintProtectedFields
+                isReveal = parsedArgs.isReveal
             )
 
             printDiffUseCase.printDiff(

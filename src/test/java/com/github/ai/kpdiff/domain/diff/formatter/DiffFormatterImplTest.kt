@@ -19,7 +19,7 @@ class DiffFormatterImplTest {
         listOf(
             Pair(defaultOptions(), newPathDiffer()) to OUTPUT,
             Pair(verboseOptions(), newPathDiffer()) to VERBOSE_OUTPUT,
-            Pair(printProtectedOptions(), newPathDiffer()) to VERBOSE_OUTPUT_WITH_PROTECTED_FIELDS
+            Pair(revealOptions(), newPathDiffer()) to REVEALED_VERBOSE_OUTPUT
         ).forEach { (data, expected) ->
             // arrange
             val (options, differ) = data
@@ -54,11 +54,11 @@ class DiffFormatterImplTest {
     private fun verboseOptions(): DiffFormatterOptions =
         DiffFormatterOptions(isColorEnabled = false, isVerboseOutput = true)
 
-    private fun printProtectedOptions(): DiffFormatterOptions =
+    private fun revealOptions(): DiffFormatterOptions =
         DiffFormatterOptions(
             isColorEnabled = false,
             isVerboseOutput = true,
-            isPrintProtectedFields = true
+            isReveal = true
         )
 
     companion object {
@@ -129,7 +129,7 @@ class DiffFormatterImplTest {
             +                 Field 'Notes': ''
         """.transformOutput()
 
-        private val VERBOSE_OUTPUT_WITH_PROTECTED_FIELDS = VERBOSE_OUTPUT.map { line ->
+        private val REVEALED_VERBOSE_OUTPUT = VERBOSE_OUTPUT.map { line ->
             line.replace("Field 'Password': '***'", "Field 'Password': 'abc123'")
         }
 

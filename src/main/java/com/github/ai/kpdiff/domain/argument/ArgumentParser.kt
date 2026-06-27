@@ -96,8 +96,7 @@ class ArgumentParser(
             OptionalArgument.HELP -> parseHelp(values)
             OptionalArgument.VERSION -> parseVersion(values)
             OptionalArgument.VERBOSE -> parseVerbose(values)
-            OptionalArgument.PRINT_PROTECTED_FIELDS -> parsePrintProtectedFields(values)
-            OptionalArgument.PRINT_PASSWORDS -> parsePrintProtectedFields(values)
+            OptionalArgument.REVEAL -> parseReveal(values)
             OptionalArgument.KEY_FILE_A -> parseLeftKeyPath(queue.poll(), values)
             OptionalArgument.KEY_FILE_B -> parseRightKeyPath(queue.poll(), values)
             OptionalArgument.PASSWORD -> parsePassword(queue.poll(), values)
@@ -154,8 +153,8 @@ class ArgumentParser(
         return Either.Right(Unit)
     }
 
-    private fun parsePrintProtectedFields(arguments: MutableArguments): Either<Unit> {
-        arguments.isPrintProtectedFields = true
+    private fun parseReveal(arguments: MutableArguments): Either<Unit> {
+        arguments.isReveal = true
         return Either.Right(Unit)
     }
 

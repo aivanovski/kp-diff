@@ -43,8 +43,7 @@ class PrintHelpUseCase(
                 -d, --diff-by                    Type of differ, default is 'path'. Possible values:
                                                       path - produces more accurate diff, considers entries identical if they have identical content but UUID differs
                                                       uuid - considers entries identical if they have identical content and UUID
-                    --print-protected-fields    Print values of protected fields such as passwords
-                    --print-passwords            Alias for --print-protected-fields
+                    --reveal                     Reveal protected field values such as passwords
                 -v, --verbose                    Print verbose output (entry fields will be printed)
                 -V, --version                    Print version
                 -h, --help                       Print help information

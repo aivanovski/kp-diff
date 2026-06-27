@@ -345,7 +345,7 @@ class GetKeysUseCaseTest {
             isPrintHelp = false,
             isPrintVersion = false,
             isVerboseOutput = false,
-            isPrintProtectedFields = false
+            isReveal = false
         )
     }
 }

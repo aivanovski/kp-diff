@@ -206,24 +206,19 @@ internal class ArgumentParserTest {
 
 
     @Test
-    fun `parse should return arguments if protected-field printing is specified`() {
-        listOf(
-            OptionalArgument.PRINT_PROTECTED_FIELDS.cliFullName,
-            OptionalArgument.PRINT_PASSWORDS.cliFullName
-        ).forEach { argumentName ->
-            assertParsedSuccessfully(
-                arguments = arrayOf(
-                    LEFT_FILE_PATH,
-                    RIGHT_FILE_PATH,
-                    argumentName
-                ),
-                expectedArguments = newArguments(
-                    LEFT_FILE_PATH,
-                    RIGHT_FILE_PATH,
-                    isPrintProtectedFields = true
-                )
+    fun `parse should return arguments if --reveal is specified`() {
+        assertParsedSuccessfully(
+            arguments = arrayOf(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                OptionalArgument.REVEAL.cliFullName
+            ),
+            expectedArguments = newArguments(
+                LEFT_FILE_PATH,
+                RIGHT_FILE_PATH,
+                isReveal = true
             )
-        }
+        )
     }
 
     @Test
@@ -697,7 +692,7 @@ internal class ArgumentParserTest {
         isPrintHelp: Boolean = false,
         isPrintVersion: Boolean = false,
         isVerboseOutput: Boolean = false,
-        isPrintProtectedFields: Boolean = false
+        isReveal: Boolean = false
     ): Arguments {
         return Arguments(
             leftPath = leftPath,
@@ -718,7 +713,7 @@ internal class ArgumentParserTest {
             isPrintHelp = isPrintHelp,
             isPrintVersion = isPrintVersion,
             isVerboseOutput = isVerboseOutput,
-            isPrintProtectedFields = isPrintProtectedFields
+            isReveal = isReveal
         )
     }
 

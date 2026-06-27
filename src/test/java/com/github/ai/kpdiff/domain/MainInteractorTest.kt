@@ -270,7 +270,7 @@ class MainInteractorTest {
             isPrintHelp = isPrintHelp,
             isPrintVersion = isPrintVersion,
             isVerboseOutput = false,
-            isPrintProtectedFields = false
+            isReveal = false
         )
 
     private fun newInteractor(): MainInteractor =

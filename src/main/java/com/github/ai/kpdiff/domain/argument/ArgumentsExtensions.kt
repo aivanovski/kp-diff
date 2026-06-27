@@ -24,6 +24,6 @@ fun MutableArguments.toArguments(): Arguments {
         isPrintHelp = isPrintHelp,
         isPrintVersion = isPrintVersion,
         isVerboseOutput = isVerboseOutput,
-        isPrintProtectedFields = isPrintProtectedFields
+        isReveal = isReveal
     )
 }

@@ -194,7 +194,7 @@ class DiffFormatterImpl(
         val formatter = formatterProvider.getFormatter(entity::class)
             as EntityFormatter<DatabaseEntity>
 
-        val formattedEvent = event.maskProtectedFields(options)
+        val formattedEvent = event.maskProtectedFieldsUnlessRevealed(options)
 
         return terminalOutputFormatter.format(
             line = formatter.format(formattedEvent as DiffEvent<DatabaseEntity>, indent),
@@ -207,10 +207,10 @@ class DiffFormatterImpl(
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun <T : DatabaseEntity> DiffEvent<T>.maskProtectedFields(
+    private fun <T : DatabaseEntity> DiffEvent<T>.maskProtectedFieldsUnlessRevealed(
         options: DiffFormatterOptions
     ): DiffEvent<T> {
-        if (options.isPrintProtectedFields) {
+        if (options.isReveal) {
             return this
         }
 
